@@ -34,6 +34,16 @@ class AppTests(unittest.TestCase):
         at.button(key="submit_inquiry").click().run()
         self.assertEqual(at.text_area(key="draft").value, "My own revised situation.")
 
+    def test_return_to_own_scenario_clears_example_without_submitting(self):
+        at=AppTest.from_file(str(APP)).run()
+        at.button(key="case_dashboard").click().run()
+        self.assertTrue(at.text_area(key="draft").value)
+        at.button(key="case_blank").click().run()
+        self.assertFalse(at.exception)
+        self.assertEqual(at.text_area(key="draft").value, "")
+        self.assertEqual(at.session_state["example"], "blank")
+        self.assertEqual(at.session_state["conversation"].messages, [])
+
     @patch.dict(os.environ, {"OPENROUTER_API_KEY": "test-only", "GEMINI_API_KEY": "", "ZHIPU_API_KEY": ""})
     def test_submit_and_transport_failure_preserve_user_work(self):
         import json

@@ -25,6 +25,20 @@ Copy `.streamlit/secrets.toml.example` to `.streamlit/secrets.toml`. Fill in **o
 
 **Developer setup:** fill `.env` locally or `.streamlit/secrets.toml`; on Community Cloud, use the Secrets panel. Templates contain empty keys. For Gemini or GLM, set the corresponding `*_FREE_TIER_CONFIRMED` flag to `true` only after confirming your account's current free-model eligibility. API keys are never bundled or displayed from this configuration.
 
+Both developer services can be configured together in Community Cloud **Settings → Secrets**:
+
+```toml
+GEMINI_API_KEY = "replace-with-your-key"
+GEMINI_MODEL = "gemini-3.5-flash-lite"
+GEMINI_FREE_TIER_CONFIRMED = "false"
+
+ZHIPU_API_KEY = "replace-with-your-key"
+ZHIPU_MODEL = "glm-4.7-flash"
+ZHIPU_FREE_TIER_CONFIRMED = "false"
+```
+
+Set each confirmation flag to `"true"` only after checking that account's free-tier eligibility. Replace existing entries rather than creating duplicate TOML fields. Retain any OpenRouter settings. Select the service in the sidebar; clear session keys to use developer keys. Developer keys never appear in the browser input fields. Do not put this filled configuration in the repository.
+
 **Visitor setup:** open **AI Model Settings → Use your own API key**, select a service/model, enter the key in the password field and confirm free eligibility. A nonempty visitor key takes priority for that service; an empty field uses the developer configuration. Keys remain only in that Streamlit session's memory, survive service switching and are removed by **Clear session keys** or session expiry. This app does not write keys to files, logs, exports, GitHub, URLs or shared caches. Browser password masking is visual protection; enter keys only on a trusted HTTPS deployment. A fresh browser session does not inherit another visitor's credentials.
 
 **Test Connection** first checks the account-specific model list for Gemini, then sends one small fictional audit-ethics case through the actual `Session.submit` workflow, including the objectivity prompt, JSON parsing, question-only and quote checks. It consumes one generation request (plus a metadata request for Gemini), does not use the user's case, does not append to the formal conversation, and never automatically falls back to another service. A success badge applies to the current service/key/model configuration; changing it invalidates the badge. A successful test does not establish the quality of all future questions.
@@ -67,10 +81,11 @@ A Gemini HTTP 404 can indicate unavailable model/resource; the connection test c
 
 ## Interface and execution states
 
+- **Own situation first:** a separate full-width row returns to a blank draft. Four optional example folders are secondary starting points, arranged in one desktop row or a mobile grid.
 - **Riffle-inspired case selection:** native Streamlit buttons are styled as folder cards; hovering lifts one and slightly shifts neighbors. Selected cards have a checkmark and accent border. Keyboard and touch activation use the same Python callback; selecting a case fills an editable draft without sending it. Choosing your own case restores a blank starting point.
 - **Exploded-inspired details:** expand Case details to view context, inquiry and human review in layers. Hover or keyboard focus on the expander separates them. All information stays readable without motion.
-- **Relay-inspired execution:** real backend events drive Input check → Model request → Output validation → Save result. Earlier stages are complete only when execution has advanced past them. Errors mark the current stage and preserve the draft; no fake tool calls or timers imply progress. Save means commit to current session memory, not disk. The provider records still show the actual model used.
-- A short settling header graphic and subtle active-stage pulse provide restrained feedback. There are no autoplay background loops, external fonts/CDNs, Node build or front-end framework. Reduced-motion preferences disable transitions; mobile layouts wrap cards. See [motion attribution](THIRD_PARTY_NOTICES.md).
+- **Relay-inspired execution:** a full-width four-step panel uses numbered markers, explanatory text and distinct idle/active/completed/error states. Real backend events drive Input check → Model request → Output validation → Save result. Earlier stages are complete only when execution has advanced past them. Errors mark the current stage and preserve the draft; no fake tool calls or timers imply progress. Save means commit to current session memory, not disk. The provider records still show the actual model used.
+- Spring-like easing and staggered neighboring folder movements take cues from [Motion](https://motion.dev/docs/animate) and [Anime.js stagger](https://animejs.com/documentation/utilities/stagger/). The implementation uses original local CSS, without importing either library. A short settling header graphic and subtle active-stage pulse provide restrained feedback. There are no autoplay background loops, external fonts/CDNs, Node build or front-end framework. Reduced-motion preferences disable transitions; mobile layouts wrap cards. See [motion attribution](THIRD_PARTY_NOTICES.md).
 
 The stylesheet uses Streamlit's container keys and DOM test identifiers. Dependencies are pinned; check visual behavior before upgrading Streamlit. Core functionality remains native Python callbacks even if CSS is unavailable.
 

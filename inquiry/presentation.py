@@ -32,22 +32,34 @@ h1,h2,h3{letter-spacing:-.035em;color:var(--ink)}
 .exploded .layer{position:relative;margin-top:-4px;border:1px solid var(--line);border-radius:10px;background:white;padding:12px 16px;transition:transform .5s var(--ease),margin .5s var(--ease);box-shadow:0 3px 10px #20213404}
 .exploded:hover .layer,.exploded:focus-within .layer{margin-top:7px;transform:translateX(var(--offset))}
 .exploded .layer small{color:var(--accent);font-size:.65rem;letter-spacing:.1em}.exploded .layer p{color:#666978;font-size:.85rem;line-height:1.5;margin:3px 0 0}
-.relay{display:flex;gap:0;padding:12px 0 18px;align-items:center}.relay-node{flex:1;border-top:2px solid #e2e2eb;padding:10px 4px 0;font-size:.72rem;color:var(--muted);position:relative}.relay-node:before{content:'';position:absolute;top:-5px;left:4px;width:8px;height:8px;border-radius:50%;background:#d8d7e3}.relay-node.complete{border-color:#9a91d5;color:#6558aa}.relay-node.complete:before{background:#8d81d5}.relay-node.active{border-color:var(--accent);color:var(--accent)}.relay-node.active:before{background:var(--accent);animation:pulse 1.2s ease-in-out infinite}.relay-node.failed{border-color:#c96565;color:#a64545}.relay-node.failed:before{background:#c96565}
+.workflow-panel{background:#fff;border:1px solid #e4e3eb;border-radius:20px;padding:20px 22px;margin:0 0 26px;box-shadow:0 8px 28px #24263004}
+.flow-heading{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;font-size:12px;font-weight:600;letter-spacing:.08em}.flow-status{font-size:11px;letter-spacing:0;font-weight:500;background:#f3f2f8;color:#767187;border-radius:20px;padding:5px 10px}
+.flow-track{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.flow-step{position:relative;border:1px solid #eae9ef;background:#fafafb;border-radius:12px;padding:15px;min-height:108px;transition:background .35s,border-color .35s,transform .4s var(--ease)}
+.flow-step .marker{display:inline-flex;width:28px;height:28px;align-items:center;justify-content:center;border-radius:9px;background:#eeedf3;color:#888295;font-size:11px;margin-bottom:10px}.flow-step strong{display:block;font-size:13px;font-weight:600}.flow-step small{display:block;font-size:11px;color:#8a8793;margin-top:5px;line-height:1.5}
+.flow-step.active{border-color:#b3a8ed;background:#f3f0ff;box-shadow:0 0 0 3px #6558ce07}.flow-step.active .marker{color:white;background:var(--accent);animation:pulse 1.3s ease-in-out infinite}.flow-step.complete{border-color:#d4e4dc;background:#f6faf8}.flow-step.complete .marker{color:#387558;background:#e1f0e7}.flow-step.failed{border-color:#e6b8b8;background:#fff8f8}.flow-step.failed .marker{color:#a64545;background:#f6dfdf}
+.st-key-own_scenario{border:1px solid #dcd7f0;border-radius:16px;padding:14px 18px;background:linear-gradient(110deg,#f0edfc,#fff);margin-bottom:16px}.st-key-own_scenario button{min-height:54px;text-align:left;justify-content:flex-start;border:0!important;background:transparent!important;box-shadow:none!important;color:#52458d!important;font-size:18px!important}.st-key-own_scenario button p{font-size:18px;font-weight:600}.st-key-own_scenario [data-testid="stCaptionContainer"]{padding-left:8px}
+.st-key-case_picker{padding:18px 0 12px}.st-key-case_picker [data-testid="stHorizontalBlock"]{gap:16px!important}.st-key-case_picker [data-testid="stColumn"]:before{width:45%;height:26px;left:0;top:0;background:#e9e6f4;border-color:#dcd7ea}.st-key-case_picker [data-testid="stColumn"]:after{content:'';position:absolute;inset:22px 6px 0;border:1px solid #e2dfec;border-radius:12px;background:#f0eef6;z-index:0;transform:rotate(2deg);pointer-events:none;transition:transform .6s var(--ease)}.st-key-case_picker [data-testid="stColumn"]:hover:after{transform:translateY(-5px) rotate(4deg)}
+.st-key-case_picker button{z-index:1;min-height:176px;padding:20px 17px;border-radius:5px 14px 14px 14px;transition:transform .65s cubic-bezier(.16,1.25,.36,1),box-shadow .4s,border-color .25s}.st-key-case_picker button p:nth-child(2){font-size:17px;line-height:1.4;margin-bottom:12px}.st-key-case_picker button p:last-child{font-size:11px;color:#878293}.st-key-case_picker [data-testid="stColumn"]:hover button{transform:translateY(-16px) rotateX(7deg) rotate(-1deg);box-shadow:0 20px 30px #29233f16}
+.exploded .layer{padding:16px 20px;border-radius:14px;transition:transform .6s cubic-bezier(.16,1.15,.36,1),margin .5s var(--ease)}.exploded .layer:nth-child(2){background:#faf9ff}.exploded .layer:nth-child(3){background:#f5f3fc}.exploded:hover .layer,.exploded:focus-within .layer{margin-top:10px;transform:translateX(var(--offset))}
 @keyframes pulse{50%{box-shadow:0 0 0 5px #6558ce18;opacity:.5}}@keyframes enter{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}@keyframes settle{from{opacity:0;transform:translateY(-8px) rotate(-28deg) skew(8deg)}to{opacity:1;transform:rotate(-28deg) skew(8deg)}}
-@media(max-width:700px){.block-container{padding:1.2rem 1rem}.hero h1{font-size:2.8rem}.st-key-case_picker [data-testid="stHorizontalBlock"]{flex-wrap:wrap}.st-key-case_picker [data-testid="stColumn"]{min-width:140px!important;flex:1 1 40%!important}.st-key-case_picker button{min-height:100px}.hero-glyph{width:60px}.relay-node{font-size:.65rem}}
+@media(max-width:700px){.block-container{padding:1.2rem 1rem}.hero h1{font-size:2.8rem}.st-key-case_picker [data-testid="stHorizontalBlock"]{flex-wrap:wrap}.st-key-case_picker [data-testid="stColumn"]{min-width:140px!important;flex:1 1 40%!important}.st-key-case_picker button{min-height:100px}.hero-glyph{width:60px}.flow-track{grid-template-columns:repeat(2,1fr)}.workflow-panel{padding:16px}.flow-step{padding:12px}.st-key-case_picker button{min-height:170px}.st-key-case_picker button p:nth-child(2){font-size:15px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}.st-key-case_picker button{transform:none!important}}
 </style>'''
 
 
 def relay_html(stage='idle', zh=False, failed=False):
-    names = ['输入检查','模型请求','输出校验','保存结果'] if zh else ['Check input','Ask model','Validate output','Save result']
+    names = ['输入检查','模型追问','输出校验','保存结果'] if zh else ['Check input','Ask model','Validate output','Save result']
+    descriptions = ['读取情境与上下文','请求下一条伦理问题','检查结构与引用','保留本会话探究记录'] if zh else ['Read situation and context','Request the next ethical question','Check structure and quotations','Keep this session’s inquiry record']
     steps = ['input','request','validate','save']
     current = steps.index(stage) if stage in steps else (4 if stage=='done' else -1)
+    status = ('需要处理错误' if zh else 'Needs attention') if failed else ('已完成本轮' if zh else 'Turn complete') if stage=='done' else ('等待输入' if zh else 'Waiting for input') if stage=='idle' else ('正在执行' if zh else 'In progress')
     nodes=[]
     for i,label in enumerate(names):
         state='complete' if i<current else ('failed' if failed else 'active') if i==current else ''
-        nodes.append(f'<div class="relay-node {state}">{i+1:02} · {label}</div>')
-    return '<div class="relay" role="status" aria-live="polite">'+''.join(nodes)+'</div>'
+        marker='✓' if state=='complete' else '!' if state=='failed' else f'{i+1:02}'
+        nodes.append(f'<div class="flow-step {state}"><span class="marker">{marker}</span><strong>{label}</strong><small>{descriptions[i]}</small></div>')
+    heading = '探究执行流程' if zh else 'INQUIRY WORKFLOW'
+    return f'<div class="workflow-panel" role="status" aria-live="polite"><div class="flow-heading">{heading}<span class="flow-status">{status}</span></div><div class="flow-track">'+''.join(nodes)+'</div></div>'
 
 
 def details_html(example, zh=False):

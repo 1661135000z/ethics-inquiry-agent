@@ -200,14 +200,26 @@ def load_example(case_id):
     st.session_state.example_source = example["source"]
 
 
+relay = st.empty()
+stage, failed = st.session_state.workflow
+relay.markdown(relay_html(stage, zh, failed), unsafe_allow_html=True)
+
 if not conversation.messages:
-    st.caption(t("CASE SELECTION · optional, editable starting points", "案例选择 · 可选、可修改的起点"))
+    with st.container(key="own_scenario"):
+        own = st.session_state.example == "blank"
+        st.button(t("✎  Write my own situation", "✎  自行输入情境") + ("  ✓" if own else "  →"),
+                  key="case_blank", type="primary" if own else "secondary",
+                  on_click=load_example, args=("blank",), use_container_width=True)
+        st.caption(t("Your situation comes first. Describe the people, decision and concern in the field below.",
+                     "以你的情境为起点。在下方输入参与者、需要作出的判断和你的顾虑。"))
+    st.caption(t("OR EXPLORE · four editable examples", "也可以探索 · 四个可修改的示例"))
     with st.container(key="case_picker"):
-        for i, (column, case) in enumerate(zip(st.columns(len(EXAMPLES)), EXAMPLES)):
+        for i, (column, case) in enumerate(zip(st.columns(4), EXAMPLES[1:])):
             with column:
                 selected = case["id"] == st.session_state.example
                 name = case["zh" if zh else "en"].replace("Example · ", "").replace("Fictional · ", "").replace("示例 · ", "").replace("新编虚构 · ", "")
-                st.button(f"{i+1:02}  {'✓' if selected else '↗'}\n\n{name}", key=f"case_{case['id']}",
+                descriptions = [t("Relationships · commercial pressure", "私人关系 · 商业压力"), t("Responsibilities · independent review", "业务责任 · 独立复核"), t("AI outputs · missing evidence", "AI结果 · 缺失证据"), t("Incentives · unsupported claims", "利益激励 · 未经验证的陈述")]
+                st.button(f"{i+1:02}  {t('✓ SELECTED', '✓ 已选择') if selected else t('↗ EXPLORE', '↗ 探索')}\n\n**{name}**\n\n{descriptions[i]}", key=f"case_{case['id']}",
                     type="primary" if selected else "secondary", on_click=load_example, args=(case["id"],), use_container_width=True)
     selected_case = next(e for e in EXAMPLES if e['id'] == st.session_state.example)
     with st.expander(t("Case details · inspect the layers", "案例详情 · 展开信息层次")):
@@ -221,11 +233,6 @@ with left:
     st.subheader(t("Your inquiry", "你的伦理情境"))
     st.caption(t("Describe a situation. Examine what is known. Decide what needs checking.",
                  "描述情境，梳理已知信息，发现仍需核实的事项。"))
-    if not conversation.messages:
-        with st.container(border=True):
-            st.markdown("**" + t("Start with your own situation", "从你自己的情境开始") + "**")
-            st.write(t("Who is involved, what decision is being made, and what concerns you? Leave unknown facts unknown.",
-                       "谁参与其中？需要作出什么判断？你有什么顾虑？不知道的事实可以保留为未知。"))
     for index, message in enumerate(conversation.messages):
         with st.chat_message(message["role"], avatar=":material/psychology:" if message["role"] == "assistant" else None):
             # Untrusted user/model text is never rendered as HTML or executable markdown.
@@ -247,10 +254,6 @@ with left:
         if config_error:
             st.caption(t("Configure a key in AI Model Settings before sending.",
                          "请先在侧栏 AI Model Settings 输入密钥或设置开发者配置。"))
-    relay = st.empty()
-    stage, failed = st.session_state.workflow
-    relay.markdown(relay_html(stage, zh, failed), unsafe_allow_html=True)
-
     def progress(stage):
         st.session_state.workflow = (stage, False)
         relay.markdown(relay_html(stage, zh), unsafe_allow_html=True)
