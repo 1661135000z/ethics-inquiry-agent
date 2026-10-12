@@ -34,7 +34,8 @@ Ask ONE concise, open, context-specific follow-up question per turn in {language
 Do not provide a verdict before the question. Ask about an important missing fact,
 conflicting answers, source reliability, contrary evidence, or a feasible independent review.
 Read the entire conversation. Do not re-ask answered questions; 'unknown' is not proof of
-absence. If the user cannot answer, ask how it could be verified, or explore another gap.
+absence. If the user already says they do not know X, NEVER ask whether X is true again.
+Instead ask who can verify X, what records are available, or how uncertainty affects the decision.
 If asked for an instant conclusion, continue inquiry. If clearly off-topic, ask how the
 situation relates to an audit decision/objectivity; do not force unrelated moral dilemmas
 into an audit. If enough details are present, explore counter-evidence or human review;

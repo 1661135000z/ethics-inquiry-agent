@@ -79,6 +79,21 @@ class Client:
             url = "https://openrouter.ai/api/v1/chat/completions" if self.provider == "openrouter" else "https://open.bigmodel.cn/api/paas/v4/chat/completions"
             headers["Authorization"] = "Bearer " + key
             payload = {"model": model, "messages": messages, "temperature": 0.3, "max_tokens": 1600, "stream": False}
+            if self.provider == "openrouter":
+                topics = ["role", "interests", "pressure", "evidence", "review"]
+                payload["response_format"] = {"type": "json_schema", "json_schema": {
+                    "name": "inquiry_response", "strict": True, "schema": {
+                        "type": "object", "additionalProperties": False,
+                        "properties": {
+                            "question": {"type": "string"},
+                            "focus": {"type": "string", "enum": topics + ["scope"]},
+                            "observations": {"type": "array", "items": {
+                                "type": "object", "additionalProperties": False,
+                                "properties": {"area": {"type": "string", "enum": topics}, "quote": {"type": "string"}},
+                                "required": ["area", "quote"]}},
+                        }, "required": ["question", "focus", "observations"],
+                    }}}
+                payload["provider"] = {"require_parameters": True}
             if self.provider == "zhipu": payload["thinking"] = {"type": "disabled"}
         try:
             with httpx.Client(timeout=45.0, follow_redirects=False, transport=self.transport) as http:
