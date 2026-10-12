@@ -1,0 +1,35 @@
+:host {display:block;width:100%;font-family:"InquireSans","Noto Sans SC","PingFang SC",sans-serif;}
+.welcome {--accent:var(--inquire-accent,#6857c8);color:var(--st-text-color,#292934);padding:22px 3px 12px;font-family:inherit;}
+.welcome-intro {max-width:700px;margin:0 0 28px;}
+.welcome-eyebrow {font-size:10px;font-weight:650;letter-spacing:.16em;color:var(--accent);margin:0 0 14px;}
+.welcome-heading {font-size:clamp(24px,3.2vw,38px);font-weight:580;line-height:1.23;letter-spacing:-.045em;margin:0 0 14px;}
+.welcome-description {font-size:14px;line-height:1.65;opacity:.66;margin:0;}
+.model-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;perspective:900px;}
+.model-card {--rx:0deg;--ry:0deg;--shine-x:50%;position:relative;display:flex;flex-direction:column;min-width:0;min-height:225px;text-align:left;font:inherit;color:inherit;cursor:pointer;padding:23px 25px;border:1px solid #ded9eb;border-radius:17px;background:radial-gradient(ellipse at var(--shine-x) 0%,#faf7ff 0%,#ffffff 85%);transform:rotateX(var(--rx)) rotateY(var(--ry));transition:transform .35s cubic-bezier(.2,.8,.2,1),border-color .25s,box-shadow .25s;}
+.model-card:hover {border-color:#b8aad8;box-shadow:0 14px 35px #53407410;}
+.model-card[aria-pressed="true"] {border-color:var(--accent);box-shadow:inset 0 0 0 1px #6857c830,0 10px 28px #6857c80b;}
+.model-top {display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
+.model-glyph {color:var(--accent);font-size:28px;line-height:1;}
+.model-status {font-size:10px;letter-spacing:.025em;border-radius:20px;padding:5px 9px;background:#f0edf5;color:#746a82;}
+.model-status[data-ready="true"] {background:#e8f1e9;color:#45694b;}
+.model-name {font-size:23px;font-weight:650;letter-spacing:-.04em;line-height:1.25;}
+.model-label {font-size:11px;opacity:.63;margin-top:5px;}
+.model-detail {font-size:13px;line-height:1.7;opacity:.72;margin:15px 0 20px;max-width:330px;}
+.model-action {font-size:12px;color:var(--accent);margin-top:auto;}
+.model-card[data-provider="openrouter"] {grid-column:1/-1;min-height:0;padding:15px 22px;display:grid;grid-template-columns:auto 1fr auto;column-gap:15px;align-items:center;background:#faf9fc;}
+.model-card[data-provider="openrouter"] .model-top {grid-column:1;grid-row:1/3;margin:0;}
+.model-card[data-provider="openrouter"] .model-status,.model-card[data-provider="openrouter"] .model-detail {display:none;}
+.model-card[data-provider="openrouter"] .model-name {grid-column:2;font-size:15px;}
+.model-card[data-provider="openrouter"] .model-label {grid-column:2;margin-top:2px;}
+.model-card[data-provider="openrouter"] .model-action {grid-column:3;grid-row:1/3;margin:0;}
+.model-card:focus-visible {outline:3px solid var(--accent);outline-offset:4px;}
+@media(max-width:600px) {.model-grid {grid-template-columns:1fr;gap:12px;} .model-card {min-height:195px;padding:21px;} .welcome {padding-top:12px;} .model-card[data-provider="openrouter"] .model-action {font-size:11px;}}
+@media(prefers-reduced-motion:reduce) {.model-card {transform:none!important;transition:none;}}
+.model-card:not([data-provider="openrouter"]) {overflow:hidden;isolation:isolate;}
+.model-card:not([data-provider="openrouter"])::before {content:"";position:absolute;z-index:-1;width:220px;height:220px;right:-70px;top:-65px;border-radius:50%;background:radial-gradient(circle,#b7a2ed38,transparent 70%);pointer-events:none;transition:transform .6s cubic-bezier(.2,.8,.2,1);}
+.model-card[data-provider="gemini"]::before {background:radial-gradient(circle,#94b4e644,#c6b8ec22 45%,transparent 70%);}
+.model-card:not([data-provider="openrouter"])::after {content:"";position:absolute;z-index:-1;width:135px;height:135px;right:-15px;top:25px;border:1px solid #b5a5d626;border-radius:50%;box-shadow:0 0 0 22px #b5a5d60b,0 0 0 44px #b5a5d608;pointer-events:none;}
+.model-card:hover::before {transform:scale(1.25) translate(-10px,10px);}
+.model-card[data-provider="gemini"] .model-glyph {color:#7364c6;text-shadow:7px -3px 17px #8eb9e488;}
+.model-card[data-provider="zhipu"] .model-glyph {color:#64528d;text-shadow:5px 2px 20px #b992d788;}
+@media(prefers-reduced-motion:reduce) {.model-card::before {transition:none!important;transform:none!important;}}

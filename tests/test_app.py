@@ -27,10 +27,20 @@ def journey_harness(steps,on_navigate,key='journey_v2'):
     for step in steps:
         st.button(step['title'],key='navigate_'+step['id'],on_click=navigate,args=(step['id'],))
 
+def resume_harness(token,on_restore,on_ready):
+    if not st.session_state.get('resume_ready'): on_ready()
+
+def welcome_harness(selected,ready,zh,on_choose,nonce=0):
+    def choose(service):
+        st.session_state['welcome_v2']={'choose':service}
+        on_choose()
+    for service in ['gemini','zhipu','openrouter']:
+        st.button(service,key='welcome_'+service,on_click=choose,args=(service,))
+
 class AppTests(unittest.TestCase):
     def setUp(self):
         self.patches=[patch.dict(os.environ,{'GEMINI_API_KEY':'','OPENROUTER_API_KEY':'test-only','ZHIPU_API_KEY':'','OPENROUTER_MODEL':'openrouter/free'}),
-            patch('inquiry.components.render_cases',cases_harness),patch('inquiry.components.render_journey',journey_harness),patch('inquiry.components.render_scroll'),patch('inquiry.components.render_message_motion')]
+            patch('inquiry.components.render_cases',cases_harness),patch('inquiry.components.render_journey',journey_harness),patch('inquiry.components.render_scroll'),patch('inquiry.components.render_message_motion'),patch('inquiry.components.render_resume',resume_harness),patch('inquiry.components.render_welcome',welcome_harness),patch('inquiry.components.render_transition'),patch('inquiry.components.render_copy')]
         for p in self.patches:p.start();self.addCleanup(p.stop)
     def app(self):
         at=AppTest.from_file(str(APP)).run()
@@ -50,11 +60,11 @@ class AppTests(unittest.TestCase):
 
     def test_first_visit_requires_model_confirmation_and_has_no_reset_actions(self):
         at=self.app()
-        self.assertEqual(at.text_area(key='draft').value,'')
-        self.assertTrue(at.button(key='submit_inquiry').disabled)
+        self.assertEqual(len(at.text_area),0)
+        self.assertNotIn('submit_inquiry',[b.key for b in at.button])
         self.assertNotIn('main_new_inquiry',[b.key for b in at.button])
         self.assertNotIn('choose_scenario',[b.key for b in at.button])
-        self.assertEqual(at.session_state['test_journey_steps'][0]['state'],'active')
+        self.assertFalse(at.session_state['workspace'].onboarded)
         self.confirm(at)
         self.assertEqual(at.session_state['test_journey_steps'][1]['state'],'active')
         at.text_area(key='draft').input('My own audit concern.').run()
@@ -161,5 +171,66 @@ class AppTests(unittest.TestCase):
             at.button(key='clear_api_keys').click().run()
             self.assertEqual(at.text_input(key='api_key_gemini').value,'')
             self.assertNotIn('visitor-only',''.join(e.value for e in at.success))
+
+    def test_welcome_card_selects_service_without_api_request(self):
+        at=self.app()
+        with patch('inquiry.providers.Client.complete') as complete:
+            at.button(key='welcome_zhipu').click().run()
+            complete.assert_not_called()
+        self.assertFalse(at.exception)
+        self.assertEqual(at.selectbox(key='provider').value,'zhipu')
+        self.assertFalse(at.session_state['workspace'].onboarded)
+        self.assertNotIn('draft',[a.key for a in at.text_area])
+
+    def test_regeneration_retains_latest_answer_turn_count_and_unsent_draft(self):
+        at=self.app();self.first_turn(at)
+        at.text_area(key='draft').input('Still drafting.').run()
+        replacement=json.dumps({'question':'Which independent records could verify that estimate?', 'focus':'evidence','observations':[]})
+        with patch('inquiry.providers.Client.complete',return_value=(replacement,{'provider':'openrouter','model':'test/free'})):
+            at.button(key='regenerate').click().run()
+        self.assertFalse(at.exception)
+        self.assertEqual(at.session_state['conversation'].turns,1)
+        self.assertEqual(at.text_area(key='draft').value,'Still drafting.')
+        self.assertIn('independent records',at.session_state['conversation'].messages[-1]['content'])
+        self.assertEqual(at.session_state['conversation'].records[-1]['regenerations'],1)
+
+    def test_onboarding_transition_is_not_reissued_on_ordinary_interaction(self):
+        at=self.app();self.confirm(at)
+        nonce=at.session_state['transition_nonce']
+        at.text_area(key='draft').input('An audit concern.').run()
+        self.assertEqual(at.session_state['transition_nonce'],nonce)
+        self.assertNotIn('welcome_gemini',[b.key for b in at.button])
+
+    def test_regenerate_obeys_revoked_consent(self):
+        at=self.app();self.first_turn(at)
+        at.checkbox(key='consent').uncheck().run()
+        with patch('inquiry.providers.Client.complete') as complete:
+            at.button(key='regenerate').click().run()
+            complete.assert_not_called()
+        self.assertEqual(at.session_state['conversation'].turns,1)
+        self.assertTrue(any('Confirm data sharing' in e.value for e in at.warning))
+
+    def test_enabling_new_fallback_requires_new_consent(self):
+        with patch.dict(os.environ,{'ZHIPU_API_KEY':'owner-only','ZHIPU_FREE_TIER_CONFIRMED':'true'}):
+            at=self.app();self.first_turn(at)
+            at.checkbox(key='allow_fallback').check().run()
+            self.assertFalse(at.checkbox(key='consent').value)
+
+    def test_refresh_recovers_chat_draft_preferences_without_welcome_or_consent(self):
+        at=self.app();self.first_turn(at)
+        at.text_area(key='draft').input('An unsent response.').run()
+        token=at.session_state['resume_token']
+        def restore_harness(_token,on_restore,on_ready):
+            if not st.session_state.get('resume_ready'):
+                st.session_state['resume_v2']={'restore':token}
+                on_restore()
+        with patch('inquiry.components.render_resume',restore_harness):
+            fresh=self.app()
+        self.assertEqual(fresh.session_state['conversation'].turns,1)
+        self.assertEqual(fresh.text_area(key='draft').value,'An unsent response.')
+        self.assertEqual(fresh.selectbox(key='provider').value,'openrouter')
+        self.assertFalse(fresh.checkbox(key='consent').value)
+        self.assertFalse(fresh.session_state['workspace'].confirmed_model)
+        self.assertNotIn('welcome_gemini',[b.key for b in fresh.button])
 
 if __name__=='__main__':unittest.main()

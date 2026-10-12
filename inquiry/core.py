@@ -132,6 +132,45 @@ class Session:
         emit("done")
         return question
 
+    def regenerate(self, client, language="English", progress=None):
+        """Replace the most recent question only after a valid response arrives."""
+        emit = progress or (lambda stage: None)
+        emit("input")
+        if not self.messages or self.messages[-1]["role"] != "assistant":
+            raise InputError("There is no follow-up question to regenerate.")
+        candidate = self.messages[:-1]
+        if not candidate or candidate[-1]["role"] != "user":
+            raise InputError("There is no user response for this question.")
+        emit("request")
+        raw, metadata = client.complete([
+            {"role": "system", "content": system_prompt(language, self.observations)}, *candidate
+        ])
+        emit("validate")
+        question, focus, quotes = parse_reply(
+            raw, [m["content"] for m in candidate if m["role"] == "user"]
+        )
+        merged = list(self.observations)
+        for quote in quotes:
+            if quote not in merged:
+                merged.append(quote)
+        prior = self.records[-1] if self.records else {}
+        record = {
+            "turn": self.turns, "time": datetime.now(timezone.utc).isoformat(),
+            "provider": str(metadata.get("provider", "unknown")),
+            "model": str(metadata.get("model", "unknown")),
+            "tokens": metadata.get("tokens"), "focus": focus,
+            "fallback_from": metadata.get("fallback_from"),
+            "regenerations": prior.get("regenerations", 0) + 1,
+        }
+        records = self.records[:-1] + [record] if self.records else [record]
+        emit("save")
+        self.messages = candidate + [{"role": "assistant", "content": question}]
+        self.observations = merged[-30:]
+        self.focus = focus
+        self.records = records
+        emit("done")
+        return question
+
     def briefing(self, language="English"):
         if self.turns < 2:
             raise InputError("First describe the situation and answer at least one follow-up question.")

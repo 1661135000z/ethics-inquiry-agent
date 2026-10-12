@@ -1,3 +1,13 @@
+# Progressive interface release checks
+
+2026-10-13: 66 automated tests pass, including welcome gating, provider-card selection, transactional regeneration, immediate consent revocation, fallback consent reset, tab recovery, older-schema migration, public preference recovery, and source asset checks. AppTest uses native event harnesses; it does not render JavaScript.
+
+Actual local browser checks at 1920×1080 and 390×844 verified welcome-only initial content, provider selection opening native settings, explicit confirmation entering the workbench, one-time transition with Skip, narrow-screen two-column cases, manual Preview opening without selection or Python rerun, and actual case selection populating editable input and advancing the journey. A narrow-screen mouse-hover/Preview conflict was found and fixed; mobile preview stays open until explicitly toggled/dismissed. Earlier compact-release observations remain below for provenance.
+
+The welcome/transition assets use local native CSS and Web Animations; no GSAP/CDN runtime is loaded. Reduced motion is guarded in code, but OS preference was not toggled during the manual browser checks. Refresh recovery is process-local and best effort; server restart or expiry discards snapshots.
+
+---
+
 # Compact product release checks
 
 2026-10-13: 45 automated tests pass. The suite includes transactional scenario switching, cancellation restoring unsent input, initial-case restart, explicit model confirmation, configuration invalidation, service-switch model preferences, visitor-key precedence, actual agent protocol under HTTP mocks, component event contracts, and byte-for-byte source ZIP/font checks.

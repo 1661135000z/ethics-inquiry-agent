@@ -38,17 +38,26 @@ export default function(component) {
       preview.setAttribute('aria-expanded',String(item.id===state.id));
     });
   };
-  const open=id => { cancel(); if(state.id!==id){state.id=id;paint();} };
+  const open=id => { cancel(); if(state.id!==id){state.id=id;paint();
+    if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+      [ui.heading,ui.body,ui.source].forEach((el,index)=>{el.getAnimations().forEach(animation=>animation.cancel());el.animate([{opacity:0,transform:'translateY(9px)'},{opacity:1,transform:'translateY(0)'}],{duration:350,delay:index*45,fill:'backwards',easing:'cubic-bezier(.2,.8,.2,1)'});});
+    }
+  } };
   const close=() => { cancel(); state.id=null; paint(); };
-  const later=() => { cancel(); state.timer=setTimeout(() => {
+  const later=() => { cancel(); if(!window.matchMedia('(hover: hover) and (min-width: 651px)').matches) return; state.timer=setTimeout(() => {
     const focused=parentElement.activeElement || document.activeElement;
-    const active=ui.slots.find(entry => entry.item.id===state.id); const inUnion=active?.slot.matches(':hover') || ui.detail.matches(':hover'); if (!root.contains(focused) && !inUnion) close();
+    const active=ui.slots.find(entry => entry.item.id===state.id); const inUnion=active?.slot.matches(':hover') || ui.detail.matches(':hover'); const keyboardFocus=Boolean(focused && root.contains(focused) && focused.matches(':focus-visible')); if (!keyboardFocus && !inUnion) close();
   },120); };
   ui.slots.forEach(({slot,choose,preview,item}) => {
-    slot.onpointerenter=e => {if(e.pointerType!=='touch') open(item.id);};
+    slot.onpointerenter=e => {if(e.pointerType!=='touch' && window.matchMedia('(hover: hover) and (min-width: 651px)').matches) open(item.id);};
     slot.onpointerleave=later;
     choose.onfocus=() => open(item.id); choose.onblur=later;
-    choose.onclick=() => setTriggerValue('choose',item.id);
+    choose.onclick=() => {
+      const rect=choose.getBoundingClientRect();
+      const registry=document[Symbol.for('inquire.publicMotion')]||(document[Symbol.for('inquire.publicMotion')]={});
+      registry.case={left:rect.left,top:rect.top,width:rect.width,height:rect.height,title:item.title};
+      setTriggerValue('choose',item.id);
+    };
     preview.onclick=() => {state.id===item.id ? close() : open(item.id);};
     preview.onblur=later;
   });

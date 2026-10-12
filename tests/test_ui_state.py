@@ -16,6 +16,7 @@ class WorkspaceTests(unittest.TestCase):
         w=Workspace()
         self.assertEqual(w.current_step('config-a',True),'model')
         w.confirm_model('config-a')
+        self.assertTrue(w.onboarded)
         self.assertEqual(w.current_step('config-a',True),'scenario')
         w.draft='My own concern about an audit judgment.'
         self.assertEqual(w.current_step('config-a',True),'conversation')
@@ -63,5 +64,20 @@ class WorkspaceTests(unittest.TestCase):
         w.cancel_selection()
         self.assertEqual(w.draft,'Unsent answer.')
         self.assertEqual(w.conversation.turns,1)
+
+    def test_regenerate_preserves_draft_and_transactional_failure(self):
+        from copy import deepcopy
+        w=Workspace();w.confirm_model('a');w.submit('Audit concern.',GoodClient())
+        w.draft='My unsent response.'
+        old=deepcopy(w.conversation)
+        with self.assertRaises(ProviderError):w.regenerate(BadClient())
+        self.assertEqual(w.conversation,old)
+        self.assertEqual(w.draft,'My unsent response.')
+        self.assertEqual(w.workflow,('request',True))
+        w.regenerate(GoodClient())
+        self.assertEqual(w.draft,'My unsent response.')
+        self.assertEqual(w.conversation.turns,1)
+        self.assertEqual(w.workflow,('done',False))
+        self.assertEqual(w.phase,'chat')
 
 if __name__=='__main__':unittest.main()

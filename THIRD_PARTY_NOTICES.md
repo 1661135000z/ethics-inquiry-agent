@@ -29,7 +29,7 @@ SOFTWARE.
 
 ## Additional design references
 
-Motion, Anime.js and AutoAnimate informed timing and transition ideas. Their runtimes and source code are not bundled. React Bits, Motion Primitives and Uiverse were evaluated as design references; no components from those projects are included.
+GSAP Timeline sequencing, Motion, Anime.js and AutoAnimate informed timing and transition ideas. The FLIP, stagger, SVG and reveal sequences are independently authored with browser-native Web Animations; no GSAP runtime or source is bundled. Their runtimes and source code are not bundled. React Bits, Motion Primitives and Uiverse were evaluated as design references; no components from those projects are included.
 
 ## Noto Sans SC
 

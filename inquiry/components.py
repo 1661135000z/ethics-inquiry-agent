@@ -64,3 +64,47 @@ def render_scroll(target: str, nonce: int):
 def render_message_motion(epoch: int, count: int):
     """Animate only newly appended transcript messages."""
     return _component("message_motion")(data={"epoch": epoch, "count": count}, key="message_motion_v2", height=0)
+
+
+def render_welcome(
+    selected: str, ready: bool | Mapping[str, bool], zh: bool,
+    on_choose: Callable[[], None], nonce: int = 0,
+):
+    """Render public provider selection; all configuration stays in Python.
+
+    Read the chosen ID from st.session_state["welcome_v2"]["choose"] in the
+    callback. Readiness accepts a bool for the selected model or an ID mapping.
+    """
+    providers = ("gemini", "zhipu", "openrouter")
+    if selected not in providers:
+        raise ValueError("Unknown model provider")
+    statuses = ({provider: ready.get(provider) is True for provider in providers}
+                if isinstance(ready, Mapping)
+                else {provider: bool(ready) and provider == selected for provider in providers})
+    return _component("welcome")(
+        data={"selected": selected, "ready": statuses, "zh": bool(zh), "nonce": int(nonce)},
+        key="welcome_v2", on_choose_change=on_choose,
+    )
+
+
+def render_transition(kind: str, nonce: int, title: str):
+    """Run a cancellable confirmation once per nonce at an owned anchor."""
+    if kind not in {"model", "scenario", "conversation"}:
+        raise ValueError("Unknown transition target")
+    return _component("transition_bridge")(
+        data={"kind": kind, "nonce": int(nonce), "title": str(title)},
+        key="transition_v2", height=0,
+    )
+
+
+def render_resume(token: str, on_restore: Callable[[], None], on_ready: Callable[[], None]):
+    """Send an opaque session token only; restoration is a one-shot callback."""
+    return _component("resume_bridge")(
+        data={"token": str(token)}, key="resume_v2", height=0,
+        on_restore_change=on_restore, on_ready_change=on_ready,
+    )
+
+
+def render_copy(text: str, key: str, zh: bool = False):
+    """Copy an assistant question on an explicit browser click."""
+    return _component("copy_reply")(data={"text": str(text), "zh": bool(zh)}, key=key)

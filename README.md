@@ -37,9 +37,9 @@ ZHIPU_MODEL = "glm-4.7-flash"
 ZHIPU_FREE_TIER_CONFIRMED = "false"
 ```
 
-Set each confirmation flag to `"true"` only after checking that account's free-tier eligibility. Replace existing entries rather than creating duplicate TOML fields. Retain any OpenRouter settings. Select the service in the sidebar; clear session keys to use developer keys. Developer keys never appear in the browser input fields. Do not put this filled configuration in the repository.
+Set each confirmation flag to `"true"` only after checking that account's free-tier eligibility. Replace existing entries rather than creating duplicate TOML fields. Retain any OpenRouter settings. Select the service in the main Model settings panel; clear session keys to use developer keys. Developer keys never appear in the browser input fields. Do not put this filled configuration in the repository.
 
-**Visitor setup:** open **AI Model Settings → Use your own API key**, select a service/model, enter the key in the password field and confirm free eligibility. A nonempty visitor key takes priority for that service; an empty field uses the developer configuration. Keys remain only in that Streamlit session's memory, survive service switching and are removed by **Clear session keys** or session expiry. This app does not write keys to files, logs, exports, GitHub, URLs or shared caches. Browser password masking is visual protection; enter keys only on a trusted HTTPS deployment. A fresh browser session does not inherit another visitor's credentials.
+**Visitor setup:** open **Model settings → Use your own API key**, select a service/model, enter the key in the password field and confirm free eligibility. A nonempty visitor key takes priority for that service; an empty field uses the developer configuration. Keys remain only in that Streamlit session's memory, survive service switching and are removed by **Clear session keys** or session expiry. This app does not write keys to files, logs, exports, GitHub, URLs or shared caches. Browser password masking is visual protection; enter keys only on a trusted HTTPS deployment. A fresh browser session does not inherit another visitor's credentials.
 
 **Test Connection** first checks the account-specific model list for Gemini, then sends one small fictional audit-ethics case through the actual `Session.submit` workflow, including the objectivity prompt, JSON parsing, question-only and quote checks. It consumes one generation request (plus a metadata request for Gemini), does not use the user's case, does not append to the formal conversation, and never automatically falls back to another service. A success badge applies to the current service/key/model configuration; changing it invalidates the badge. A successful test does not establish the quality of all future questions.
 
@@ -79,11 +79,13 @@ Gemini 2.5 names are valid, but Google restricts access for projects that have n
 
 A Gemini HTTP 404 can indicate unavailable model/resource; the connection test checks model availability before generation. A GLM HTTP 401 means authentication was rejected and is not fixed by renaming the model. This adapter uses the domestic `open.bigmodel.cn` endpoint and keys issued at `bigmodel.cn`, not international `z.ai` or a separate coding-plan endpoint. Paste the complete API key without `Bearer`, surrounding quotes or line breaks. Errors display provider/model, HTTP status and a bounded numeric diagnostic code where supplied, never the upstream error message or your key. Do not publish account identifiers or raw provider error bodies.
 
-## Compact interface and product state
+## Progressive welcome and compact workbench
+
+First visit shows only an immersive provider selection and setup area. Gemini and GLM cards select the provider and open configuration; OpenRouter remains an optional alternative. Confirming a configured model unlocks the workbench through a skippable 1.05-second local card-to-status transition. The welcome never repeats on ordinary reruns or starting another inquiry.
 
 The main-page **Model settings** panel contains the service, model, visitor key and connection test. On first visit, confirm **Use Gemini / GLM / OpenRouter** to continue with configured developer keys. This confirmation sends no API request. A successful connection test also confirms the current configuration; changing service, model or key invalidates confirmation. Sidebar contains language and scope information.
 
-A compact right-hand journey tracks **Choose model → Choose situation → Start conversation**. It is driven by confirmed configuration, selected/typed situation and valid conversation responses. It stays in progress during inquiry; a single answer does not certify completion. On narrow screens, the journey becomes an in-flow horizontal strip. Clicking a step focuses its region; returning to situations preserves the current conversation.
+A 260px interactive right-hand journey tracks **Choose model → Choose situation → Start conversation**. It is driven by confirmed configuration, selected/typed situation and valid conversation responses. It stays in progress during inquiry; a single answer does not certify completion. On narrow screens, the journey becomes an in-flow horizontal strip. Clicking a step focuses its region; returning to situations preserves the current conversation.
 
 Folder cards use local Streamlit Custom Components v2. Hover or keyboard focus previews details without a Python rerun or model request; moving into the details keeps the preview open, and leaving closes it after 120ms. Click/Enter selects an editable draft. Touch users have a separate Preview control. Details use safe text nodes; component payloads contain no API keys. One-shot triggers prevent replayed selections.
 
@@ -94,7 +96,11 @@ Folder cards use local Streamlit Custom Components v2. Hover or keyboard focus p
 
 Conversation, notebook and review briefing share tabs. **Execution details**, initially collapsed, retains real Input check → Model request → Output validation → Save result events. Failed requests expand it automatically and preserve the input. Save means current-session memory, not disk. Provider records show the actual model and fallback used.
 
-Animations are original local CSS/Web Animations inspired by Hairline, Motion, Anime.js and AutoAnimate; no React, Node build, external scripts or background animation is required. `prefers-reduced-motion` removes motion. Component focus and local preview state survive unrelated reruns. See [notices](THIRD_PARTY_NOTICES.md).
+Each assistant question has a browser-only **Copy** action. **Regenerate last question** consumes a model request and validates a replacement before updating the latest question and provenance; it preserves earlier turns, the latest user answer and your unsent draft. Failure preserves the original response. **Help me respond** fills editable response starters without sending them or inventing facts. Revoking sending consent or changing fallback services blocks further calls until consent is renewed.
+
+Refresh recovery uses an opaque capability in tab `sessionStorage`, with inquiry snapshots in a bounded server-memory cache (two-hour inactivity timeout, at most 128 workspaces). The snapshot contains inquiry data, public provider/model/language preferences and request count; **no API keys, consent or connection signature**. A recovered workbench requires model confirmation again; visitor keys must be re-entered. No inquiry text is stored in the browser, on disk or in a URL. Process restarts, expiry and capacity eviction can erase recovery; download is the durable backup. Closing the tab ends access to its token.
+
+Animations are original local CSS/Web Animations inspired by Hairline, GSAP timeline sequencing, Motion, Anime.js and AutoAnimate; no React, Node build, external scripts or background animation is required. `prefers-reduced-motion` removes motion. Component focus and local preview state survive unrelated reruns. See [notices](THIRD_PARTY_NOTICES.md).
 
 ## Local typography
 
@@ -119,7 +125,7 @@ The app does not intentionally persist conversations to disk. Provider policies 
 python -m unittest discover -s tests -v
 ```
 
-`inquiry/core.py`: state, prompt and response checks. `inquiry/providers.py`: HTTP adapters and cost guards. `inquiry/examples.py`: optional scenarios. `inquiry/ui_state.py`: navigation and transactional scenario switching. `inquiry/components.py` and `frontend/`: local v2 components. `inquiry/presentation.py`: compact local style. `app.py`: UI and session-only credentials. Tests use fake responses; passing them is **not** evidence of live provider quality or mainland reachability.
+`inquiry/core.py`: state, prompt and response checks. `inquiry/providers.py`: HTTP adapters and cost guards. `inquiry/examples.py`: optional scenarios. `inquiry/ui_state.py`: navigation and transactional scenario switching. `inquiry/resume.py`: bounded process-memory refresh recovery. `inquiry/components.py` and `frontend/`: local v2 components. `inquiry/presentation.py`: compact local style. `app.py`: UI and session-only credentials. Tests use fake responses; passing them is **not** evidence of live provider quality or mainland reachability.
 
 ## Official references
 

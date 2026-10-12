@@ -16,9 +16,15 @@ class Workspace:
     saved_workflow: tuple = ('idle', False)
     show_briefing: bool = False
     epoch: int = 0
+    provider_id: str = ''
+    model_id: str = ''
+    language_id: str = 'English'
+    request_count: int = 0
+    onboarded: bool = False
 
     def confirm_model(self, signature):
         self.confirmed_model = signature
+        self.onboarded = True
 
     def current_step(self, signature, configured):
         if not configured or signature != self.confirmed_model:
@@ -86,5 +92,18 @@ class Workspace:
         self.phase = 'chat'
         self.draft = ''
         self.pending_case, self.pending_text = 'blank', ''
+        self.show_briefing = False
+        return reply
+
+    def regenerate(self, client, language='English', progress=None):
+        def emit(stage):
+            self.workflow = (stage, False)
+            if progress:
+                progress(stage)
+        try:
+            reply = self.conversation.regenerate(client, language, progress=emit)
+        except Exception:
+            self.workflow = (self.workflow[0], True)
+            raise
         self.show_briefing = False
         return reply

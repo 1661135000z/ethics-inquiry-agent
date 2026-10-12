@@ -8,7 +8,7 @@ def source_files():
     files = [ROOT / p for p in (
         'app.py', 'requirements.txt', 'README.md', '.gitignore',
         '.streamlit/config.toml', '.streamlit/secrets.toml.example',
-        'docs/evaluation.md', 'scripts/package.py', '.env.example', 'THIRD_PARTY_NOTICES.md',
+        'docs/evaluation.md', 'docs/experience-design.md', 'scripts/package.py', '.env.example', 'THIRD_PARTY_NOTICES.md',
     )]
     for folder in ('inquiry', 'tests'):
         files.extend(sorted((ROOT / folder).glob('*.py')))
