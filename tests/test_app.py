@@ -8,6 +8,14 @@ APP = Path(__file__).resolve().parents[1] / "app.py"
 
 
 class AppTests(unittest.TestCase):
+    @patch.dict(os.environ, {"OPENROUTER_API_KEY": "test-only", "GEMINI_API_KEY": "", "ZHIPU_API_KEY": "", "OPENROUTER_MODEL":"openrouter/free"})
+    def test_free_model_picker_defaults_to_fixed_model(self):
+        at = AppTest.from_file(str(APP)).run()
+        self.assertEqual(at.selectbox(key="free_model").value, "nvidia/nemotron-3-super-120b-a12b:free")
+        at.selectbox(key="free_model").select("openrouter/free").run()
+        self.assertFalse(at.exception)
+        self.assertEqual(at.selectbox(key="free_model").value, "openrouter/free")
+
     def test_clean_start_has_no_prefilled_case_or_api_calls(self):
         with patch.dict(os.environ, {"GEMINI_API_KEY":"", "OPENROUTER_API_KEY":"", "ZHIPU_API_KEY":""}):
             at = AppTest.from_file(str(APP)).run()

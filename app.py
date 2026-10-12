@@ -72,6 +72,16 @@ with st.sidebar:
     default = configured[0] if configured else "gemini"
     provider = st.selectbox(t("Model service", "模型服务"), list(PROVIDERS), index=list(PROVIDERS).index(default),
                             format_func=lambda k: PROVIDERS[k]["name"], key="provider")
+    if provider == "openrouter":
+        fixed = "nvidia/nemotron-3-super-120b-a12b:free"
+        choices = [fixed, "openrouter/free"]
+        configured_model = settings.get("OPENROUTER_MODEL", "")
+        if configured_model and configured_model not in choices:
+            choices.append(configured_model)
+        selected_model = st.selectbox(t("Free model", "免费模型"), choices, key="free_model",
+            format_func=lambda m: t("Nemotron 3 Super · fixed", "Nemotron 3 Super · 固定模型") if m == fixed else
+                                  t("Free router · variable model", "免费路由 · 模型可能变化") if m == "openrouter/free" else m)
+        settings = dict(settings, OPENROUTER_MODEL=selected_model)
     client = Client(provider, settings)
     config_error = None
     try:

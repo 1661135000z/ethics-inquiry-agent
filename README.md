@@ -26,7 +26,7 @@ Copy `.streamlit/secrets.toml.example` to `.streamlit/secrets.toml`. Fill in **o
 | Service | Default | Setup / limits |
 |---|---|---|
 | Google Gemini | `gemini-2.5-flash-lite` | Eligible free-tier project; set `GEMINI_FREE_TIER_CONFIRMED = "true"` only after checking the account. Regional restrictions apply. |
-| OpenRouter | `openrouter/free` | Free-model router; actual model varies and is recorded. A specific `vendor/model:free` ID can be used for more repeatable evaluation. |
+| OpenRouter | `openrouter/free` | The sidebar defaults to the tested `nvidia/nemotron-3-super-120b-a12b:free` model. Select `openrouter/free` for variable routing, or configure another `vendor/model:free` ID. Actual model is recorded. |
 | 智谱 GLM | `glm-4.7-flash` | Domestic alternative. Confirm current free eligibility, then set `ZHIPU_FREE_TIER_CONFIRMED = "true"`. |
 
 Only these Gemini/GLM models and OpenRouter free routes are allowed. No paid-model fallback, automatic retry loop, training, or server purchase is needed. **Zero cost cannot be guaranteed by code:** provider terms, account billing, quotas and availability can change. Do not enable paid billing to bypass a limit. Free services may process data for product improvement; use fictional or anonymized scenarios only.
