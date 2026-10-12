@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 import streamlit as st
 from inquiry.core import Session, AREAS, InputError, ModelOutputError
-from inquiry.providers import PROVIDERS, Client, FallbackClient, ProviderError, Limits, settings_from, session_settings
+from inquiry.providers import PROVIDERS, Client, FallbackClient, ProviderError, Limits, settings_from, session_settings, GEMINI_MODELS
 from inquiry.presentation import STYLE, relay_html, details_html
 from inquiry.examples import EXAMPLES
 
@@ -101,10 +101,12 @@ with st.sidebar:
                                   t("Free router · variable model", "免费路由 · 模型可能变化") if m == "openrouter/free" else m)
         settings = dict(settings, OPENROUTER_MODEL=selected_model)
     if provider != "openrouter":
-        models = ["gemini-2.5-flash-lite", "gemini-2.5-flash"] if provider == "gemini" else ["glm-4.7-flash"]
+        models = list(GEMINI_MODELS) if provider == "gemini" else ["glm-4.7-flash"]
         configured_model = settings.get(PROVIDERS[provider]["setting"])
         selected_model = st.selectbox(t("Model", "模型"), models,
-            index=models.index(configured_model) if configured_model in models else 0, key=f"model_{provider}")
+            index=models.index(configured_model) if configured_model in models and not configured_model.startswith("gemini-2.5-") else 0, key=f"model_{provider}_current")
+        if provider == "gemini":
+            st.caption(t("2.5 models are retained for existing eligible projects; new projects should start with Flash-Lite 3.5.", "2.5系列仅保留给已有访问资格的项目；新项目默认使用3.5 Flash-Lite。"))
     with st.expander(t("Use your own API key", "使用自己的 API Key")):
         visitor_key = st.text_input(t("Session API key", "本会话 API Key"), type="password", key=f"api_key_{provider}",
             value=st.session_state.get("visitor_credentials", {}).get(provider, {}).get("key", ""),
@@ -132,11 +134,28 @@ with st.sidebar:
         config_error = str(error)
         st.info(t("Connection setup needed", "需要配置模型连接"))
         st.caption(config_error)
-    st.caption(t("Test sends one fictional inquiry and uses API quota.", "测试会发送一段虚构伦理情境，消耗一次 API 额度。"))
+    if provider == "gemini":
+        st.caption(t("Connection tests first read the model list, then send one fictional inquiry.", "连接测试先读取可用模型列表，再发送一次虚构伦理追问。"))
+        if st.button(t("Check available models", "检查可用模型"), key="check_models", disabled=bool(config_error)):
+            try:
+                names = Client(provider, settings, budget=take_budget).available_models()
+                st.session_state.gemini_available = {"signature": signature, "names": names}
+            except ProviderError as error:
+                st.error(str(error))
+        available = st.session_state.get("gemini_available", {})
+        if available.get("signature") == signature:
+            st.caption(t("Available approved models: ", "当前密钥可访问的已核准模型：") + (", ".join(available['names']) or t("None; check account and endpoint eligibility.", "暂无，请检查账号及接口资格。")))
+    else:
+        st.caption(t("Test sends one fictional inquiry and uses API quota.", "测试会发送一段虚构伦理情境，消耗一次 API 额度。"))
     if st.button(t("Test Connection", "测试连接"), key="test_connection", disabled=bool(config_error), use_container_width=True):
         try:
             probe = Session()
             with st.spinner(t("Testing the inquiry workflow…", "正在测试伦理追问流程……")):
+                if provider == "gemini":
+                    names = Client(provider, settings, budget=take_budget).available_models()
+                    st.session_state.gemini_available = {"signature": signature, "names": names}
+                    if selected_model not in names:
+                        raise ProviderError("Selected model not available to this key / 当前密钥无法访问所选模型。可用：" + (", ".join(names) or "none / 暂无"), "model_unavailable")
                 probe.submit("Fictional scenario: I am an audit senior. My manager asks me to accept an estimate supported only by management's claim. I do not know what independent evidence exists.",
                              Client(provider, settings, budget=take_budget), language)
             st.session_state.connection_check = {"signature": signature, "model": probe.records[-1]["model"]}

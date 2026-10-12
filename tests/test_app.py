@@ -66,7 +66,7 @@ class AppTests(unittest.TestCase):
         def complete(client, messages):
             captured.append((client.settings['GEMINI_API_KEY'],messages))
             return json.dumps({'question':'Who can independently review the disputed estimate?', 'focus':'review','observations':[]}), {'provider':'gemini','model':'gemini-2.5-flash-lite'}
-        with patch("inquiry.providers.Client.complete",complete):
+        with patch("inquiry.providers.Client.complete",complete), patch("inquiry.providers.Client.available_models", return_value=["gemini-3.5-flash-lite"]):
             at.button(key="test_connection").click().run()
         self.assertFalse(at.exception)
         self.assertEqual(captured[0][0],'visitor-only')

@@ -27,7 +27,7 @@ Copy `.streamlit/secrets.toml.example` to `.streamlit/secrets.toml`. Fill in **o
 
 **Visitor setup:** open **AI Model Settings → Use your own API key**, select a service/model, enter the key in the password field and confirm free eligibility. A nonempty visitor key takes priority for that service; an empty field uses the developer configuration. Keys remain only in that Streamlit session's memory, survive service switching and are removed by **Clear session keys** or session expiry. This app does not write keys to files, logs, exports, GitHub, URLs or shared caches. Browser password masking is visual protection; enter keys only on a trusted HTTPS deployment. A fresh browser session does not inherit another visitor's credentials.
 
-**Test Connection** sends one small fictional audit-ethics case through the actual `Session.submit` workflow, including the objectivity prompt, JSON parsing, question-only and quote checks. It consumes one request, does not use the user's case, does not append to the formal conversation, and never automatically falls back to another service. A success badge applies to the current service/key/model configuration; changing it invalidates the badge. A successful test does not establish the quality of all future questions.
+**Test Connection** first checks the account-specific model list for Gemini, then sends one small fictional audit-ethics case through the actual `Session.submit` workflow, including the objectivity prompt, JSON parsing, question-only and quote checks. It consumes one generation request (plus a metadata request for Gemini), does not use the user's case, does not append to the formal conversation, and never automatically falls back to another service. A success badge applies to the current service/key/model configuration; changing it invalidates the badge. A successful test does not establish the quality of all future questions.
 
 中文：在侧栏选择 Gemini 或智谱 GLM，展开“使用自己的 API Key”，输入密钥并勾选免费档确认，点击“测试连接”。不输入自己的密钥时使用开发者配置。请勿把密钥放入聊天内容；无需把密钥发给项目维护者。Gemini 连接失败时可手动切换智谱，原有对话保留。服务提供方仍按自身政策处理请求，应用不能核实账户计费状态。
 
@@ -35,7 +35,7 @@ Copy `.streamlit/secrets.toml.example` to `.streamlit/secrets.toml`. Fill in **o
 
 | Service | Default | Setup / limits |
 |---|---|---|
-| Google Gemini | `gemini-2.5-flash-lite` | Eligible free-tier project; set `GEMINI_FREE_TIER_CONFIRMED = "true"` only after checking the account. Regional restrictions apply. |
+| Google Gemini | `gemini-3.5-flash-lite` | Eligible free-tier project; set `GEMINI_FREE_TIER_CONFIRMED = "true"` only after checking the account. Regional restrictions apply. |
 | OpenRouter | `openrouter/free` | The sidebar defaults to the tested `nvidia/nemotron-3-super-120b-a12b:free` model. Select `openrouter/free` for variable routing, or configure another `vendor/model:free` ID. Actual model is recorded. |
 | 智谱 GLM | `glm-4.7-flash` | Domestic alternative. Confirm current free eligibility, then set `ZHIPU_FREE_TIER_CONFIRMED = "true"`. |
 
@@ -58,6 +58,12 @@ Streamlit Cloud, GitHub and overseas model services are not guaranteed accessibl
 准备在线链接、源码 ZIP 和真实测试的演示录像。源码可直接发送给使用者，避免依赖 GitHub 下载。使用者也可安装本地版并选择智谱；国内模型仍需有效密钥、免费额度和可用网络。录像只能展示结果，不能替代交互使用。
 
 Build a source-only ZIP with `python scripts/package.py`. It uses an explicit file allowlist, excluding keys, environments and course PDFs.
+
+## Connection diagnosis
+
+Gemini 2.5 names are valid, but Google restricts access for projects that have not used them previously. New projects default to `gemini-3.5-flash-lite`; `gemini-3.1-flash-lite` is another vetted free-tier choice. Legacy 2.5 options remain selectable for eligible projects. Use **Check available models** to query the model list with your current key; only the project's vetted text-generation models are displayed. Model-list access does not prove generation quota or billing eligibility. See [Google's current access notice](https://ai.google.dev/gemini-api/docs/deprecations).
+
+A Gemini HTTP 404 can indicate unavailable model/resource; the connection test checks model availability before generation. A GLM HTTP 401 means authentication was rejected and is not fixed by renaming the model. This adapter uses the domestic `open.bigmodel.cn` endpoint and keys issued at `bigmodel.cn`, not international `z.ai` or a separate coding-plan endpoint. Paste the complete API key without `Bearer`, surrounding quotes or line breaks. Errors display provider/model, HTTP status and a bounded numeric diagnostic code where supplied, never the upstream error message or your key. Do not publish account identifiers or raw provider error bodies.
 
 ## Interface and execution states
 
