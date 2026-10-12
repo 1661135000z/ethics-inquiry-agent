@@ -94,6 +94,7 @@ class Client:
                         }, "required": ["question", "focus", "observations"],
                     }}}
                 payload["provider"] = {"require_parameters": True}
+                payload["reasoning"] = {"enabled": False}
             if self.provider == "zhipu": payload["thinking"] = {"type": "disabled"}
         try:
             with httpx.Client(timeout=45.0, follow_redirects=False, transport=self.transport) as http:

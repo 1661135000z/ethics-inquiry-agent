@@ -24,6 +24,7 @@ class ProviderTests(unittest.TestCase):
             self.assertEqual(body["model"], "openrouter/free")
             self.assertEqual(body["response_format"]["type"], "json_schema")
             self.assertTrue(body["provider"]["require_parameters"])
+            self.assertFalse(body["reasoning"]["enabled"])
             self.assertLessEqual(body["max_tokens"], 1600)
             return httpx.Response(200, json={"choices": [{"message": {"content": "{}"}}], "model": "actual/free", "usage": {"total_tokens": 80}})
         c = Client("openrouter", self.settings(), transport=httpx.MockTransport(handle))
