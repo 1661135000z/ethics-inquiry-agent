@@ -18,11 +18,23 @@ class ProviderError(RuntimeError):
         self.code = code
 
 
-def settings_from(env, secrets=None):
+def settings_from(env, secrets=None, dotenv=None):
     keys = {"GEMINI_FREE_TIER_CONFIRMED", "ZHIPU_FREE_TIER_CONFIRMED", "ACCESS_CODE"}
     for p in PROVIDERS.values(): keys.update([p["key"], p["setting"]])
     secrets = secrets or {}
-    return {key: str(env.get(key) or secrets.get(key) or "").strip() for key in keys}
+    dotenv = dotenv or {}
+    return {key: str(env.get(key) or secrets.get(key) or dotenv.get(key) or "").strip() for key in keys}
+
+
+def session_settings(owner, provider, key, model, free_confirmed=False):
+    """Copy settings; never mutate shared configuration or persist visitor credentials."""
+    result = dict(owner)
+    p = PROVIDERS[provider]
+    result[p['setting']] = model
+    if key.strip():
+        result[p['key']] = key.strip()
+        result[f'{provider.upper()}_FREE_TIER_CONFIRMED'] = str(bool(free_confirmed)).lower()
+    return result
 
 
 class Limits:
@@ -59,7 +71,7 @@ class Client:
             allowed = model == "glm-4.7-flash"
         if not allowed: raise ProviderError("Model blocked by the free-tier allowlist; no request was sent.")
         if self.provider in {"gemini", "zhipu"} and self.settings.get(f"{self.provider.upper()}_FREE_TIER_CONFIRMED", "").lower() != "true":
-            raise ProviderError("Owner must confirm the account's current free-tier eligibility in Secrets before use.")
+            raise ProviderError("Confirm the account's free-tier eligibility / 请先确认当前密钥的免费档资格。")
         return key, model
 
     def complete(self, messages):
@@ -95,17 +107,19 @@ class Client:
                     }}}
                 payload["provider"] = {"require_parameters": True}
                 payload["reasoning"] = {"enabled": False}
-            if self.provider == "zhipu": payload["thinking"] = {"type": "disabled"}
+            if self.provider == "zhipu":
+                payload["thinking"] = {"type": "disabled"}
+                payload["response_format"] = {"type": "json_object"}
         try:
             with httpx.Client(timeout=45.0, follow_redirects=False, transport=self.transport) as http:
                 response = http.post(url, headers=headers, json=payload)
         except (httpx.HTTPError, OSError):
-            raise ProviderError("Connection failed or timed out. Try another configured provider / 连接失败或超时。", "network") from None
+            raise ProviderError("Connection failed or timed out / 连接失败或超时。Gemini可能受网络或地区限制，请手动切换智谱GLM。", "network") from None
         if response.status_code != 200:
             code = "quota" if response.status_code in {402, 429} else "auth" if response.status_code in {401, 403} else "unavailable"
-            notices = {"quota": "Free quota/capacity unavailable. Wait or select another free provider; do not enable paid billing.",
-                       "auth": "Access denied. Check the API key, free-tier eligibility and regional availability.",
-                       "unavailable": "Provider/model unavailable. Check configuration or switch provider."}
+            notices = {"quota": "Free quota/capacity unavailable / 免费额度或容量不足，请稍后重试或切换免费服务，不要开启付费计费。",
+                       "auth": "Access denied / 无法访问。请检查密钥、模型权限及地区限制；Gemini不可用时可切换智谱GLM。",
+                       "unavailable": "Provider/model unavailable / 服务或模型暂不可用，请检查模型选择或切换服务。"}
             raise ProviderError(notices[code] + f" (HTTP {response.status_code})", code)
         try:
             data = response.json()

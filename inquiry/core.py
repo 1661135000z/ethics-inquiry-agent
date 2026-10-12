@@ -96,7 +96,9 @@ class Session:
     def turns(self):
         return sum(m["role"] == "user" for m in self.messages)
 
-    def submit(self, text, client, language="English"):
+    def submit(self, text, client, language="English", progress=None):
+        emit = progress or (lambda stage: None)
+        emit("input")
         text = text.strip()
         if not text or len(text) > 4000:
             raise InputError("Enter 1–4,000 characters / 请输入1–4,000个字符。")
@@ -105,15 +107,18 @@ class Session:
         if sum(len(m["content"]) for m in self.messages) + len(text) > 24000:
             raise InputError("Conversation length limit reached. Export and start a new inquiry.")
         candidate = self.messages + [{"role": "user", "content": text}]
+        emit("request")
         raw, metadata = client.complete([
             {"role": "system", "content": system_prompt(language, self.observations)}, *candidate
         ])
+        emit("validate")
         question, focus, quotes = parse_reply(raw, [m["content"] for m in candidate if m["role"] == "user"])
         merged = list(self.observations)
         for quote in quotes:
             if quote not in merged:
                 merged.append(quote)
         # Commit all changes only after transport and validation succeed.
+        emit("save")
         self.messages = candidate + [{"role": "assistant", "content": question}]
         self.observations = merged[-30:]
         self.focus = focus
@@ -124,6 +129,7 @@ class Session:
             "tokens": metadata.get("tokens"), "focus": focus,
             "fallback_from": metadata.get("fallback_from"),
         })
+        emit("done")
         return question
 
     def briefing(self, language="English"):

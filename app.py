@@ -1,27 +1,17 @@
 """Run with: python -m streamlit run app.py"""
 import hmac
+import hashlib
+from dotenv import dotenv_values
 import os
 from pathlib import Path
 import streamlit as st
 from inquiry.core import Session, AREAS, InputError, ModelOutputError
-from inquiry.providers import PROVIDERS, Client, FallbackClient, ProviderError, Limits, settings_from
+from inquiry.providers import PROVIDERS, Client, FallbackClient, ProviderError, Limits, settings_from, session_settings
+from inquiry.presentation import STYLE, relay_html, details_html
 from inquiry.examples import EXAMPLES
 
 st.set_page_config(page_title="Inquire · Audit ethics", page_icon="◈", layout="wide")
-st.markdown("""<style>
-.stApp { background: #f7f8fa; }
-.block-container { max-width: 1240px; padding-top: 2.4rem; padding-bottom: 2rem; }
-h1,h2,h3 { letter-spacing: -.025em; color: #182b3a; }
-[data-testid="stSidebar"] { background: #edf1f4; border-right: 1px solid #dce3e8; }
-[data-testid="stChatMessage"] { background: white; border: 1px solid #e4e9ec; border-radius: 14px; }
-[data-testid="stForm"] { background: white; border-radius: 16px; }
-.eyebrow { font-size: .72rem; letter-spacing: .18em; font-weight: 700; color: #177c76; margin-bottom: .5rem; }
-.hero { padding-bottom: 1.1rem; border-bottom: 1px solid #dce3e8; margin-bottom: 1.3rem; }
-.hero h1 { font-size: 3.3rem; margin: 0; padding: 0; }
-.hero p { color: #63727d; font-size: 1.05rem; margin: .4rem 0 0; }
-.step { border-left: 3px solid #177c76; padding-left: .85rem; color: #526473; font-size: .9rem; }
-@media(max-width: 700px) { .block-container { padding: 1.2rem 1rem; } .hero h1 { font-size: 2.5rem; } }
-</style>""", unsafe_allow_html=True)
+st.markdown(STYLE, unsafe_allow_html=True)
 
 
 @st.cache_resource
@@ -36,6 +26,7 @@ def reset():
     st.session_state.show_briefing = False
     st.session_state.example = "blank"
     st.session_state.example_source = ""
+    st.session_state.workflow = ("idle", False)
     # Intentionally preserve attempt limit across New inquiry.
 
 
@@ -47,7 +38,8 @@ try:
     secret_values = st.secrets.to_dict()
 except (FileNotFoundError, st.errors.StreamlitSecretNotFoundError):
     secret_values = {}
-settings = settings_from(os.environ, secret_values)
+owner_settings = settings_from(os.environ, secret_values, dotenv_values(Path(__file__).with_name(".env")))
+settings = dict(owner_settings)
 
 with st.sidebar:
     st.markdown("### ◈ Inquire")
@@ -66,8 +58,34 @@ if settings.get("ACCESS_CODE"):
         st.info(t("Enter the access code supplied by the project owner to continue.", "请输入项目负责人提供的访问码。"))
         st.stop()
 
+def take_budget():
+    if st.session_state.attempts >= 24: return False
+    hourly, daily = shared_limits()
+    if not hourly.take() or not daily.take(): return False
+    st.session_state.attempts += 1
+    return True
+
+
+def remember_key(provider):
+    st.session_state.setdefault("visitor_credentials", {})[provider] = {
+        "key": st.session_state.get(f"api_key_{provider}", ""),
+        "free": st.session_state.get(f"free_confirm_{provider}", False),
+    }
+
+
+def forget_keys():
+    st.session_state.visitor_credentials = {}
+    for name in list(st.session_state):
+        if name.startswith("api_key_") or name.startswith("free_confirm_"):
+            del st.session_state[name]
+    st.session_state.connection_check = None
+
+
 with st.sidebar:
-    st.caption(t("CONNECTION", "模型连接"))
+    st.markdown("**AI Model Settings**")
+    for service, credential in st.session_state.get("visitor_credentials", {}).items():
+        settings = session_settings(settings, service, credential["key"],
+            settings.get(PROVIDERS[service]["setting"]) or PROVIDERS[service]["model"], credential["free"])
     configured = [k for k, v in PROVIDERS.items() if settings.get(v["key"])]
     default = configured[0] if configured else "gemini"
     provider = st.selectbox(t("Model service", "模型服务"), list(PROVIDERS), index=list(PROVIDERS).index(default),
@@ -82,15 +100,50 @@ with st.sidebar:
             format_func=lambda m: t("Nemotron 3 Super · fixed", "Nemotron 3 Super · 固定模型") if m == fixed else
                                   t("Free router · variable model", "免费路由 · 模型可能变化") if m == "openrouter/free" else m)
         settings = dict(settings, OPENROUTER_MODEL=selected_model)
+    if provider != "openrouter":
+        models = ["gemini-2.5-flash-lite", "gemini-2.5-flash"] if provider == "gemini" else ["glm-4.7-flash"]
+        configured_model = settings.get(PROVIDERS[provider]["setting"])
+        selected_model = st.selectbox(t("Model", "模型"), models,
+            index=models.index(configured_model) if configured_model in models else 0, key=f"model_{provider}")
+    with st.expander(t("Use your own API key", "使用自己的 API Key")):
+        visitor_key = st.text_input(t("Session API key", "本会话 API Key"), type="password", key=f"api_key_{provider}",
+            value=st.session_state.get("visitor_credentials", {}).get(provider, {}).get("key", ""),
+            on_change=remember_key, args=(provider,),
+            help=t("Used only in this session. Leave empty to use the developer configuration.", "只用于当前会话；留空时使用开发者配置。"))
+        free_confirmed = False
+        if provider in {"gemini", "zhipu"}:
+            free_confirmed = st.checkbox(t("My key is eligible for the selected free-tier model", "我的密钥具有所选模型的免费档资格"), key=f"free_confirm_{provider}",
+                value=st.session_state.get("visitor_credentials", {}).get(provider, {}).get("free", False), on_change=remember_key, args=(provider,))
+        st.button(t("Clear session keys", "清除会话密钥"), key="clear_api_keys", on_click=forget_keys)
+        st.caption(t("Never paste a key into the scenario. Developer keys are never displayed.", "不要把密钥放进情境中。开发者密钥不会显示在页面上。"))
+    settings = session_settings(settings, provider, visitor_key, selected_model, free_confirmed)
+    st.caption(t("Key source: current session" if visitor_key else "Key source: developer configuration", "密钥来源：当前会话" if visitor_key else "密钥来源：开发者配置"))
+    signature = hashlib.sha256((provider + selected_model + settings.get(PROVIDERS[provider]["key"], "") + settings.get(provider.upper()+"_FREE_TIER_CONFIRMED", "")).encode()).hexdigest()
     client = Client(provider, settings)
     config_error = None
     try:
         _, model = client.validate()
-        st.success(t("Configured · ready to test", "已配置 · 待实际调用验证"))
+        if (st.session_state.get("connection_check") or {}).get("signature") == signature:
+            st.success(t("Connection verified · inquiry test passed", "连接已验证 · 伦理追问测试通过"))
+        else:
+            st.info(t("Configured · ready to test", "已配置 · 待实际调用验证"))
         st.caption(model)
     except ProviderError as error:
         config_error = str(error)
         st.info(t("Connection setup needed", "需要配置模型连接"))
+        st.caption(config_error)
+    st.caption(t("Test sends one fictional inquiry and uses API quota.", "测试会发送一段虚构伦理情境，消耗一次 API 额度。"))
+    if st.button(t("Test Connection", "测试连接"), key="test_connection", disabled=bool(config_error), use_container_width=True):
+        try:
+            probe = Session()
+            with st.spinner(t("Testing the inquiry workflow…", "正在测试伦理追问流程……")):
+                probe.submit("Fictional scenario: I am an audit senior. My manager asks me to accept an estimate supported only by management's claim. I do not know what independent evidence exists.",
+                             Client(provider, settings, budget=take_budget), language)
+            st.session_state.connection_check = {"signature": signature, "model": probe.records[-1]["model"]}
+            st.rerun()
+        except (ProviderError, ModelOutputError, InputError) as error:
+            st.session_state.connection_check = None
+            st.error(str(error))
     secondary = None
     alternatives = [k for k in configured if k != provider]
     if alternatives:
@@ -116,26 +169,35 @@ with st.sidebar:
                            Path(__file__).with_name(".streamlit").joinpath("secrets.toml.example").read_text(),
                            "secrets.toml.example", mime="text/plain")
 
-st.markdown('<div class="hero"><div class="eyebrow">ETHICS IN PRACTICE</div><h1>Inquire.</h1><p>' +
-            t("Better judgment begins with a better question.", "好的判断，从一个更好的问题开始。") + '</p></div>', unsafe_allow_html=True)
+st.markdown('<div class="hero"><div><div class="eyebrow">ETHICS IN PRACTICE</div><h1>Inquire.</h1><p>' +
+            t("Better judgment begins with a better question.", "好的判断，从一个更好的问题开始。") + '</p></div><div class="hero-glyph" aria-hidden="true"><span></span><span></span><span></span></div></div>', unsafe_allow_html=True)
 conversation = st.session_state.conversation
-left, right = st.columns([2.1, 1], gap="large")
 
 
-def load_example():
-    example = next(e for e in EXAMPLES if e["id"] == st.session_state.example)
+def load_example(case_id):
+    example = next(e for e in EXAMPLES if e["id"] == case_id)
+    st.session_state.example = case_id
     st.session_state.draft = example["text_zh" if st.session_state.language == "中文" else "text_en"]
     st.session_state.example_source = example["source"]
 
 
-def take_budget():
-    if st.session_state.attempts >= 24: return False
-    hourly, daily = shared_limits()
-    if not hourly.take() or not daily.take(): return False
-    st.session_state.attempts += 1
-    return True
+if not conversation.messages:
+    st.caption(t("CASE SELECTION · optional, editable starting points", "案例选择 · 可选、可修改的起点"))
+    with st.container(key="case_picker"):
+        for i, (column, case) in enumerate(zip(st.columns(len(EXAMPLES)), EXAMPLES)):
+            with column:
+                selected = case["id"] == st.session_state.example
+                name = case["zh" if zh else "en"].replace("Example · ", "").replace("Fictional · ", "").replace("示例 · ", "").replace("新编虚构 · ", "")
+                st.button(f"{i+1:02}  {'✓' if selected else '↗'}\n\n{name}", key=f"case_{case['id']}",
+                    type="primary" if selected else "secondary", on_click=load_example, args=(case["id"],), use_container_width=True)
+    selected_case = next(e for e in EXAMPLES if e['id'] == st.session_state.example)
+    with st.expander(t("Case details · inspect the layers", "案例详情 · 展开信息层次")):
+        st.markdown(details_html(selected_case, zh), unsafe_allow_html=True)
+        if selected_case['source']: st.caption(selected_case['source'])
 
 
+
+left, right = st.columns([2.1, 1], gap="large")
 with left:
     st.subheader(t("Your inquiry", "你的伦理情境"))
     st.caption(t("Describe a situation. Examine what is known. Decide what needs checking.",
@@ -145,11 +207,6 @@ with left:
             st.markdown("**" + t("Start with your own situation", "从你自己的情境开始") + "**")
             st.write(t("Who is involved, what decision is being made, and what concerns you? Leave unknown facts unknown.",
                        "谁参与其中？需要作出什么判断？你有什么顾虑？不知道的事实可以保留为未知。"))
-            with st.expander(t("Or explore an optional example", "也可以选用示例（可修改）")):
-                st.selectbox(t("Example", "示例"), [e["id"] for e in EXAMPLES], key="example",
-                             format_func=lambda k: next(e["zh" if zh else "en"] for e in EXAMPLES if e["id"] == k))
-                st.button(t("Use as a starting point", "填入输入框"), key="load_example", on_click=load_example)
-                if st.session_state.example_source: st.caption(st.session_state.example_source)
     for index, message in enumerate(conversation.messages):
         with st.chat_message(message["role"], avatar=":material/psychology:" if message["role"] == "assistant" else None):
             # Untrusted user/model text is never rendered as HTML or executable markdown.
@@ -169,8 +226,16 @@ with left:
                                     type="primary", disabled=bool(config_error) or conversation.turns >= 12,
                                     use_container_width=True)
         if config_error:
-            st.caption(t("No model request can be sent until the connection is configured. See Setup & cost in the sidebar.",
-                         "模型连接配置完成后才能发送。请查看侧栏的“配置与费用”。"))
+            st.caption(t("Configure a key in AI Model Settings before sending.",
+                         "请先在侧栏 AI Model Settings 输入密钥或设置开发者配置。"))
+    relay = st.empty()
+    stage, failed = st.session_state.workflow
+    relay.markdown(relay_html(stage, zh, failed), unsafe_allow_html=True)
+
+    def progress(stage):
+        st.session_state.workflow = (stage, False)
+        relay.markdown(relay_html(stage, zh), unsafe_allow_html=True)
+
     if sent:
         if not consent:
             st.warning(t("Please confirm the data-sharing notice before sending.", "请先确认上方的数据发送说明。"))
@@ -179,11 +244,14 @@ with left:
                 live = FallbackClient(Client(provider, settings, budget=take_budget),
                                       Client(secondary, settings, budget=take_budget) if secondary else None)
                 with st.spinner(t("Finding the next useful question…", "正在寻找值得进一步追问的问题……")):
-                    conversation.submit(st.session_state.draft, live, language)
+                    conversation.submit(st.session_state.draft, live, language, progress=progress)
                 st.session_state.clear_draft = True
                 st.session_state.show_briefing = False
                 st.rerun()
             except (InputError, ModelOutputError, ProviderError) as error:
+                stage = st.session_state.workflow[0]
+                st.session_state.workflow = (stage, True)
+                relay.markdown(relay_html(stage, zh, True), unsafe_allow_html=True)
                 st.error(str(error))
     if conversation.turns >= 12:
         st.info(t("Turn limit reached. Export the record and begin a new inquiry if needed.", "已达到对话轮数上限。请先导出记录，再按需开始新对话。"))

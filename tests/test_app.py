@@ -27,8 +27,7 @@ class AppTests(unittest.TestCase):
     @patch.dict(os.environ, {"OPENROUTER_API_KEY": "test-only", "GEMINI_API_KEY": "", "ZHIPU_API_KEY": ""})
     def test_optional_example_is_editable_and_not_submitted(self):
         at = AppTest.from_file(str(APP)).run()
-        at.selectbox(key="example").select("dashboard").run()
-        at.button(key="load_example").click().run()
+        at.button(key="case_dashboard").click().run()
         self.assertIn("year-end", at.text_area(key="draft").value)
         self.assertFalse(at.session_state["conversation"].messages)
         at.text_area(key="draft").input("My own revised situation.")
@@ -54,6 +53,33 @@ class AppTests(unittest.TestCase):
         self.assertFalse(at.exception)
         self.assertEqual(at.session_state["conversation"].turns, 1)
         self.assertEqual(at.text_area(key="draft").value, "My manager asked me.")
+        self.assertEqual(at.session_state["workflow"], ("request", True))
+
+    @patch.dict(os.environ, {"GEMINI_API_KEY":"owner-only", "GEMINI_FREE_TIER_CONFIRMED":"true", "OPENROUTER_API_KEY":"", "ZHIPU_API_KEY":""})
+    def test_connection_uses_visitor_key_without_changing_conversation(self):
+        import json
+        at=AppTest.from_file(str(APP)).run()
+        self.assertIn("api_key_gemini", [w.key for w in at.text_input])
+        at.text_input(key="api_key_gemini").input("visitor-only").run()
+        at.checkbox(key="free_confirm_gemini").check().run()
+        captured=[]
+        def complete(client, messages):
+            captured.append((client.settings['GEMINI_API_KEY'],messages))
+            return json.dumps({'question':'Who can independently review the disputed estimate?', 'focus':'review','observations':[]}), {'provider':'gemini','model':'gemini-2.5-flash-lite'}
+        with patch("inquiry.providers.Client.complete",complete):
+            at.button(key="test_connection").click().run()
+        self.assertFalse(at.exception)
+        self.assertEqual(captured[0][0],'visitor-only')
+        self.assertIn('OBJECTIVITY',captured[0][1][0]['content'])
+        self.assertFalse(at.session_state['conversation'].messages)
+        self.assertNotIn('visitor-only', ''.join(x.value for x in at.success))
+        at.text_input(key="api_key_gemini").input("new-key").run()
+        self.assertFalse(any('Connection verified' in x.value for x in at.success))
+        at.selectbox(key="provider").select("zhipu").run()
+        at.selectbox(key="provider").select("gemini").run()
+        self.assertEqual(at.text_input(key="api_key_gemini").value, "new-key")
+        at.button(key="clear_api_keys").click().run()
+        self.assertEqual(at.text_input(key="api_key_gemini").value,'')
 
     def test_chinese_ui_and_reset_keep_request_counter(self):
         at = AppTest.from_file(str(APP)).run()

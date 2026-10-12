@@ -44,3 +44,9 @@ Human review identified these limitations:
 - The briefing retained an earlier unknown after a later update and included the user's irrelevant instruction inside an exact quotation. It is a record of extracted statements, not a reconciled or complete fact summary; reviewers must check the full conversation and distinguish instructions from case facts.
 
 Contradiction handling, the remaining examples, broader adversarial tests, a real domestic-provider call and mainland-network access remain outstanding. Automated tests use mocks for error and fallback paths. Actual test transcripts are kept locally rather than represented as universal success results.
+
+## Interface and connection update
+
+Automated verification covers native case selection and editable input; session-key priority, retention across service switching and explicit clearing; stale connection-badge invalidation; connection probes leaving the formal conversation untouched; Gemini and GLM transport payloads running through the objectivity inquiry protocol; and real progress events and failure-state preservation. These tests use simulated HTTP/model responses. They do not prove that newly obtained real Gemini or GLM keys work.
+
+The browser review checks the folder-card controls, readable titles at mobile and desktop widths, layered details and Python draft updates without an API call. Real Gemini/GLM connection tests remain pending private key configuration: use Test Connection in the deployed app and record the actual provider/model, result and date. Never place keys in a test transcript or public evidence. Reduced motion must retain all readable information and native button operation.
