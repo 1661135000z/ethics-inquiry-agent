@@ -1,0 +1,22 @@
+:host { display:block; width:100%; font-family:"InquireSans","Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif; }
+.journey { --accent:var(--inquire-accent,#6857c8); font-family:"InquireSans","Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif; color:var(--st-text-color,#292934); width:100%; }
+.journey-list { list-style:none; margin:0; padding:0; }
+.journey-step { position:relative; padding:0 0 18px; }
+.journey-step:last-child { padding-bottom:0; }
+.journey-step:not(:last-child)::after { content:""; position:absolute; left:12px; top:26px; bottom:3px; width:1px; background:#d4ded4; }
+.journey-button { display:grid; grid-template-columns:25px minmax(0,1fr); gap:10px; width:100%; padding:0; text-align:left; border:0; background:transparent; color:inherit; cursor:pointer; font:inherit; }
+.journey-marker { width:25px; height:25px; box-sizing:border-box; border-radius:50%; display:grid; place-items:center; background:#f5f6f0; border:1px solid #ccd7cb; color:#758073; font-size:11px; transition:background .2s,border-color .2s,color .2s; }
+.journey-step[data-state="complete"] .journey-marker { background:#ede8f8; border-color:#c9bfe6; color:var(--accent); }
+.journey-step[data-state="current"] .journey-marker { background:var(--accent); border-color:var(--accent); color:white; }
+.journey-title { display:block; font-size:13px; line-height:1.5; font-weight:600; }
+.journey-detail { display:block; font-size:11px; line-height:1.55; opacity:.62; margin-top:3px; }
+.journey-button:focus-visible { outline:2px solid var(--accent); outline-offset:5px; border-radius:4px; }
+.journey-button:disabled { cursor:default; opacity:.65; }
+@media(max-width:1000px) { .journey-list { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; } .journey-step { padding:0; } .journey-step:not(:last-child)::after { display:none; } .journey-button { gap:7px; } }
+@media(prefers-reduced-motion:reduce) { .journey-marker { transition:none; } }
+
+.journey-step::after { transition:background .2s; }
+.journey-step[data-state="complete"]::after { background:var(--accent); }
+.journey-step[data-state="current"] .journey-marker { animation:journey-pulse 2.8s ease-in-out infinite; }
+@keyframes journey-pulse { 50% { box-shadow:0 0 0 4px #6857c813; } }
+@media(prefers-reduced-motion:reduce) { .journey-step::after { transition:none; } .journey-step[data-state="current"] .journey-marker { animation:none; } }

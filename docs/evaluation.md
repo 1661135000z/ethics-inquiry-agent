@@ -1,3 +1,15 @@
+# Compact product release checks
+
+2026-10-13: 45 automated tests pass. The suite includes transactional scenario switching, cancellation restoring unsent input, initial-case restart, explicit model confirmation, configuration invalidation, service-switch model preferences, visitor-key precedence, actual agent protocol under HTTP mocks, component event contracts, and byte-for-byte source ZIP/font checks.
+
+AppTest uses a native test harness for v2 events; it does not execute JavaScript. The actual local v2 components were separately verified in the browser at 1366×768 and 390×844: hover preview opened, pointer transfer into details stayed open, pointer exit closed it, and hover/preview left the Python render sequence unchanged. Keyboard case selection generated an event and populated the draft. Mobile Preview opened details without selecting the case. Journey model navigation opened the native model panel. Desktop first screen contained model entry, custom-case row, four examples, input and the full journey. Mobile journey stayed in the document flow.
+
+Font files were served locally as font/woff2; source and artifact hashes are verified. No third-party font CDN is needed. Reduced-motion guards exist in CSS and JavaScript; OS-level preference changes were not made during these browser checks.
+
+Real provider reachability and response quality require live tests and cannot be established by this suite. The older live-test observations below are historical checks, not a guarantee of present availability, neutrality, mainland access, or billing eligibility.
+
+---
+
 # Evaluation checklist
 
 Automated tests use simulated provider responses and make no live model calls. They check state preservation, quote provenance, input limits, provider payloads, free-model restrictions, error sanitization and UI behavior. Real API calls and reviewer-network access require separate testing.

@@ -12,6 +12,9 @@ def source_files():
     )]
     for folder in ('inquiry', 'tests'):
         files.extend(sorted((ROOT / folder).glob('*.py')))
+    for folder in ('frontend', 'static/fonts'):
+        files.extend(sorted(p for p in (ROOT / folder).rglob('*') if p.is_file() and p.suffix in {'.css','.js','.woff2','.txt','.json'}))
+    if (ROOT / 'scripts/build_fonts.py').exists(): files.append(ROOT / 'scripts/build_fonts.py')
     return files
 
 def build():

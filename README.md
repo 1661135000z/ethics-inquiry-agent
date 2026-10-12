@@ -79,22 +79,33 @@ Gemini 2.5 names are valid, but Google restricts access for projects that have n
 
 A Gemini HTTP 404 can indicate unavailable model/resource; the connection test checks model availability before generation. A GLM HTTP 401 means authentication was rejected and is not fixed by renaming the model. This adapter uses the domestic `open.bigmodel.cn` endpoint and keys issued at `bigmodel.cn`, not international `z.ai` or a separate coding-plan endpoint. Paste the complete API key without `Bearer`, surrounding quotes or line breaks. Errors display provider/model, HTTP status and a bounded numeric diagnostic code where supplied, never the upstream error message or your key. Do not publish account identifiers or raw provider error bodies.
 
-## Interface and execution states
+## Compact interface and product state
 
-- **Own situation first:** a separate full-width row returns to a blank draft. Four optional example folders are secondary starting points, arranged in one desktop row or a mobile grid.
-- **Riffle-inspired case selection:** native Streamlit buttons are styled as folder cards; hovering lifts one and slightly shifts neighbors. Selected cards have a checkmark and accent border. Keyboard and touch activation use the same Python callback; selecting a case fills an editable draft without sending it. Choosing your own case restores a blank starting point.
-- **Exploded-inspired details:** expand Case details to view context, inquiry and human review in layers. Hover or keyboard focus on the expander separates them. All information stays readable without motion.
-- **Relay-inspired execution:** a full-width four-step panel below the conversation and notebook uses numbered markers, explanatory text and distinct idle/active/completed/error states. Real backend events drive Input check → Model request → Output validation → Save result. Earlier stages are complete only when execution has advanced past them. Errors mark the current stage and preserve the draft; no fake tool calls or timers imply progress. Save means commit to current session memory, not disk. The provider records still show the actual model used.
-- Spring-like easing and staggered neighboring folder movements take cues from [Motion](https://motion.dev/docs/animate) and [Anime.js stagger](https://animejs.com/documentation/utilities/stagger/). The implementation uses original local CSS, without importing either library. A short settling header graphic and subtle active-stage pulse provide restrained feedback. There are no autoplay background loops, external fonts/CDNs, Node build or front-end framework. Reduced-motion preferences disable transitions; mobile layouts wrap cards. See [motion attribution](THIRD_PARTY_NOTICES.md).
+The main-page **Model settings** panel contains the service, model, visitor key and connection test. On first visit, confirm **Use Gemini / GLM / OpenRouter** to continue with configured developer keys. This confirmation sends no API request. A successful connection test also confirms the current configuration; changing service, model or key invalidates confirmation. Sidebar contains language and scope information.
 
-The stylesheet uses Streamlit's container keys and DOM test identifiers. Dependencies are pinned; check visual behavior before upgrading Streamlit. Core functionality remains native Python callbacks even if CSS is unavailable.
+A compact right-hand journey tracks **Choose model → Choose situation → Start conversation**. It is driven by confirmed configuration, selected/typed situation and valid conversation responses. It stays in progress during inquiry; a single answer does not certify completion. On narrow screens, the journey becomes an in-flow horizontal strip. Clicking a step focuses its region; returning to situations preserves the current conversation.
 
-Main-page **Choose another situation** and **New conversation / Clear current** buttons both reset the conversation, notebook, briefing, draft, consent and workflow, returning to optional case selection with a blank starting point. They preserve model settings and request limits. Download needed records before resetting.
+Folder cards use local Streamlit Custom Components v2. Hover or keyboard focus previews details without a Python rerun or model request; moving into the details keeps the preview open, and leaving closes it after 120ms. Click/Enter selects an editable draft. Touch users have a separate Preview control. Details use safe text nodes; component payloads contain no API keys. One-shot triggers prevent replayed selections.
+
+**Choose another situation** and **New conversation** appear only after a valid conversation starts:
+- Choose another situation opens a pending selection while preserving the current conversation and unsent reply. Cancel restores them. A valid first reply for the new situation commits the replacement; network or output errors preserve both the old conversation and new draft.
+- New conversation clears messages, notebook, briefing, consent and execution state, while retaining the initial situation and model configuration. Custom situations retain their original first user message. Download records before restarting.
+- Model switches preserve conversation and request counters. Changing service/model resets sending consent.
+
+Conversation, notebook and review briefing share tabs. **Execution details**, initially collapsed, retains real Input check → Model request → Output validation → Save result events. Failed requests expand it automatically and preserve the input. Save means current-session memory, not disk. Provider records show the actual model and fallback used.
+
+Animations are original local CSS/Web Animations inspired by Hairline, Motion, Anime.js and AutoAnimate; no React, Node build, external scripts or background animation is required. `prefers-reduced-motion` removes motion. Component focus and local preview state survive unrelated reruns. See [notices](THIRD_PARTY_NOTICES.md).
+
+## Local typography
+
+Noto Sans SC variable-font WOFF2 subsets are bundled under `static/fonts/` with the SIL Open Font License. Unicode-range loading retrieves only needed subsets; `font-display: swap` and system fallbacks keep text readable while loading. English and Chinese use one font family, with no Google Fonts/CDN requests. Streamlit static serving is enabled in the checked-in configuration. Keep static files and license files in deployments and portable ZIPs.
+
+Font preparation is a development-only step: `scripts/build_fonts.py` records the official source and produces the committed subsets. Running the app needs neither fontTools nor Brotli. See the font manifest for provenance and artifact sizes.
 
 ## Use and scope
 
-1. Choose English or 中文 and a configured service.
-2. Type your own fictional/anonymized situation, or load and edit an optional example. Loading a case never submits it.
+1. Choose English or 中文, open Model settings if needed, and confirm the configured service.
+2. Type your own fictional/anonymized situation, or load and edit an optional example. Hover previews; click selects. Loading a case never submits it.
 3. Confirm sharing with the selected service(s); send and answer the follow-up. Unknown facts can remain unknown.
 4. After one follow-up answer, prepare a human-review briefing or download the conversation. The notebook quotes user statements, not verified audit evidence.
 
@@ -108,7 +119,7 @@ The app does not intentionally persist conversations to disk. Provider policies 
 python -m unittest discover -s tests -v
 ```
 
-`inquiry/core.py`: state, prompt and response checks. `inquiry/providers.py`: HTTP adapters and cost guards. `inquiry/examples.py`: optional scenarios. `inquiry/presentation.py`: local motion/style and escaped details. `app.py`: UI and session-only credentials. Tests use fake responses; passing them is **not** evidence of live provider quality or mainland reachability.
+`inquiry/core.py`: state, prompt and response checks. `inquiry/providers.py`: HTTP adapters and cost guards. `inquiry/examples.py`: optional scenarios. `inquiry/ui_state.py`: navigation and transactional scenario switching. `inquiry/components.py` and `frontend/`: local v2 components. `inquiry/presentation.py`: compact local style. `app.py`: UI and session-only credentials. Tests use fake responses; passing them is **not** evidence of live provider quality or mainland reachability.
 
 ## Official references
 

@@ -10,5 +10,6 @@ font = "sans serif"
 gatherUsageStats = false
 
 [server]
+enableStaticServing = true
 headless = true
 maxUploadSize = 1
