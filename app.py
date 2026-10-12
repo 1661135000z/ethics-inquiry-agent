@@ -257,7 +257,7 @@ with main:
                           type="primary" if own else "secondary", on_click=choose_case, args=("blank",), width="stretch")
             subtitles = [t("Relationships & fees", "关系与收费"),t("Design & review", "设计与复核"),t("AI & evidence", "AI与证据"),t("Incentives & claims", "激励与陈述")]
             cases = [{"id":e["id"], "title":e["zh" if zh else "en"].split(" · ")[-1],"subtitle":subtitles[i],
-                      "text":e["text_zh" if zh else "text_en"],"source":e["source"]} for i,e in enumerate(EXAMPLES[1:])]
+                      "text":e["text_zh" if zh else "text_en"],"source":t("Original fictional scenario", "原创虚构情境") if e["id"] in {"dashboard","vendor"} else t("Hypothetical scenario", "假设情境")} for i,e in enumerate(EXAMPLES[1:])]
             render_cases(cases, ws.pending_case if ws.phase == "select" else ws.case_id, ws.epoch, on_case_event, zh=zh)
 
     with st.container(key="conversation_region"):
@@ -313,7 +313,7 @@ scenario_ready = current == "conversation"
 steps=[
     {"id":"model","title":t("Choose model", "选择模型"),"detail":model_name if model_ready else t("Service & connection", "服务与连接"),"state":"complete" if model_ready else "active"},
     {"id":"scenario","title":t("Choose situation", "选择情境"),"detail":t("Example or your own", "示例或自定义"),"state":"complete" if scenario_ready else "active" if current=="scenario" else "pending"},
-    {"id":"conversation","title":t("Conversation in progress", "对话中") if conversation.messages and ws.phase!="select" else t("Start conversation", "开始对话"),"detail":t(f"{conversation.turns} turns",f"{conversation.turns}轮") if conversation.messages and ws.phase!="select" else "", "state":"active" if current=="conversation" else "pending"},
+    {"id":"conversation","title":t("Conversation in progress", "对话中") if conversation.messages and ws.phase!="select" else t("Start conversation", "开始对话"),"detail":t(f"{conversation.turns} turn" + ("s" if conversation.turns != 1 else ""),f"{conversation.turns}轮") if conversation.messages and ws.phase!="select" else "", "state":"active" if current=="conversation" else "pending"},
 ]
 with rail:
     with st.container(key="journey_rail"):
@@ -341,6 +341,9 @@ if sent:
             with error_slot.container():
                 with st.spinner(t("Preparing the next question…", "正在准备下一条问题……")):
                     ws.submit(ws.pending_text if ws.phase=="select" else ws.draft,live,language,progress=progress)
+            record = ws.conversation.records[-1]
+            if record['provider'] == provider and not record.get('fallback_from'):
+                st.session_state.connection_check = {'signature': signature, 'model': record['model']}
             # Schedule widget update before it is rendered on the next run.
             st.session_state.pop("draft",None)
             st.rerun()

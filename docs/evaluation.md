@@ -8,6 +8,8 @@ Font files were served locally as font/woff2; source and artifact hashes are ver
 
 Real provider reachability and response quality require live tests and cannot be established by this suite. The older live-test observations below are historical checks, not a guarantee of present availability, neutrality, mainland access, or billing eligibility.
 
+Live Community Cloud checks on 2026-10-13: Gemini `gemini-3.5-flash-lite` returned a contextual question about verifying entries missing from an AI dashboard. The response passed the agent's structure, question and quotation validation. GLM `glm-4.7-flash` passed Test Connection through an isolated `Session.submit`, while the formal Gemini conversation and unsent follow-up remained intact. Both used developer configuration; no key values were read or displayed. Returning to situation selection preserved the formal conversation; cancelling restored the unsent answer. These observations establish successful calls at that time, not future availability or universal response quality.
+
 ---
 
 # Evaluation checklist

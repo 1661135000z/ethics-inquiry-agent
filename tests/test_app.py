@@ -46,6 +46,7 @@ class AppTests(unittest.TestCase):
             at.button(key='submit_inquiry').click().run()
         self.assertFalse(at.exception)
         self.assertEqual(at.session_state['conversation'].turns,1)
+        self.assertTrue(at.session_state['connection_check']['signature'])
 
     def test_first_visit_requires_model_confirmation_and_has_no_reset_actions(self):
         at=self.app()
