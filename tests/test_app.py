@@ -91,6 +91,30 @@ class AppTests(unittest.TestCase):
         at.button(key="clear_api_keys").click().run()
         self.assertEqual(at.text_input(key="api_key_gemini").value,'')
 
+    @patch.dict(os.environ, {"OPENROUTER_API_KEY":"test-only", "GEMINI_API_KEY":"", "ZHIPU_API_KEY":""})
+    def test_main_navigation_can_restart_after_conversation(self):
+        import json
+        at=AppTest.from_file(str(APP)).run()
+        at.button(key="case_dashboard").click().run()
+        at.checkbox(key="consent").check()
+        reply=json.dumps({"question":"Who can review the missing entries?", "focus":"review", "observations":[]})
+        with patch("inquiry.providers.Client.complete", return_value=(reply,{"provider":"openrouter","model":"test/free"})):
+            at.button(key="submit_inquiry").click().run()
+        self.assertEqual(at.session_state["conversation"].turns,1)
+        at.session_state["attempts"]=5
+        at.button(key="choose_scenario").click().run()
+        self.assertFalse(at.exception)
+        self.assertEqual(at.session_state["conversation"].messages,[])
+        self.assertEqual(at.session_state["conversation"].records,[])
+        self.assertEqual(at.session_state["workflow"],("idle",False))
+        self.assertFalse(at.checkbox(key="consent").value)
+        self.assertEqual(at.session_state["attempts"],5)
+        at.button(key="case_vendor").click().run()
+        self.assertIn("referral",at.text_area(key="draft").value)
+        at.button(key="main_new_inquiry").click().run()
+        self.assertEqual(at.text_area(key="draft").value,"")
+        self.assertEqual(at.session_state["example"],"blank")
+
     def test_chinese_ui_and_reset_keep_request_counter(self):
         at = AppTest.from_file(str(APP)).run()
         at.selectbox(key="language").select("中文").run()

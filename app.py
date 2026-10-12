@@ -27,6 +27,7 @@ def reset():
     st.session_state.example = "blank"
     st.session_state.example_source = ""
     st.session_state.workflow = ("idle", False)
+    st.session_state.consent = False
     # Intentionally preserve attempt limit across New inquiry.
 
 
@@ -200,9 +201,17 @@ def load_example(case_id):
     st.session_state.example_source = example["source"]
 
 
-relay = st.empty()
-stage, failed = st.session_state.workflow
-relay.markdown(relay_html(stage, zh, failed), unsafe_allow_html=True)
+with st.container(key="inquiry_actions"):
+    action_left, action_right = st.columns(2)
+    with action_left:
+        st.button(t("← Choose another situation", "← 重新选择情境"), key="choose_scenario",
+                  on_click=reset, use_container_width=True)
+    with action_right:
+        st.button(t("＋ New conversation / Clear current", "＋ 开始新对话 / 清空当前对话"), key="main_new_inquiry",
+                  on_click=reset, use_container_width=True)
+    if conversation.messages:
+        st.caption(t("Both actions clear this conversation and its notebook. Download any record you want to keep first.",
+                     "以上操作会清空当前对话和探究记录；如需保留，请先下载对话记录。"))
 
 if not conversation.messages:
     with st.container(key="own_scenario"):
@@ -254,27 +263,6 @@ with left:
         if config_error:
             st.caption(t("Configure a key in AI Model Settings before sending.",
                          "请先在侧栏 AI Model Settings 输入密钥或设置开发者配置。"))
-    def progress(stage):
-        st.session_state.workflow = (stage, False)
-        relay.markdown(relay_html(stage, zh), unsafe_allow_html=True)
-
-    if sent:
-        if not consent:
-            st.warning(t("Please confirm the data-sharing notice before sending.", "请先确认上方的数据发送说明。"))
-        else:
-            try:
-                live = FallbackClient(Client(provider, settings, budget=take_budget),
-                                      Client(secondary, settings, budget=take_budget) if secondary else None)
-                with st.spinner(t("Finding the next useful question…", "正在寻找值得进一步追问的问题……")):
-                    conversation.submit(st.session_state.draft, live, language, progress=progress)
-                st.session_state.clear_draft = True
-                st.session_state.show_briefing = False
-                st.rerun()
-            except (InputError, ModelOutputError, ProviderError) as error:
-                stage = st.session_state.workflow[0]
-                st.session_state.workflow = (stage, True)
-                relay.markdown(relay_html(stage, zh, True), unsafe_allow_html=True)
-                st.error(str(error))
     if conversation.turns >= 12:
         st.info(t("Turn limit reached. Export the record and begin a new inquiry if needed.", "已达到对话轮数上限。请先导出记录，再按需开始新对话。"))
     if st.session_state.show_briefing:
@@ -307,6 +295,33 @@ with right:
                    "应用不会主动将聊天写入磁盘。模型服务按其自身政策处理对话。重置或离开前请自行下载。"))
         st.caption(t("Focus: objectivity and ethical threats. This is not an authoritative statement of current professional standards.",
                      "聚焦客观性及伦理威胁。本工具不是现行专业准则的权威解释。"))
+
+# Below the conversation and notebook; updates only from real backend events.
+relay = st.empty()
+stage, failed = st.session_state.workflow
+relay.markdown(relay_html(stage, zh, failed), unsafe_allow_html=True)
+
+def progress(stage):
+    st.session_state.workflow = (stage, False)
+    relay.markdown(relay_html(stage, zh), unsafe_allow_html=True)
+
+if sent:
+    if not consent:
+        st.warning(t("Please confirm the data-sharing notice before sending.", "请先确认上方的数据发送说明。"))
+    else:
+        try:
+            live = FallbackClient(Client(provider, settings, budget=take_budget),
+                                  Client(secondary, settings, budget=take_budget) if secondary else None)
+            with st.spinner(t("Finding the next useful question…", "正在寻找值得进一步追问的问题……")):
+                conversation.submit(st.session_state.draft, live, language, progress=progress)
+            st.session_state.clear_draft = True
+            st.session_state.show_briefing = False
+            st.rerun()
+        except (InputError, ModelOutputError, ProviderError) as error:
+            stage = st.session_state.workflow[0]
+            st.session_state.workflow = (stage, True)
+            relay.markdown(relay_html(stage, zh, True), unsafe_allow_html=True)
+            st.error(str(error))
 
 st.divider()
 st.caption(t("INQUIRE · A question-first learning tool. Professional judgment stays with people.",
