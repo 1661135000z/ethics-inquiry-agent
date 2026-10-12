@@ -27,3 +27,9 @@ Prefer at least two scenarios with three or more exchanges each. Export actual c
 - Working app URL, tested shortly before use.
 - Source repository and source ZIP provided directly to reviewers.
 - Real test transcripts and limitations; no private information in public evidence.
+
+## Live smoke test — 2026-10-12
+
+The deployed OpenRouter integration completed an English two-turn fictional journal-screening inquiry using `nvidia/nemotron-3-super-120b-a12b:free`. The first question asked how to verify missing entries; the follow-up asked about professional skepticism under closure pressure. The review briefing and downloaded Markdown were checked, including actual model provenance, user quotes and unknown fields.
+
+An earlier Chinese first turn also succeeded, but repeated an uncertainty already stated. Testing exposed malformed/empty responses and a transient unavailable response. Structured-output routing and a request to disable extra reasoning were added; automated tests passed after the changes. A successful retry does not establish the cause of every failure or guarantee free-service reliability. Broader multi-scenario, injection, domestic-provider and mainland-network tests remain outstanding. The matrix above remains the full evaluation plan, not a claim that every item passed.

@@ -1,5 +1,7 @@
 # Inquire — Audit ethics agent
 
+[Open the live app](https://ethics-inquiry-agent.streamlit.app/)
+
 A bilingual Python + Streamlit learning tool focused on **objectivity**. Describe any audit situation; the agent asks one contextual follow-up question at a time. No scenario is assumed. Optional editable examples include relationships, self-review and two fictional AI-audit situations.
 
 ## Run locally / 本地运行
