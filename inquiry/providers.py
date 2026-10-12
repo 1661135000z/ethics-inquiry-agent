@@ -106,7 +106,7 @@ class Client:
             notices = {"quota": "Free quota/capacity unavailable. Wait or select another free provider; do not enable paid billing.",
                        "auth": "Access denied. Check the API key, free-tier eligibility and regional availability.",
                        "unavailable": "Provider/model unavailable. Check configuration or switch provider."}
-            raise ProviderError(notices[code], code)
+            raise ProviderError(notices[code] + f" (HTTP {response.status_code})", code)
         try:
             data = response.json()
             if self.provider == "gemini":
