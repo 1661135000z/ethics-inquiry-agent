@@ -11,16 +11,18 @@ from inquiry.core import Session, AREAS, InputError, ModelOutputError
 from inquiry.ui_state import Workspace
 from inquiry.providers import PROVIDERS, Client, FallbackClient, ProviderError, Limits, settings_from, session_settings, GEMINI_MODELS
 from inquiry.presentation import STYLE, relay_html
-from inquiry.components import render_cases, render_journey, render_scroll, render_message_motion, render_welcome, render_transition, render_resume, render_copy
+from inquiry.components import render_cases, render_journey, render_scroll, render_message_motion, render_welcome, render_transition, render_resume, render_copy, render_palette
 from inquiry.resume import ResumeStore
 from inquiry.examples import EXAMPLES
+from inquiry.lenses import area_counts, reported_quotes, focus_html, SHORT
+from inquiry.review_packet import build_review_packet
 
 st.set_page_config(page_title="Inquire · Audit ethics", page_icon="◈", layout="wide", initial_sidebar_state="collapsed")
-st.markdown(STYLE, unsafe_allow_html=True)
+st.html(STYLE)
 font_sheet = Path(__file__).parent / "static/fonts/font.css"
 if font_sheet.exists():
     font_css = font_sheet.read_text().replace("url('", "url('app/static/fonts/")
-    st.markdown("<style>" + font_css + "</style>", unsafe_allow_html=True)
+    st.html("<style>" + font_css + "</style>")
 
 @st.cache_resource
 def shared_limits():
@@ -204,19 +206,44 @@ def cancel_selection():
 
 def new_conversation():
     ws.new_conversation()
+    st.session_state.note_filter = "all"
     sync_widget()
     st.session_state.consent = False
+
+def schedule_scroll(target):
+    st.session_state.scroll_nonce = st.session_state.get("scroll_nonce", 0) + 1
+    st.session_state.scroll_request = (target, st.session_state.scroll_nonce)
+
+def change_tab():
+    labels = {"Conversation":"conversation", "对话":"conversation", "Inquiry notebook":"notebook", "探究记录":"notebook", "Review briefing":"briefing", "复核简报":"briefing"}
+    ws.view = labels.get(st.session_state.get("workspace_tab"), "conversation")
 
 def on_navigation():
     target = st.session_state.get("journey_v2", {}).get("navigate")
     if target not in {"model", "scenario", "conversation"}: return
     if target == "scenario": reselect()
-    st.session_state.scroll_request = (target, st.session_state.get("scroll_nonce", 0) + 1)
-    st.session_state.scroll_nonce = st.session_state.scroll_request[1]
+    if target == "conversation": ws.view = "conversation"
+    schedule_scroll(target)
+
+def on_palette_action():
+    action = st.session_state.get("command_v2", {}).get("action")
+    if action == "model":
+        schedule_scroll("model")
+    elif ws.onboarded and action == "scenario":
+        reselect()
+        schedule_scroll("scenario")
+    elif ws.onboarded and action == "write":
+        ws.view = "conversation"
+        schedule_scroll("composer")
+    elif ws.conversation.messages and action in {"conversation", "notebook", "briefing"}:
+        if action == "briefing" and ws.conversation.turns < 2: return
+        if action == "conversation" and ws.phase == "select": cancel_selection()
+        ws.view = action
+        schedule_scroll("conversation")
 
 st.session_state.ui_render_sequence = st.session_state.get("ui_render_sequence", 0) + 1
-st.markdown('<div class="product-bar" data-render-sequence="' + str(st.session_state.ui_render_sequence) + '"><h1>Inquire<span>.</span></h1><span class="product-description">' +
-            t("Audit ethics · question first", "审计伦理 · 先追问，再思考") + '</span></div>', unsafe_allow_html=True)
+st.html('<div class="product-bar" data-render-sequence="' + str(st.session_state.ui_render_sequence) + '"><h1>Inquire<span>.</span></h1><span class="product-description">' +
+            t("Question first. Judgment stays human.", "追问更清楚，判断由你掌握。") + '</span></div>')
 if ws.onboarded:
     main, rail = st.columns([4.6, 1], gap="large")
 else:
@@ -329,6 +356,16 @@ with main:
         st.caption(t("Choose a service to begin.", "选择模型服务开始。") if config_error else f"{model_name} · {selected_model} · {badge}")
         if config_error:
             st.caption(t("Open Model settings to configure a connection.", "打开模型设置，配置连接。"))
+        if ws.onboarded:
+            commands = [
+                {"id":"model","title":t("Model settings", "模型设置"),"hint":t("Configure service & connection", "服务与连接"),"enabled":True},
+                {"id":"scenario","title":t("Choose a situation", "选择情境"),"hint":t("Current inquiry stays until you switch", "保留当前探究，预览新情境"),"enabled":True},
+                {"id":"write","title":t("Focus the composer", "继续填写回答"),"hint":t("Jump to your editable draft", "定位可编辑草稿"),"enabled":True},
+                {"id":"conversation","title":t("Conversation", "对话"),"hint":t("Return to the current inquiry", "回到当前探究"),"enabled":bool(ws.conversation.messages)},
+                {"id":"notebook","title":t("Inquiry notebook", "探究记录"),"hint":t("Explore reported statements", "浏览已提取的用户陈述"),"enabled":bool(ws.conversation.messages)},
+                {"id":"briefing","title":t("Review briefing", "复核简报"),"hint":t("Prepare & export for human review", "准备并导出人工复核资料"),"enabled":ws.conversation.turns >= 2},
+            ]
+            render_palette(commands, zh, on_palette_action)
 
     if not ws.onboarded:
         save_workspace()
@@ -345,13 +382,14 @@ with main:
                               help=t("Clear this conversation; retain the initial situation and model. Download first if needed.", "清空对话，保留初始情境与模型；需要时先下载记录。"))
     if ws.phase != "chat":
         with st.container(key="scenario_region"):
+            st.html('<div class="section-heading"><span>02</span><h2>'+t("Choose your starting point", "选择你的探究起点")+'</h2></div>')
             if ws.phase == "select":
                 st.caption(t("Preview a new situation. Your current conversation stays until a new reply succeeds.", "预览新情境；当前对话会保留到新情境的有效回复返回。"))
                 st.button(t("Cancel · return to conversation", "取消 · 返回当前对话"), key="cancel_selection", on_click=cancel_selection)
             own = (ws.pending_case if ws.phase == "select" else ws.case_id) == "blank"
             with st.container(key="own_scenario"):
                 st.button(t("Write my own situation", "自行输入情境"), key="case_blank",
-                          type="primary" if own else "secondary", on_click=choose_case, args=("blank",), width="stretch")
+                          type="primary" if own else "secondary", on_click=choose_case, args=("blank",), width="stretch",icon=":material/edit_note:")
             subtitles = [t("Relationships & fees", "关系与收费"),t("Design & review", "设计与复核"),t("AI & evidence", "AI与证据"),t("Incentives & claims", "激励与陈述")]
             cases = [{"id":e["id"], "title":e["zh" if zh else "en"].split(" · ")[-1],"subtitle":subtitles[i],
                       "text":e["text_zh" if zh else "text_en"],"source":t("Original fictional scenario", "原创虚构情境") if e["id"] in {"dashboard","vendor"} else t("Hypothetical scenario", "假设情境")} for i,e in enumerate(EXAMPLES[1:])]
@@ -360,9 +398,18 @@ with main:
     with st.container(key="conversation_region"):
         if conversation.messages and ws.phase != "select":
             case_label = next((e["zh" if zh else "en"].split(" · ")[-1] for e in EXAMPLES if e["id"] == ws.case_id), t("Your situation", "自定义情境"))
-            st.markdown('<div class="current-situation"><span>' + t("CURRENT SITUATION", "当前情境") + '</span><strong>' + escape(case_label) + '</strong></div>',unsafe_allow_html=True)
-        tabs = st.tabs([t("Conversation", "对话"),t("Inquiry notebook", "探究记录"),t("Review briefing", "复核简报")]) if conversation.messages else [st.container(),st.container(),st.container()]
+            st.html('<div class="current-situation"><span>' + t("CURRENT SITUATION", "当前情境") + '</span><strong>' + escape(case_label) + '</strong></div>')
+        if conversation.messages:
+            labels = [t("Conversation", "对话"),t("Inquiry notebook", "探究记录"),t("Review briefing", "复核简报")]
+            views = ["conversation", "notebook", "briefing"]
+            if ws.view not in views: ws.view = "conversation"
+            st.session_state.workspace_tab = labels[views.index(ws.view)]
+            tabs = st.tabs(labels,key="workspace_tab",on_change=change_tab)
+        else:
+            tabs = [st.container(),st.container(),st.container()]
         with tabs[0]:
+            if conversation.messages and ws.phase == "chat":
+                st.html(focus_html(conversation,language))
             if ws.phase == "select" and conversation.messages:
                 with st.expander(t("Current conversation · preserved", "当前对话 · 已保留")):
                     for message in conversation.messages: st.text(message["content"])
@@ -383,36 +430,57 @@ with main:
                         suggestions = [t("I do not know yet. The person or record that could verify this is…", "目前尚不确定。能够核实这一点的人或记录是……"), t("The evidence supporting this is…; an alternative explanation is…", "支持这一点的证据是……；另一种可能解释是……"), t("An independent reviewer could check…; their relationship to this decision is…", "独立复核人员可以检查……；其与本次判断的关系是……")]
                         for i, text in enumerate(suggestions):
                             st.button(text,key=f"suggestion_{i}",on_click=fill_suggestion,args=(text,))
-            if "draft" not in st.session_state: sync_widget()
-            st.text_area(t("Situation or follow-up answer", "情境或追问回答"), key="draft", height=110,max_chars=4000,
-                         on_change=sync_draft, placeholder=t("Describe the decision and what concerns you…", "描述需要作出的判断，以及你的顾虑……"),label_visibility="collapsed")
-            consent=st.checkbox(t("Fictional/anonymized content; send to the selected service(s).", "内容为虚构或已匿名处理；同意发送至所选模型服务。"),key="consent")
-            with st.form("inquiry_form"):
-                sent=st.form_submit_button(t("Start a new inquiry with this situation", "以此开始新对话") if ws.phase=="select" else t("Ask the next question", "开始 / 继续追问"),
-                    key="submit_inquiry",type="primary",disabled=bool(config_error) or not model_ready or (conversation.turns>=12 and ws.phase!="select"),width="stretch")
-            if not model_ready:
-                st.caption(t("Choose and confirm your model above to continue.", "先在上方选择并确认模型。"))
+            with st.container(key="composer"):
+                title = t("Your next answer", "你的下一条回答") if conversation.messages and ws.phase == "chat" else t("Describe the situation", "描述你的情境")
+                st.html('<div class="composer-heading"><strong>'+title+'</strong><span>'+t("Uncertainty is useful information", "不确定，也可以如实说明")+'</span></div>')
+                if "draft" not in st.session_state: sync_widget()
+                st.text_area(t("Situation or follow-up answer", "情境或追问回答"), key="draft", height=110,max_chars=4000,
+                             on_change=sync_draft, placeholder=t("Describe the decision and what concerns you…", "描述需要作出的判断，以及你的顾虑……"),label_visibility="collapsed")
+                consent=st.checkbox(t("Fictional/anonymized content; send to the selected service(s).", "内容为虚构或已匿名处理；同意发送至所选模型服务。"),key="consent")
+                with st.form("inquiry_form"):
+                    sent=st.form_submit_button(t("Start a new inquiry with this situation", "以此开始新对话") if ws.phase=="select" else t("Send answer", "发送回答") if conversation.messages else t("Start inquiry", "开始追问"),
+                        key="submit_inquiry",type="primary",disabled=bool(config_error) or not model_ready or (conversation.turns>=12 and ws.phase!="select"),width="stretch")
+                if not model_ready:
+                    st.caption(t("Choose and confirm your model above to continue.", "先在上方选择并确认模型。"))
             execution = st.expander(t("Execution details", "执行详情"),expanded=ws.workflow[1])
             with execution:
                 relay = st.empty()
-                relay.markdown(relay_html(*[ws.workflow[0], zh, ws.workflow[1]]), unsafe_allow_html=True)
+                relay.html(relay_html(*[ws.workflow[0], zh, ws.workflow[1]]))
             error_slot = st.empty()
             if conversation.turns>=12 and ws.phase!="select":
                 st.caption(t("Turn limit reached. Export and start a new conversation.", "已到轮数上限，请导出后开始新对话。"))
         if conversation.messages:
             with tabs[1]:
-                st.caption(t("User statements, not verified evidence.", "用户陈述，不是已核实的证据。"))
-                for area,labels in AREAS.items():
-                    quotes=[o["quote"] for o in conversation.observations if o["area"]==area]
-                    with st.expander(labels[int(zh)] + (f" · {len(quotes)}" if quotes else " · —")):
-                        if quotes:
-                            for quote in quotes: st.text(quote)
-                        else: st.caption(t("Nothing extracted yet; check the full conversation.", "尚无提取陈述，请核对完整对话。"))
+                counts = area_counts(conversation)
+                quotes = reported_quotes(conversation)
+                st.html('<div class="notebook-heading"><div><h2>'+t("A record of what you have shared", "你已提供的陈述")+'</h2><p>'+t("User-reported statements · still require verification", "用户陈述 · 仍需核实")+'</p></div><div class="notebook-total"><strong>'+str(len(quotes))+'</strong><span>'+t("classified statements", "条归类陈述")+'</span></div></div>')
+                if "note_filter" not in st.session_state: st.session_state.note_filter = ws.note_filter
+                area = st.segmented_control(t("Filter inquiry direction", "筛选探究方向"),["all",*AREAS],required=True,key="note_filter",
+                    format_func=lambda key: t("All", "全部") if key == "all" else f"{SHORT[key][int(zh)]} {counts[key]}",label_visibility="collapsed",width="stretch") or "all"
+                ws.note_filter = area
+                groups = list(AREAS) if area == "all" else [area]
+                for topic in groups:
+                    entries = [q for q in quotes if q["area"] == topic]
+                    with st.container(key="notes_"+topic):
+                        st.html('<div class="note-group-title"><strong>'+AREAS[topic][int(zh)]+'</strong><span>'+str(len(entries))+'</span></div>')
+                        for entry in entries:
+                            refs = t("User turn ", "用户第 ") + ", ".join(str(turn) for turn in entry["turns"]) + (" 轮" if zh else "")
+                            st.html('<div class="statement-card"><p>'+escape(entry["quote"]).replace("\n","<br>")+'</p><span>'+refs+'</span></div>')
+                        if not entries:
+                            st.caption(t("Not yet reported here. Check the full conversation; this is not evidence of absence.", "尚未提取到相关陈述；请核对完整对话，这不代表相关事实不存在。"))
             with tabs[2]:
+                st.html('<div class="briefing-intro"><span>'+t("FOR HUMAN REVIEW", "供人工复核")+'</span><h2>'+t("Turn the inquiry into a review packet.", "把探究整理成复核资料。")+'</h2><p>'+t("Your statements, open questions and model provenance — together in one printable file.", "用户陈述、当前追问与模型来源，整理为可离线查看和打印的文件。")+'</p></div>')
                 st.button(t("Prepare review briefing", "生成人工复核简报"),key="briefing",disabled=conversation.turns<2,
                           on_click=lambda: setattr(ws,"show_briefing",True))
-                if ws.show_briefing and conversation.turns>=2: st.text(conversation.briefing(language))
-                else: st.caption(t("Available after your situation and one follow-up answer.", "描述情境并回答一次追问后可用。"))
+                if conversation.turns>=2:
+                    st.download_button(t("Download review packet · HTML", "下载复核资料包 · HTML"),build_review_packet(conversation,language),"inquire-review.html",mime="text/html",key="download_review_packet",icon=":material/download:")
+                    if ws.show_briefing:
+                        with st.container(key="briefing_document"):
+                            st.text(conversation.briefing(language))
+                    else:
+                        st.caption(t("Print or save as PDF from your browser after opening the packet.", "打开资料包后，可通过浏览器打印或另存为 PDF。"))
+                else:
+                    st.caption(t("Available after your situation and one follow-up answer.", "描述情境并回答一次追问后可用。"))
         if conversation.messages:
             st.download_button(t("Download conversation", "下载对话记录"),conversation.export(language),"inquire-conversation.md",mime="text/markdown",key="download_conversation")
 
@@ -447,7 +515,7 @@ if sent or regenerate:
         error_slot.warning(t("Confirm the model before sending.", "请先确认模型。"))
     else:
         def progress(stage):
-            relay.markdown(relay_html(stage,zh),unsafe_allow_html=True)
+            relay.html(relay_html(stage,zh))
         try:
             live=FallbackClient(Client(provider,settings,budget=take_budget),Client(secondary,settings,budget=take_budget) if secondary else None)
             with error_slot.container():
@@ -463,12 +531,14 @@ if sent or regenerate:
             if record['provider'] == provider and not record.get('fallback_from'):
                 st.session_state.connection_check = {'signature': signature, 'model': record['model']}
             # Schedule widget update before it is rendered on the next run.
-            if not regenerate: st.session_state.pop("draft",None)
+            if not regenerate:
+                st.session_state.pop("draft",None)
+                st.session_state.pop("note_filter",None)
             save_workspace()
             st.rerun()
         except (InputError,ModelOutputError,ProviderError) as error:
             if isinstance(error,ProviderError) and error.code == "auth": ws.confirmed_model=""
-            relay.markdown(relay_html(ws.workflow[0],zh,True),unsafe_allow_html=True)
+            relay.html(relay_html(ws.workflow[0],zh,True))
             error_slot.error(str(error))
             st.session_state.workflow=ws.workflow
             # Public expander API must be expanded on the next render.

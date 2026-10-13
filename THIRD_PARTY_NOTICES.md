@@ -34,3 +34,7 @@ GSAP Timeline sequencing, Motion, Anime.js and AutoAnimate informed timing and t
 ## Noto Sans SC
 
 Bundled WOFF2 files derive from the official Google Fonts Noto Sans SC variable font. They retain the source font's complete character coverage, divided into Unicode-range subsets. The SIL Open Font License and copyright notices are included in `static/fonts/OFL.txt`; source provenance and checksums are in `static/fonts/manifest.json`. Font preparation uses fontTools and Brotli only during development, not application runtime.
+
+## Original product assets
+
+The optical welcome illustration, command palette, inquiry-lens presentation and printable review packet are independently authored for this project. They use local SVG, CSS and native browser APIs; no external icon, animation or frontend framework runtime is required. Existing Hairline and font notices above remain applicable.

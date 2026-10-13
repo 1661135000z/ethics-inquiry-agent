@@ -1,3 +1,13 @@
+# Product polish release checks
+
+2026-10-13: 90 automated tests pass. New coverage checks keyboard-command allowlists and lifecycle, model-free navigation, draft/tab continuity, notebook quote provenance, reset behavior, HTML escaping, report prerequisites, offline resource restrictions and valid report styles. Existing core, provider, consent and recovery checks remain included.
+
+Actual local browser checks at 1366×768 and 390×844 verified the new welcome, model confirmation, keyboard palette, composer focus, dirty-draft preservation, touch preview and responsive layout. Two fictional inquiry turns used an explicitly labelled local provider fixture, with no live API requests. Notebook source references and filtering were checked; a Markdown-wrapper overlap was identified and removed by using native HTML containers. The review packet was actually downloaded, opened offline and visually checked with its source references and provenance. Mobile preview and command menu fit without horizontal page overflow. Reduced-motion guards are covered in source, but the OS preference was not changed manually.
+
+This pass does not establish fresh live Gemini/GLM availability. Earlier live observations below are historical. Mainland network access and actual browser print/PDF output remain separate checks.
+
+---
+
 # Progressive interface release checks
 
 2026-10-13: 71 automated tests pass, including welcome gating, provider-card selection, transactional regeneration, immediate consent revocation, fallback consent reset, tab recovery, older-schema migration, public preference recovery, and source asset checks. AppTest uses native event harnesses; it does not render JavaScript.

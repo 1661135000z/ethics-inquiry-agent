@@ -43,7 +43,7 @@ Set each confirmation flag to `"true"` only after checking that account's free-t
 
 **Test Connection** first checks the account-specific model list for Gemini, then sends one small fictional audit-ethics case through the actual `Session.submit` workflow, including the objectivity prompt, JSON parsing, question-only and quote checks. It consumes one generation request (plus a metadata request for Gemini), does not use the user's case, does not append to the formal conversation, and never automatically falls back to another service. A success badge applies to the current service/key/model configuration; changing it invalidates the badge. A successful test does not establish the quality of all future questions.
 
-中文：在侧栏选择 Gemini 或智谱 GLM，展开“使用自己的 API Key”，输入密钥并勾选免费档确认，点击“测试连接”。不输入自己的密钥时使用开发者配置。请勿把密钥放入聊天内容；无需把密钥发给项目维护者。Gemini 连接失败时可手动切换智谱，原有对话保留。服务提供方仍按自身政策处理请求，应用不能核实账户计费状态。
+中文：在主页面的“模型设置”中选择 Gemini 或智谱 GLM，展开“使用自己的 API Key”，输入密钥并勾选免费档确认，点击“测试连接”。不输入自己的密钥时使用开发者配置。请勿把密钥放入聊天内容；无需把密钥发给项目维护者。Gemini 连接失败时可手动切换智谱，原有对话保留。服务提供方仍按自身政策处理请求，应用不能核实账户计费状态。
 
 ## Model choices and costs
 
@@ -101,6 +101,20 @@ After several messages, the transcript uses a bounded scroll area with native au
 Refresh recovery uses an opaque capability in tab `sessionStorage`, with inquiry snapshots in a bounded server-memory cache (two-hour inactivity timeout, at most 128 workspaces). The snapshot contains inquiry data, public provider/model/language preferences and request count; **no API keys, consent or connection signature**. A recovered workbench requires model confirmation again; visitor keys must be re-entered. No inquiry text is stored in the browser, on disk or in a URL. Process restarts, expiry and capacity eviction can erase recovery; download is the durable backup. Closing the tab ends access to its token.
 
 Animations are original local CSS/Web Animations inspired by Hairline, GSAP timeline sequencing, Motion, Anime.js and AutoAnimate; no React, Node build, external scripts or background animation is required. `prefers-reduced-motion` removes motion. Component focus and local preview state survive unrelated reruns. See [notices](THIRD_PARTY_NOTICES.md).
+
+## Navigation and human-review tools
+
+The welcome uses an original, locally rendered document-and-lens illustration. Motion runs on actual entry or state changes; reduced-motion preferences keep all controls usable without movement.
+
+Open **Jump to…** or press **Ctrl/Cmd K** to search model settings, situations, writing, conversation, notebook and briefing. **/** focuses the composer when you are not already typing. These actions only navigate: they never send a draft, reset a conversation or call a model. Available destinations reflect the current inquiry state.
+
+Tabs retain their logical selection across language changes. Cancelling a pending situation switch restores the previous tab and unsent draft. The inquiry-lens banner uses short, predefined guidance for the accepted question's topic; it does not expose internal reasoning or claim to detect threats conclusively.
+
+Notebook filters show literal user statements by topic, with their source user-turn numbers. Counts describe extracted statements, not verified evidence or completeness. Missing information remains unknown rather than evidence of absence; check the full transcript.
+
+After two inquiry turns, **Download review packet · HTML** creates a self-contained, bilingual document containing the original situation, current question, quoted statements, transcript and recorded model provenance. Open it offline and use your browser's Print / Save as PDF. It contains no scripts, remote resources, credentials or automated ethical verdict. Downloading and filtering use no API quota. Treat exported statements as untrusted text and review them yourself.
+
+中文：快捷导航只定位页面，不发送内容；探究记录可按主题筛选并查看原始轮次。两轮对话后，可下载离线复核资料包并打印为 PDF。记录中的陈述不等于已验证证据，仍需人工复核。
 
 ## Local typography
 

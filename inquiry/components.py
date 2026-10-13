@@ -54,7 +54,7 @@ def render_journey(
 
 def render_scroll(target: str, nonce: int):
     """Perform a single scoped navigation action on an app-owned anchor."""
-    if target not in {"model", "scenario", "conversation"}:
+    if target not in {"model", "scenario", "conversation", "composer"}:
         raise ValueError("Unknown navigation target")
     return _component("scroll_bridge")(
         data={"target": target, "nonce": nonce}, key="scroll_bridge_v2", height=0,
@@ -108,3 +108,37 @@ def render_resume(token: str, on_restore: Callable[[], None], on_ready: Callable
 def render_copy(text: str, key: str, zh: bool = False):
     """Copy an assistant question on an explicit browser click."""
     return _component("copy_reply")(data={"text": str(text), "zh": bool(zh)}, key=key)
+
+
+_PALETTE_ACTIONS = frozenset({"model", "scenario", "conversation", "notebook", "briefing", "write"})
+
+
+def render_palette(
+    commands: Sequence[Mapping[str, Any]], zh: bool, on_action: Callable[[], None],
+):
+    """Render public navigation commands and validate each one-shot action.
+
+    The zero-argument callback reads ``st.session_state['command_v2']['action']``.
+    Only known, currently enabled command IDs reach it. Search and highlight
+    changes stay local; no conversation or model configuration is sent here.
+    """
+    payload = []
+    seen = set()
+    for command in commands:
+        action = command.get("id")
+        if not isinstance(action, str) or action not in _PALETTE_ACTIONS or action in seen:
+            continue
+        seen.add(action)
+        payload.append({"id": action, "title": str(command.get("title", "")),
+                        "hint": str(command.get("hint", "")), "enabled": command.get("enabled") is True})
+    enabled = {command["id"] for command in payload if command["enabled"]}
+
+    def dispatch():
+        event = st.session_state.get("command_v2", {})
+        action = event.get("action") if hasattr(event, "get") else None
+        if isinstance(action, str) and action in _PALETTE_ACTIONS and action in enabled:
+            on_action()
+
+    return _component("command_palette")(
+        data={"commands": payload, "zh": bool(zh)}, key="command_v2", on_action_change=dispatch,
+    )

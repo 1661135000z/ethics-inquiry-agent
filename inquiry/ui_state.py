@@ -21,6 +21,9 @@ class Workspace:
     language_id: str = 'English'
     request_count: int = 0
     onboarded: bool = False
+    view: str = 'conversation'
+    saved_view: str = 'conversation'
+    note_filter: str = 'all'
 
     def confirm_model(self, signature):
         self.confirmed_model = signature
@@ -49,6 +52,8 @@ class Workspace:
             return
         if self.phase != 'select':
             self.pending_case, self.pending_text = self.case_id, self.initial_text
+            self.saved_view = self.view
+            self.view = 'conversation'
             self.saved_workflow = self.workflow
             self.phase = 'select'
             self.workflow = ('idle', False)
@@ -59,6 +64,7 @@ class Workspace:
             self.phase = 'chat'
             self.pending_case, self.pending_text = 'blank', ''
             self.workflow = self.saved_workflow
+            self.view = self.saved_view
             self.epoch += 1
 
     def new_conversation(self):
@@ -68,6 +74,8 @@ class Workspace:
         self.pending_case, self.pending_text = 'blank', ''
         self.workflow = self.saved_workflow = ('idle', False)
         self.show_briefing = False
+        self.view = self.saved_view = 'conversation'
+        self.note_filter = 'all'
         self.epoch += 1
 
     def submit(self, text, client, language='English', progress=None):
@@ -90,6 +98,8 @@ class Workspace:
         if first:
             self.initial_text = text.strip()
         self.phase = 'chat'
+        self.view = 'conversation'
+        if switching: self.note_filter = 'all'
         self.draft = ''
         self.pending_case, self.pending_text = 'blank', ''
         self.show_briefing = False
