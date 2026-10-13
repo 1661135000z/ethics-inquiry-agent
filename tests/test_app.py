@@ -245,4 +245,17 @@ class AppTests(unittest.TestCase):
         self.assertEqual(at.session_state['workflow'],('validate',True))
         self.assertTrue(any('unreported fact' in e.value for e in at.error))
 
+    def test_retained_core_data_is_rebuilt_with_current_session_methods(self):
+        from types import SimpleNamespace
+        from dataclasses import fields
+        from inquiry.core import Session
+        at=self.app();self.first_turn(at)
+        old=at.session_state['workspace'].conversation
+        legacy=SimpleNamespace(**{f.name:getattr(old,f.name) for f in fields(Session)})
+        at.session_state['workspace'].conversation=legacy
+        at.run()
+        self.assertFalse(at.exception)
+        self.assertEqual(at.session_state['conversation'].turns,1)
+        self.assertIsInstance(at.session_state['conversation'],Session)
+
 if __name__=='__main__':unittest.main()

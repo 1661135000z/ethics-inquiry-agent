@@ -43,6 +43,10 @@ ws = st.session_state.workspace
 def upgrade_workspace(workspace):
     defaults = Workspace()
     upgraded = Workspace(**{f.name: getattr(workspace, f.name, getattr(defaults, f.name)) for f in fields(Workspace)})
+    # Retained objects may carry methods from the previous imported core module.
+    # Rebuild declared data into the current Session so new validation applies.
+    default_session = Session()
+    upgraded.conversation = Session(**{f.name: getattr(upgraded.conversation, f.name, getattr(default_session, f.name)) for f in fields(Session)})
     if upgraded.conversation.messages: upgraded.onboarded = True
     return upgraded
 ws = upgrade_workspace(ws)

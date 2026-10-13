@@ -32,6 +32,7 @@ class ResumeStore:
         # Streamlit can retain a cached store while reloading imported classes.
         # Resolve the current declared schema instead of relying on class identity.
         from .ui_state import Workspace as CurrentWorkspace
+        from .core import Session as CurrentSession
         if not (isinstance(workspace, CurrentWorkspace) or
                 (type(workspace).__name__ == "Workspace" and
                  type(workspace).__module__ == CurrentWorkspace.__module__)):
@@ -41,8 +42,8 @@ class ResumeStore:
         defaults = CurrentWorkspace()
         values = {f.name: deepcopy(getattr(workspace, f.name, getattr(defaults, f.name)))
                   for f in fields(CurrentWorkspace) if f.name not in {"conversation", "confirmed_model"}}
-        values["conversation"] = Session(**{
-            f.name: deepcopy(getattr(workspace.conversation, f.name)) for f in fields(Session)
+        values["conversation"] = CurrentSession(**{
+            f.name: deepcopy(getattr(workspace.conversation, f.name)) for f in fields(CurrentSession)
         })
         return CurrentWorkspace(**values)
 
