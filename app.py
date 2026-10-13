@@ -363,7 +363,7 @@ with main:
                 with st.expander(t("Current conversation · preserved", "当前对话 · 已保留")):
                     for message in conversation.messages: st.text(message["content"])
             else:
-                with st.container(key="transcript"):
+                with st.container(key="transcript", height=310 if len(conversation.messages)>2 else "content", border=False, autoscroll=True if len(conversation.messages)>2 else None):
                     for index,message in enumerate(conversation.messages):
                         with st.chat_message(message["role"],avatar=":material/psychology:" if message["role"] == "assistant" else None):
                             st.text(message["content"])

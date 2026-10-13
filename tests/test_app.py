@@ -233,4 +233,16 @@ class AppTests(unittest.TestCase):
         self.assertFalse(fresh.session_state['workspace'].confirmed_model)
         self.assertNotIn('welcome_gemini',[b.key for b in fresh.button])
 
+    def test_regenerated_unreported_assertion_keeps_prior_question_and_draft(self):
+        at=self.app();self.first_turn(at,'I do not know who reviewed these audit entries.')
+        prior=at.session_state['conversation'].messages[-1]['content']
+        at.text_area(key='draft').input('Still drafting.').run()
+        bad=json.dumps({'question':'Since nobody reviewed these entries, who could review them independently?', 'focus':'review','observations':[]})
+        with patch('inquiry.providers.Client.complete',return_value=(bad,{'provider':'openrouter','model':'test/free'})):
+            at.button(key='regenerate').click().run()
+        self.assertEqual(at.session_state['conversation'].messages[-1]['content'],prior)
+        self.assertEqual(at.text_area(key='draft').value,'Still drafting.')
+        self.assertEqual(at.session_state['workflow'],('validate',True))
+        self.assertTrue(any('unreported fact' in e.value for e in at.error))
+
 if __name__=='__main__':unittest.main()
