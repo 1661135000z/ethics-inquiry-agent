@@ -19,7 +19,8 @@ class WorkerTransport:
             response=await asyncio.wait_for(fetch(url,method='POST',headers=headers,body=json.dumps(payload)),45)
             raw=await asyncio.wait_for(response.text(),15)
             if len(raw)>131072:raise APIError('format','模型返回超过安全长度。',502)
-            data=json.loads(raw) if response.status==200 else {}
+            try:data=json.loads(raw)
+            except ValueError:data={}
             return parse_response(provider,model,response.status,data)
         except APIError:raise
         except Exception:raise APIError('network','无法连接模型服务，请检查网络、地区或切换模型。',502) from None

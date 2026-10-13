@@ -47,3 +47,5 @@ Spec: local architecture assessment dated 2026-10-13; latest preference permits 
 - Remaining release gates: privately configure new backend keys/access code, successful real provider calls and Worker CPU measurements, GitHub branch publication/CI, final desktop/phone screenshots.
 
 - Visual continuity revision: preserved the approved welcome; replaced folder cards with a double-bezel context canvas and expandable inspiration list. Credentials now use explicit developer/personal modes. Confirmed both configured services through public boolean metadata, never secret values. Native simulated browser checked independent fields, selection, empty custom context and keyboard preview.
+
+- Gemini diagnostic revision: a live user request returned HTTP400 after credential validation. Previously the response body was discarded. Added bounded known-category parsing without exposing upstream text or keys; 20 new Python tests now pass. Await a single diagnosed live retry; do not assume a model-name or region cause before seeing the normalized category.

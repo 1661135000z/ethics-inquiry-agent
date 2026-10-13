@@ -23,6 +23,25 @@ def request_payload(provider, model, key, messages):
 
 def parse_response(provider, model, status, data):
     if status!=200:
+        if provider=='gemini' and status==400:
+            error=data.get('error',{}) if isinstance(data,dict) else {}
+            error=error if isinstance(error,dict) else {}
+            detail=str(error.get('message',''))[:8192].lower()
+            reason=str(error.get('status','')).upper()
+            # Match only known categories. Never echo vendor text or credentials.
+            if 'free tier' in detail and ('country' in detail or 'billing' in detail):
+                code,message='free_tier_region','Gemini 判定当前请求地区不支持免费档，请切换 GLM。'
+            elif 'location' in detail and ('not supported' in detail or 'unsupported' in detail):
+                code,message='region','Gemini 不接受当前请求来源的地区，请切换 GLM；这不是访问码错误。'
+            elif ('api key' in detail and ('not valid' in detail or 'invalid' in detail)) or 'api_key_invalid' in detail:
+                code,message='auth','Gemini 未接受 API Key，请核对 AI Studio 的密钥，或切换 GLM。'
+            elif reason=='INVALID_ARGUMENT':
+                code,message='parameters','Gemini 未接受当前模型或请求参数，请更换允许的模型，或切换 GLM。'
+            elif reason=='FAILED_PRECONDITION':
+                code,message='precondition','Gemini 的账号或地区条件未满足，请检查免费资格，或切换 GLM。'
+            else:
+                code,message='request','Gemini 拒绝了当前请求，请更换模型或切换 GLM。'
+            raise APIError(code,f'{message}（HTTP 400）',502)
         code='auth' if status in {401,403} else 'quota' if status in {402,429} else 'unavailable'
         message={401:'服务未接受密钥，请检查密钥及申请平台。',403:'访问受限，请检查账号、地区和权限。',404:'模型或资源不可用，请更换允许的模型。',429:'免费额度或服务容量不足，请稍后再试或手动切换。'}.get(status,'模型服务暂不可用，请稍后重试。')
         raise APIError(code,f'{message}（HTTP {status}）',502)
@@ -48,7 +67,8 @@ class NativeTransport:
                     async for chunk in response.aiter_bytes():
                         buffer.extend(chunk)
                         if len(buffer)>131072: raise APIError('format','模型返回内容超过安全长度。',502)
-                    data=json.loads(buffer) if response.status_code==200 else {}
+                    try:data=json.loads(buffer)
+                    except ValueError:data={}
                     return parse_response(provider,model,response.status_code,data)
         except (httpx.HTTPError,ValueError):
             raise APIError('network','连接失败或超时。Gemini 不可用时请手动切换 GLM。',502) from None

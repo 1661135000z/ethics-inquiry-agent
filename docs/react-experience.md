@@ -76,4 +76,6 @@ pnpm build
 python -m unittest discover -s tests
 ```
 
+Gemini HTTP400 is classified from recognized error categories without echoing provider bodies: unsupported request location, free-tier region, rejected key, invalid parameters or unmet prerequisites. Do not automatically enable billing or retry a client error. Switch to GLM when the source region is unsupported.
+
 Local simulated browser QA is explicitly labelled; it is not proof of live model connectivity. Keep endpoint and CPU checks distinct from mock transport tests.
