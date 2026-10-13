@@ -1,5 +1,15 @@
 # Inquire — Audit ethics agent
 
+## New React experience — independent preview
+
+This branch adds React + Vite + GSAP with a portable Python API and Cloudflare Python Worker/D1 adapter. The original Streamlit source and deployment are preserved below.
+
+[Open the new preview](https://inquire-experience.inquire-ethics-lab.workers.dev/) · [Run, configure and deploy React](docs/react-experience.md)
+
+Private keys must be configured separately for the new backend. There is no automatic migration of Streamlit Secrets. Developer keys require an access code; visitor keys remain only in page memory. The new browser recovery cache holds non-secret drafts/transcripts in tab sessionStorage. Live successful provider calls and CPU-limit validation are still separate release gates; local simulated QA is clearly labelled.
+
+## Preserved Streamlit version
+
 [Open the live app](https://ethics-inquiry-agent.streamlit.app/)
 
 A bilingual Python + Streamlit learning tool focused on **objectivity**. Describe any audit situation; the agent asks one contextual follow-up question at a time. No scenario is assumed. Optional editable examples include relationships, self-review and two fictional AI-audit situations.

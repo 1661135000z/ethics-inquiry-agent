@@ -1,5 +1,7 @@
 # Motion references
 
+The following Streamlit notes describe the preserved implementation. The new `web/` interface separately bundles React and **GSAP 3.15.0 Core/Flip** through npm. GSAP is governed by its [Standard License](https://gsap.com/standard-license/), not the Hairline MIT license. Its original copyright/license banners are retained in the distributed bundle. React, Vite and supporting build tools retain their package licenses. No Base44 template source or assets were copied.
+
 The UI uses independently authored local CSS/JavaScript, Streamlit v2 components and native Streamlit widgets. Its folder ripple, layered details and execution relay are inspired by [Hairline](https://github.com/lucasmarkes/hairline), specifically Riffle, Exploded and Relay. It is an adaptation of the interaction ideas for readable, functional controls, not the original isometric SVG renderer. No Hairline JavaScript or TypeScript runtime is bundled, and no external CDN is required.
 
 The upstream MIT notice is retained here for attribution and reference:

@@ -12,3 +12,16 @@ dist/
 *.log
 
 docs/superpowers/
+.tools/
+.api-venv/
+node_modules/
+.wrangler/
+.uv-cache/
+uv.lock
+web/dist/
+.dev.vars
+*.sqlite*
+.superpowers/
+.worker-build/
+.inquire-ethics-lab/
+*.tsbuildinfo
