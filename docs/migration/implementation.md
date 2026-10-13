@@ -45,3 +45,5 @@ Spec: local architecture assessment dated 2026-10-13; latest preference permits 
 - Browser QA: cancel restores prior transcript/draft; refresh retains conversation without replaying welcome; 390px phone preview initially toggled shut via focus and was fixed/retested. No horizontal overflow at 390px. Responses in local QA are explicitly simulated.
 - Current tests: 98 preserved Streamlit, 17 new Python, 13 React reducer tests pass; TypeScript and production build pass. Runtime bundle JavaScript ~120KB gzip, local font subsets load separately.
 - Remaining release gates: privately configure new backend keys/access code, successful real provider calls and Worker CPU measurements, GitHub branch publication/CI, final desktop/phone screenshots.
+
+- Visual continuity revision: preserved the approved welcome; replaced folder cards with a double-bezel context canvas and expandable inspiration list. Credentials now use explicit developer/personal modes. Confirmed both configured services through public boolean metadata, never secret values. Native simulated browser checked independent fields, selection, empty custom context and keyboard preview.

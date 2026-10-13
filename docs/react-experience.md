@@ -58,7 +58,7 @@ Static loading, Python initialization and model inference are different delays. 
 
 ## Interaction and inquiry contract
 
-Welcome shows only model selection. Inline credentials lead to the folder workspace through a GSAP shared-element transition. Local hover/focus previews do not call Python; touch has a separate preview action. Light/dark themes, Chinese font subsets and animation assets are bundled locally. Reduced motion removes transitions; there is no search palette or skip button.
+Welcome shows only model selection. An explicit saved-configuration/personal-key choice separates ACCESS_CODE from provider keys. Inline credentials lead to an inquiry studio through a GSAP shared-element transition. The studio shares the welcome page’s centered typography, ambient contours and nested surfaces. The primary editable context sits beside optional expandable examples; local hover/focus previews do not call Python, and touch has a separate preview action. Light/dark themes, Chinese font subsets and animation assets are bundled locally. Reduced motion removes transitions; there is no search palette or skip button.
 
 The journey derives from real UI state. Switching situations preserves the accepted conversation and unsent answer until a validated first reply commits the replacement. Cancel restores the draft. New conversation keeps the original situation and model preferences while clearing consent and records. Regeneration replaces only the latest validated question and preserves the unsent answer.
 

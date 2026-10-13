@@ -18,7 +18,7 @@ export async function morph(source:HTMLElement|null,target:HTMLElement|null,upda
  ghost.querySelectorAll('input,select').forEach(el=>el.remove());
  Object.assign(ghost.style,{position:'fixed',left:a.left+'px',top:a.top+'px',width:a.width+'px',height:a.height+'px',margin:'0',pointerEvents:'none',zIndex:'40'});
  ghost.setAttribute('aria-hidden','true');document.body.append(ghost);
- const others=Array.from(document.querySelectorAll('.model-card,.folder-card')).filter(el=>el!==source);
+ const others=Array.from(document.querySelectorAll('.model-card,.situation-option')).filter(el=>el!==source);
  return new Promise<void>(resolve=>{
   const timeline=gsap.timeline({onComplete:()=>{ghost.remove();gsap.set(others,{clearProps:'all'});resolve()},onInterrupt:()=>{ghost.remove();resolve()}});
   const timer=window.setTimeout(()=>{timeline.progress(1);ghost.remove();resolve()},1600);

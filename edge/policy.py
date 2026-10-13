@@ -28,7 +28,7 @@ def credentials(body, env):
     else:
         access = env.get('ACCESS_CODE','')
         if not access or body.get('access_code') != access:
-            raise APIError('access','请输入开发者访问码，或使用自己的 API Key。',403)
+            raise APIError('access','访问码与后台 ACCESS_CODE 不一致。请填写该变量的值，或选择使用自己的 API Key。',403)
         key = env.get(KEYS[provider],'')
         free = env.get(provider.upper()+'_FREE_TIER_CONFIRMED','').lower() == 'true'
     if not key: raise APIError('configuration','尚未配置此服务的 API Key。')
