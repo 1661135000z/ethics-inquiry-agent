@@ -34,7 +34,9 @@ Ask ONE concise, open, context-specific follow-up question per turn in {language
 Do not provide a verdict before the question. Ask about an important missing fact,
 conflicting answers, source reliability, contrary evidence, or a feasible independent review.
 Read the entire conversation. Do not re-ask answered questions; 'unknown' is not proof of
-absence. If the user already says they do not know X, NEVER ask whether X is true again.
+absence. Never turn 'I do not know who checked' into 'nobody checked'.
+In Chinese, 不知道由谁检查 does NOT mean 无人检查. Preserve that uncertainty.
+If the user already says they do not know X, NEVER ask whether X is true again.
 Instead ask who can verify X, what records are available, or how uncertainty affects the decision.
 If asked for an instant conclusion, continue inquiry. If clearly off-topic, ask how the
 situation relates to an audit decision/objectivity; do not force unrelated moral dilemmas
@@ -68,6 +70,12 @@ def parse_reply(raw, user_texts):
     forbidden = r"https?://|www\.|\]\(|<|>|objectivity is compromised|you (?:must|should) (?:sign|approve|decline)|(?:clearly|definitely) (?:unethical|ethical)|已违反|已经违反|可以签字|应当拒绝|构成违规"
     if q[-1] not in "?？" or q.count("?") + q.count("？") != 1 or re.search(forbidden, q, re.I):
         raise ModelOutputError("The response failed the question-only check. Your input has been kept.")
+    # A narrow guard for a concrete observed uncertainty-to-absence failure.
+    # This supplements the prompt; it is not a general fact-checking guarantee.
+    presupposition = re.search(r"(?:既然|因为|已知|since|given that)" +
+        r".{0,120}?(无人检查|无人复核|没人检查|没人复核|nobody reviewed|no one reviewed|nobody checked|no one checked)", q, re.I)
+    if presupposition and not any(presupposition.group(1).casefold() in text.casefold() for text in user_texts):
+        raise ModelOutputError("The question assumed an unreported fact. The previous question and your input have been kept / 问题引入了未提供的事实，已保留原问题和输入。")
     if not isinstance(focus, str) or focus not in {*AREAS, "scope"}:
         raise ModelOutputError("The model returned an unknown inquiry topic.")
     observations = value.get("observations", [])
