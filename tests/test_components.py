@@ -88,16 +88,16 @@ class ComponentContracts(unittest.TestCase):
 
     def test_new_browser_assets_are_local_and_use_only_explicit_actions(self):
         welcome = (_ASSETS / "welcome.js").read_text()
-        transition = (_ASSETS / "transition_bridge.js").read_text()
+        transition = (_ASSETS / "transition_bridge.js").read_text() + (_ASSETS / "motion_runtime.js").read_text()
         copy = (_ASSETS / "copy_reply.js").read_text()
         self.assertNotIn("innerHTML", welcome + transition + copy)
         self.assertEqual(welcome.count("setTriggerValue('choose'"), 1)
         self.assertNotIn("setTriggerValue", transition + copy)
         self.assertNotIn("fetch(", welcome + transition + copy)
-        self.assertIn("seen.has(data.nonce)", transition)
+        self.assertIn("state.seen.has(nonce)", transition)
         self.assertIn("prefers-reduced-motion", welcome + transition)
-        self.assertIn("skip.onclick=finish", transition)
-        self.assertIn("duration:1050", transition)
+        self.assertIn("skip.onclick=()=>finish('skip')", transition)
+        self.assertIn("duration:720", transition)
         self.assertNotIn("querySelector('input", transition)
 
     def test_assets_do_not_send_preview_events_or_render_data_as_html(self):

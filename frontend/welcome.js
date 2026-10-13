@@ -45,7 +45,7 @@ export default function(component) {
     {id:'openrouter',name:'OpenRouter',label:zh?'可选 · 免费模型路由':'Optional · Free model routing',detail:zh?'使用已有的 OpenRouter 配置。':'Use your existing OpenRouter configuration.'}
   ];
   const signature=String(zh);
-  if(!root._ui||root._ui.signature!==signature){
+  if(!root._ui||root._ui.signature!==signature||!root.querySelector('.model-grid')){
     const intro=make('div','welcome-intro'),copy=make('div','welcome-copy'),heading=make('h2','welcome-heading');
     heading.append(make('span','heading-line',zh?'循着证据，':'Follow the evidence.'),make('span','heading-line heading-emphasis',zh?'问得更深入。':'Find the next question.'));
     copy.append(make('p','welcome-eyebrow',zh?'审计询问 / 练习空间':'AUDIT INQUIRY / PRACTICE SPACE'),heading,make('p','welcome-description',zh?'选择模型服务，开启你的审计询问练习。':'Choose a provider to begin your audit inquiry practice.'));
@@ -71,12 +71,13 @@ export default function(component) {
     const selected=model.id===data.selected,ready=Boolean(data.ready?.[model.id]);
     if(selected){const rect=button.getBoundingClientRect();const registry=document[Symbol.for('inquire.publicMotion')]||(document[Symbol.for('inquire.publicMotion')]={});registry.model={left:rect.left,top:rect.top,width:rect.width,height:rect.height,title:model.name};}
     button.setAttribute('aria-pressed',String(selected));status.textContent=ready?(zh?'已配置':'Configured'):(zh?'待配置':'Set up');status.dataset.ready=String(ready);
-    actionText.textContent=selected?(zh?'当前选择':'Selected'):(zh?'选择模型':'Choose model');
+    actionText.textContent=model.id==='openrouter'?(ready?(zh?'继续':'Continue'):(zh?'配置':'Set up')):ready?(zh?'使用此模型':'Continue with this model'):(zh?'配置此模型':'Set up this model');
     actionPath.setAttribute('d',selected?'M3 8 6.5 11.5 13 5':'M4 12 12 4M4 4H12V12');
     button.onclick=()=>{
       const rect=button.getBoundingClientRect();
       const registry=document[Symbol.for('inquire.publicMotion')]||(document[Symbol.for('inquire.publicMotion')]={});
       registry.model={left:rect.left,top:rect.top,width:rect.width,height:rect.height,title:model.name};
+      if(ready)getMotionRuntime().begin({title:model.name,rect,kind:'model',zh});
       setTriggerValue('choose',model.id);
     };
     button.onpointermove=e=>{if(reduced||e.pointerType==='touch')return;const rect=button.getBoundingClientRect();const x=(e.clientX-rect.left)/rect.width-.5,y=(e.clientY-rect.top)/rect.height-.5;button.style.setProperty('--rx',`${-y*3}deg`);button.style.setProperty('--ry',`${x*4}deg`);button.style.setProperty('--shine-x',`${(x+.5)*100}%`);};

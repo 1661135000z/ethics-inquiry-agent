@@ -2,7 +2,7 @@ export default function(component) {
   const {parentElement,data}=component;
   const root=parentElement.querySelector('.copy-reply');
   const label=data.zh?'复制':'Copy',success=data.zh?'已复制':'Copied',failure=data.zh?'复制失败':'Copy unavailable';
-  if(!root._button){const button=document.createElement('button');button.type='button';button.className='copy-button';button.textContent=label;root.replaceChildren(button);root._button=button;}
+  if(!root._button||!root._button.isConnected){const button=document.createElement('button');button.type='button';button.className='copy-button';button.textContent=label;root.replaceChildren(button);root._button=button;}
   root._button.textContent=label;
   root._button.onclick=async()=>{
     const text=String(data.text||'');

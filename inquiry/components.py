@@ -18,7 +18,7 @@ def _component(name: str):
         name,
         html=f'<div class="{name.replace("_", "-")}"></div>',
         css=(_ASSETS / f"{name}.css").read_text(encoding="utf-8"),
-        js=(_ASSETS / f"{name}.js").read_text(encoding="utf-8"),
+        js=((_ASSETS / "motion_runtime.js").read_text(encoding="utf-8") + "\n" if name in {"welcome", "transition_bridge"} else "") + (_ASSETS / f"{name}.js").read_text(encoding="utf-8"),
         isolate_styles=True,
     )
 
@@ -141,4 +141,12 @@ def render_palette(
 
     return _component("command_palette")(
         data={"commands": payload, "zh": bool(zh)}, key="command_v2", on_action_change=dispatch,
+    )
+
+
+def render_theme(mode: str, zh: bool, on_change: Callable[[], None]):
+    """Public appearance preference only; credentials never enter this component."""
+    return _component("theme_switch")(
+        data={"mode": mode if isinstance(mode, str) and mode in {"light", "dark"} else "", "zh": bool(zh)},
+        key="theme_v2", on_change_change=on_change,
     )

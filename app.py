@@ -10,15 +10,15 @@ import streamlit as st
 from inquiry.core import Session, AREAS, InputError, ModelOutputError
 from inquiry.ui_state import Workspace
 from inquiry.providers import PROVIDERS, Client, FallbackClient, ProviderError, Limits, settings_from, session_settings, GEMINI_MODELS
-from inquiry.presentation import STYLE, relay_html
-from inquiry.components import render_cases, render_journey, render_scroll, render_message_motion, render_welcome, render_transition, render_resume, render_copy, render_palette
+from inquiry.presentation import appearance_styles, relay_html
+from inquiry.components import render_cases, render_journey, render_scroll, render_message_motion, render_welcome, render_transition, render_resume, render_copy, render_palette, render_theme
 from inquiry.resume import ResumeStore
 from inquiry.examples import EXAMPLES
 from inquiry.lenses import area_counts, reported_quotes, focus_html, SHORT
 from inquiry.review_packet import build_review_packet
 
 st.set_page_config(page_title="Inquire · Audit ethics", page_icon="◈", layout="wide", initial_sidebar_state="collapsed")
-st.html(STYLE)
+st.html(appearance_styles())
 font_sheet = Path(__file__).parent / "static/fonts/font.css"
 if font_sheet.exists():
     font_css = font_sheet.read_text().replace("url('", "url('app/static/fonts/")
@@ -171,19 +171,50 @@ def transition(kind, title=""):
     st.session_state.transition_request = (kind, st.session_state.transition_nonce, title)
 
 def confirm_model(signature):
+    st.session_state.close_model_panel = True
     first = not ws.onboarded
     ws.confirm_model(signature)
     st.session_state.pop("scroll_request", None)
     if first:
         transition("model", PROVIDERS[st.session_state.provider]["name"].split(" · ")[0])
 
+def model_signature(service, model, effective):
+    return hashlib.sha256((service + model + effective.get(PROVIDERS[service]["key"], "") + effective.get(service.upper()+"_FREE_TIER_CONFIRMED", "")).encode()).hexdigest()
+
+def provider_setup(service):
+    credential = st.session_state.get("visitor_credentials", {}).get(service, {})
+    preferred = st.session_state.get("model_preferences", {}).get(service)
+    model = preferred or owner_settings.get(PROVIDERS[service]["setting"]) or PROVIDERS[service]["model"]
+    if service == "gemini" and (model not in GEMINI_MODELS or (not preferred and model.startswith("gemini-2.5-"))):
+        model = next(iter(GEMINI_MODELS))
+    if service == "openrouter" and not preferred:
+        model = "nvidia/nemotron-3-super-120b-a12b:free"
+    effective = session_settings(owner_settings, service, credential.get("key", ""), model, credential.get("free", False))
+    try:
+        Client(service, effective).validate()
+        return effective, model, True
+    except ProviderError:
+        return effective, model, False
+
 def on_welcome_event():
     service = st.session_state.get("welcome_v2", {}).get("choose")
     if service not in PROVIDERS: return
     st.session_state.provider = service
     st.session_state.consent = False
-    st.session_state.scroll_request = ("model", st.session_state.get("scroll_nonce", 0) + 1)
-    st.session_state.scroll_nonce = st.session_state.scroll_request[1]
+    effective, model, ready = provider_setup(service)
+    if ready:
+        st.session_state.setdefault("model_preferences", {})[service] = model
+        confirm_model(model_signature(service, model, effective))
+    else:
+        st.session_state.model_panel = True
+        schedule_scroll("model")
+
+def open_model_settings():
+    st.session_state.model_panel = not st.session_state.get("model_panel", False)
+
+def change_theme():
+    mode = st.session_state.get("theme_v2", {}).get("change")
+    if isinstance(mode, str) and mode in {"light", "dark"}: ws.theme = mode
 
 def fill_suggestion(text):
     ws.draft = text
@@ -221,6 +252,7 @@ def change_tab():
 def on_navigation():
     target = st.session_state.get("journey_v2", {}).get("navigate")
     if target not in {"model", "scenario", "conversation"}: return
+    if target == "model": st.session_state.model_panel = True
     if target == "scenario": reselect()
     if target == "conversation": ws.view = "conversation"
     schedule_scroll(target)
@@ -228,6 +260,7 @@ def on_navigation():
 def on_palette_action():
     action = st.session_state.get("command_v2", {}).get("action")
     if action == "model":
+        st.session_state.model_panel = True
         schedule_scroll("model")
     elif ws.onboarded and action == "scenario":
         reselect()
@@ -242,118 +275,132 @@ def on_palette_action():
         schedule_scroll("conversation")
 
 st.session_state.ui_render_sequence = st.session_state.get("ui_render_sequence", 0) + 1
-st.html('<div class="product-bar" data-render-sequence="' + str(st.session_state.ui_render_sequence) + '"><h1>Inquire<span>.</span></h1><span class="product-description">' +
-            t("Question first. Judgment stays human.", "追问更清楚，判断由你掌握。") + '</span></div>')
+with st.container(key="product_header"):
+    title_col, theme_col = st.columns([8,1])
+    with title_col:
+        st.html('<div class="product-bar" data-render-sequence="' + str(st.session_state.ui_render_sequence) + '"><h1>Inquire<span>.</span></h1><span class="product-description">' + t("Question first. Judgment stays human.", "追问更清楚，判断由你掌握。") + '</span></div>')
+    with theme_col:
+        render_theme(ws.theme, zh, change_theme)
+if st.session_state.pop("close_model_panel", False): st.session_state.model_panel = False
+st.session_state.setdefault("model_panel", False)
+st.html('<style>.st-key-model_setup_region{display:' + ('block' if st.session_state.model_panel else 'none') + '}</style>')
+
 if ws.onboarded:
     main, rail = st.columns([4.6, 1], gap="large")
 else:
     main, rail = st.container(key="welcome_workspace"), None
 with main:
     if not ws.onboarded:
-        configured_services = {k: bool(settings.get(v["key"])) for k,v in PROVIDERS.items()}
+        configured_services = {k: provider_setup(k)[2] for k in PROVIDERS}
         selected_service = st.session_state.get("provider") or next((k for k in PROVIDERS if configured_services[k]), "gemini")
         render_welcome(selected_service, configured_services, zh, on_welcome_event)
-    with st.container(key="model_entry"):
-        with st.popover(t("Model settings", "模型设置"), icon=":material/tune:", key="model_settings", width="content"):
-            for service, credential in st.session_state.get("visitor_credentials", {}).items():
-                settings = session_settings(settings, service, credential["key"],
-                    settings.get(PROVIDERS[service]["setting"]) or PROVIDERS[service]["model"], credential["free"])
-            configured = [k for k, v in PROVIDERS.items() if settings.get(v["key"])]
-            default = configured[0] if configured else "gemini"
-            provider = st.selectbox(t("Model service", "模型服务"), list(PROVIDERS), index=list(PROVIDERS).index(default),
-                                    format_func=lambda k: PROVIDERS[k]["name"], key="provider", on_change=changed_service)
-            if provider == "openrouter":
-                fixed = "nvidia/nemotron-3-super-120b-a12b:free"
-                choices = [fixed, "openrouter/free"]
-                configured_model = settings.get("OPENROUTER_MODEL", "")
-                if configured_model and configured_model not in choices:
-                    choices.append(configured_model)
-                preferred = st.session_state.get("model_preferences", {}).get(provider, fixed)
-                selected_model = st.selectbox(t("Free model", "免费模型"), choices, index=choices.index(preferred) if preferred in choices else 0, key="free_model", on_change=remember_model, args=(provider,"free_model"),
-                    format_func=lambda m: t("Nemotron 3 Super · fixed", "Nemotron 3 Super · 固定模型") if m == fixed else
-                                          t("Free router · variable model", "免费路由 · 模型可能变化") if m == "openrouter/free" else m)
-                settings = dict(settings, OPENROUTER_MODEL=selected_model)
-            if provider != "openrouter":
-                models = list(GEMINI_MODELS) if provider == "gemini" else ["glm-4.7-flash"]
-                configured_model = st.session_state.get("model_preferences", {}).get(provider) or settings.get(PROVIDERS[provider]["setting"])
-                selected_model = st.selectbox(t("Model", "模型"), models,
-                    index=models.index(configured_model) if configured_model in models and (provider in st.session_state.get("model_preferences", {}) or not configured_model.startswith("gemini-2.5-")) else 0, key=f"model_{provider}_current", on_change=remember_model, args=(provider,f"model_{provider}_current"))
-                if provider == "gemini":
-                    st.caption(t("2.5 models are retained for existing eligible projects; new projects should start with Flash-Lite 3.5.", "2.5系列仅保留给已有访问资格的项目；新项目默认使用3.5 Flash-Lite。"))
-            with st.expander(t("Use your own API key", "使用自己的 API Key")):
-                visitor_key = st.text_input(t("Session API key", "本会话 API Key"), type="password", key=f"api_key_{provider}",
-                    value=st.session_state.get("visitor_credentials", {}).get(provider, {}).get("key", ""),
-                    on_change=remember_key, args=(provider,),
-                    help=t("Used only in this session. Leave empty to use the developer configuration.", "只用于当前会话；留空时使用开发者配置。"))
-                free_confirmed = False
-                if provider in {"gemini", "zhipu"}:
-                    free_confirmed = st.checkbox(t("My key is eligible for the selected free-tier model", "我的密钥具有所选模型的免费档资格"), key=f"free_confirm_{provider}",
-                        value=st.session_state.get("visitor_credentials", {}).get(provider, {}).get("free", False), on_change=remember_key, args=(provider,))
-                st.button(t("Clear session keys", "清除会话密钥"), key="clear_api_keys", on_click=forget_keys)
-                st.caption(t("Never paste a key into the scenario. Developer keys are never displayed.", "不要把密钥放进情境中。开发者密钥不会显示在页面上。"))
-            settings = session_settings(settings, provider, visitor_key, selected_model, free_confirmed)
-            st.caption(t("Key source: current session" if visitor_key else "Key source: developer configuration", "密钥来源：当前会话" if visitor_key else "密钥来源：开发者配置"))
-            signature = hashlib.sha256((provider + selected_model + settings.get(PROVIDERS[provider]["key"], "") + settings.get(provider.upper()+"_FREE_TIER_CONFIRMED", "")).encode()).hexdigest()
-            client = Client(provider, settings)
-            config_error = None
-            try:
-                _, model = client.validate()
-                if (st.session_state.get("connection_check") or {}).get("signature") == signature:
-                    st.success(t("Connection verified · inquiry test passed", "连接已验证 · 伦理追问测试通过"))
-                else:
-                    st.info(t("Configured · ready to test", "已配置 · 待实际调用验证"))
-                st.caption(model)
-            except ProviderError as error:
-                config_error = str(error)
-                st.info(t("Connection setup needed", "需要配置模型连接"))
-                st.caption(config_error)
-            if provider == "gemini":
-                st.caption(t("Connection tests first read the model list, then send one fictional inquiry.", "连接测试先读取可用模型列表，再发送一次虚构伦理追问。"))
-                if st.button(t("Check available models", "检查可用模型"), key="check_models", disabled=bool(config_error)):
-                    try:
-                        names = Client(provider, settings, budget=take_budget).available_models()
-                        st.session_state.gemini_available = {"signature": signature, "names": names}
-                    except ProviderError as error:
-                        st.error(str(error))
-                available = st.session_state.get("gemini_available", {})
-                if available.get("signature") == signature:
-                    st.caption(t("Available approved models: ", "当前密钥可访问的已核准模型：") + (", ".join(available['names']) or t("None; check account and endpoint eligibility.", "暂无，请检查账号及接口资格。")))
-            else:
-                st.caption(t("Test sends one fictional inquiry and uses API quota.", "测试会发送一段虚构伦理情境，消耗一次 API 额度。"))
-            if st.button(t("Test Connection", "测试连接"), key="test_connection", disabled=bool(config_error), use_container_width=True):
+    model_bar = st.container(key="model_entry")
+    with st.container(key="model_setup_region"):
+        with st.expander(t("Connection settings", "连接设置"), expanded=False, icon=":material/tune:", key="model_panel", on_change="rerun"):
+            controls, diagnostics = st.columns([1.15,1], gap="large")
+            with controls:
+                for service, credential in st.session_state.get("visitor_credentials", {}).items():
+                    settings = session_settings(settings, service, credential["key"],
+                        settings.get(PROVIDERS[service]["setting"]) or PROVIDERS[service]["model"], credential["free"])
+                configured = [k for k, v in PROVIDERS.items() if settings.get(v["key"])]
+                default = configured[0] if configured else "gemini"
+                provider = st.selectbox(t("Model service", "模型服务"), list(PROVIDERS), index=list(PROVIDERS).index(default),
+                                        format_func=lambda k: PROVIDERS[k]["name"], key="provider", on_change=changed_service)
+                if provider == "openrouter":
+                    fixed = "nvidia/nemotron-3-super-120b-a12b:free"
+                    choices = [fixed, "openrouter/free"]
+                    configured_model = settings.get("OPENROUTER_MODEL", "")
+                    if configured_model and configured_model not in choices:
+                        choices.append(configured_model)
+                    preferred = st.session_state.get("model_preferences", {}).get(provider, fixed)
+                    selected_model = st.selectbox(t("Free model", "免费模型"), choices, index=choices.index(preferred) if preferred in choices else 0, key="free_model", on_change=remember_model, args=(provider,"free_model"),
+                        format_func=lambda m: t("Nemotron 3 Super · fixed", "Nemotron 3 Super · 固定模型") if m == fixed else
+                                              t("Free router · variable model", "免费路由 · 模型可能变化") if m == "openrouter/free" else m)
+                    settings = dict(settings, OPENROUTER_MODEL=selected_model)
+                if provider != "openrouter":
+                    models = list(GEMINI_MODELS) if provider == "gemini" else ["glm-4.7-flash"]
+                    configured_model = st.session_state.get("model_preferences", {}).get(provider) or settings.get(PROVIDERS[provider]["setting"])
+                    selected_model = st.selectbox(t("Model", "模型"), models,
+                        index=models.index(configured_model) if configured_model in models and (provider in st.session_state.get("model_preferences", {}) or not configured_model.startswith("gemini-2.5-")) else 0, key=f"model_{provider}_current", on_change=remember_model, args=(provider,f"model_{provider}_current"))
+                    if provider == "gemini":
+                        st.caption(t("2.5 models are retained for existing eligible projects; new projects should start with Flash-Lite 3.5.", "2.5系列仅保留给已有访问资格的项目；新项目默认使用3.5 Flash-Lite。"))
+                with st.expander(t("Use your own API key", "使用自己的 API Key")):
+                    visitor_key = st.text_input(t("Session API key", "本会话 API Key"), type="password", key=f"api_key_{provider}",
+                        value=st.session_state.get("visitor_credentials", {}).get(provider, {}).get("key", ""),
+                        on_change=remember_key, args=(provider,),
+                        help=t("Used only in this session. Leave empty to use the developer configuration.", "只用于当前会话；留空时使用开发者配置。"))
+                    free_confirmed = False
+                    if provider in {"gemini", "zhipu"}:
+                        free_confirmed = st.checkbox(t("My key is eligible for the selected free-tier model", "我的密钥具有所选模型的免费档资格"), key=f"free_confirm_{provider}",
+                            value=st.session_state.get("visitor_credentials", {}).get(provider, {}).get("free", False), on_change=remember_key, args=(provider,))
+                    st.button(t("Clear session keys", "清除会话密钥"), key="clear_api_keys", on_click=forget_keys)
+                    st.caption(t("Never paste a key into the scenario. Developer keys are never displayed.", "不要把密钥放进情境中。开发者密钥不会显示在页面上。"))
+                settings = session_settings(settings, provider, visitor_key, selected_model, free_confirmed)
+            with diagnostics:
+                st.caption(t("Key source: current session" if visitor_key else "Key source: developer configuration", "密钥来源：当前会话" if visitor_key else "密钥来源：开发者配置"))
+                signature = model_signature(provider, selected_model, settings)
+                client = Client(provider, settings)
+                config_error = None
                 try:
-                    probe = Session()
-                    with st.spinner(t("Testing the inquiry workflow…", "正在测试伦理追问流程……")):
-                        if provider == "gemini":
+                    _, model = client.validate()
+                    if (st.session_state.get("connection_check") or {}).get("signature") == signature:
+                        st.success(t("Connection verified · inquiry test passed", "连接已验证 · 伦理追问测试通过"))
+                    else:
+                        st.info(t("Configured · ready to test", "已配置 · 待实际调用验证"))
+                    st.caption(model)
+                except ProviderError as error:
+                    config_error = str(error)
+                    st.info(t("Connection setup needed", "需要配置模型连接"))
+                    st.caption(config_error)
+                if provider == "gemini":
+                    st.caption(t("Connection tests first read the model list, then send one fictional inquiry.", "连接测试先读取可用模型列表，再发送一次虚构伦理追问。"))
+                    if st.button(t("Check available models", "检查可用模型"), key="check_models", disabled=bool(config_error)):
+                        try:
                             names = Client(provider, settings, budget=take_budget).available_models()
                             st.session_state.gemini_available = {"signature": signature, "names": names}
-                            if selected_model not in names:
-                                raise ProviderError("Selected model not available to this key / 当前密钥无法访问所选模型。可用：" + (", ".join(names) or "none / 暂无"), "model_unavailable")
-                        probe.submit("Fictional scenario: I am an audit senior. My manager asks me to accept an estimate supported only by management's claim. I do not know what independent evidence exists.",
-                                     Client(provider, settings, budget=take_budget), language)
-                    st.session_state.connection_check = {"signature": signature, "model": probe.records[-1]["model"]}
-                    confirm_model(signature)
-                    save_workspace()
-                    st.rerun()
-                except (ProviderError, ModelOutputError, InputError) as error:
-                    st.session_state.connection_check = None
-                    st.error(str(error))
-            secondary = None
-            alternatives = [k for k in configured if k != provider]
-            if alternatives:
-                use_fallback = st.checkbox(t("Allow one free-provider fallback", "允许切换到一个免费备用服务"), value=False,key="allow_fallback",on_change=changed_service)
-                if use_fallback:
-                    secondary = st.selectbox(t("Fallback service", "备用服务"), alternatives, format_func=lambda k: PROVIDERS[k]["name"],key="fallback_provider",on_change=changed_service)
-                    st.caption(t("On network/quota failure, the same conversation is sent to this service. No paid fallback.",
-                                 "连接或额度失败时，同一对话将发送至该服务，不会切换到付费模型。"))
+                        except ProviderError as error:
+                            st.error(str(error))
+                    available = st.session_state.get("gemini_available", {})
+                    if available.get("signature") == signature:
+                        st.caption(t("Available approved models: ", "当前密钥可访问的已核准模型：") + (", ".join(available['names']) or t("None; check account and endpoint eligibility.", "暂无，请检查账号及接口资格。")))
+                else:
+                    st.caption(t("Test sends one fictional inquiry and uses API quota.", "测试会发送一段虚构伦理情境，消耗一次 API 额度。"))
+                if st.button(t("Test Connection", "测试连接"), key="test_connection", disabled=bool(config_error), use_container_width=True):
+                    try:
+                        probe = Session()
+                        with st.spinner(t("Testing the inquiry workflow…", "正在测试伦理追问流程……")):
+                            if provider == "gemini":
+                                names = Client(provider, settings, budget=take_budget).available_models()
+                                st.session_state.gemini_available = {"signature": signature, "names": names}
+                                if selected_model not in names:
+                                    raise ProviderError("Selected model not available to this key / 当前密钥无法访问所选模型。可用：" + (", ".join(names) or "none / 暂无"), "model_unavailable")
+                            probe.submit("Fictional scenario: I am an audit senior. My manager asks me to accept an estimate supported only by management's claim. I do not know what independent evidence exists.",
+                                         Client(provider, settings, budget=take_budget), language)
+                        st.session_state.connection_check = {"signature": signature, "model": probe.records[-1]["model"]}
+                        confirm_model(signature)
+                        save_workspace()
+                        st.rerun()
+                    except (ProviderError, ModelOutputError, InputError) as error:
+                        st.session_state.connection_check = None
+                        st.error(str(error))
+                secondary = None
+                alternatives = [k for k in configured if k != provider]
+                if alternatives:
+                    use_fallback = st.checkbox(t("Allow one free-provider fallback", "允许切换到一个免费备用服务"), value=False,key="allow_fallback",on_change=changed_service)
+                    if use_fallback:
+                        secondary = st.selectbox(t("Fallback service", "备用服务"), alternatives, format_func=lambda k: PROVIDERS[k]["name"],key="fallback_provider",on_change=changed_service)
+                        st.caption(t("On network/quota failure, the same conversation is sent to this service. No paid fallback.",
+                                     "连接或额度失败时，同一对话将发送至该服务，不会切换到付费模型。"))
 
+    with model_bar:
+        st.button(t("Model settings", "模型设置"), key="open_model_settings", icon=":material/tune:", on_click=open_model_settings)
         model_ready = not config_error and ws.confirmed_model == signature
         model_name = PROVIDERS[provider]["name"].split(" · ")[0]
-        if not model_ready and not config_error:
+        if not model_ready and not config_error and (ws.onboarded or st.session_state.model_panel):
             st.button(t(f"Use {model_name}", f"使用 {model_name}"), key="confirm_model", type="primary",
                       on_click=confirm_model, args=(signature,))
         badge = t("Connection verified", "连接已验证") if (st.session_state.get("connection_check") or {}).get("signature") == signature else t("Configured", "已配置")
-        st.caption(t("Choose a service to begin.", "选择模型服务开始。") if config_error else f"{model_name} · {selected_model} · {badge}")
+        st.html('<span class="model-summary">' + escape(t("Choose a service to begin.", "选择模型服务开始。") if config_error else f"{model_name} · {selected_model} · {badge}") + '</span>')
         if config_error:
             st.caption(t("Open Model settings to configure a connection.", "打开模型设置，配置连接。"))
         if ws.onboarded:
@@ -526,7 +573,7 @@ if sent or regenerate:
                     else:
                         ws.submit(ws.pending_text if ws.phase=="select" else ws.draft,live,language,progress=progress)
                     if first_reply:
-                        transition("conversation", t("Your inquiry", "你的探究"))
+                        transition("conversation", next((e["zh" if zh else "en"].split(" · ")[-1] for e in EXAMPLES if e["id"] == ws.case_id), t("Your situation", "自定义情境")))
             record = ws.conversation.records[-1]
             if record['provider'] == provider and not record.get('fallback_from'):
                 st.session_state.connection_check = {'signature': signature, 'model': record['model']}

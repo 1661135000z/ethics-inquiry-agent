@@ -12,7 +12,7 @@ export default function(component) {
     return element;
   };
   let ui = root._palette;
-  if (!ui || ui.disposed) {
+  if (!ui || ui.disposed || !ui.launcher.isConnected) {
     document[registryKey]?.dispose();
     const launcher = make('button', 'palette-launcher');
     launcher.type = 'button';

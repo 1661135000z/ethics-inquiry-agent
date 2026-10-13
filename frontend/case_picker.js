@@ -8,7 +8,7 @@ export default function(component) {
   if (!cases.some(item => item.id === state.id)) state.id = null;
   const make = (tag, cls, text) => { const el=document.createElement(tag); el.className=cls; if(text !== undefined) el.textContent=text; return el; };
   // Reuse nodes across unrelated reruns so hover and keyboard focus remain stable.
-  if (!root._ui || root._ui.signature !== JSON.stringify(cases)) {
+  if (!root._ui || root._ui.signature !== JSON.stringify(cases) || !root.querySelector('.case-row')) {
     const row=make('div','case-row'), detail=make('section','case-details');
     detail.setAttribute('aria-label','Scenario preview');
     const heading=make('h3','detail-heading'), body=make('p','detail-body'), source=make('p','detail-source');
@@ -48,8 +48,10 @@ export default function(component) {
     const focused=parentElement.activeElement || document.activeElement;
     const active=ui.slots.find(entry => entry.item.id===state.id); const inUnion=active?.slot.matches(':hover') || ui.detail.matches(':hover'); const keyboardFocus=Boolean(focused && root.contains(focused) && focused.matches(':focus-visible')); if (!keyboardFocus && !inUnion) close();
   },120); };
+  const canHover=e=>e.pointerType!=='touch' && window.matchMedia('(hover: hover) and (min-width: 651px)').matches && !document.querySelector('[data-inquire-transition]') && performance.now()>=(document[Symbol.for('inquire.publicMotion')]?.hoverAfter||0);
   ui.slots.forEach(({slot,choose,preview,item}) => {
-    slot.onpointerenter=e => {if(e.pointerType!=='touch' && window.matchMedia('(hover: hover) and (min-width: 651px)').matches) open(item.id);};
+    slot.onpointerenter=e => {if(canHover(e))open(item.id);};
+    slot.onpointermove=e => {if(canHover(e)&&state.id!==item.id)open(item.id);};
     slot.onpointerleave=later;
     choose.onfocus=() => open(item.id); choose.onblur=later;
     choose.onclick=() => {

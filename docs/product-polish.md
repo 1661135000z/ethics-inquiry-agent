@@ -11,3 +11,7 @@ The composer is a unified surface with an editable draft, visible sharing consen
 The review packet is a self-contained HTML document: initial situation, current question, literal user statements with source turns, full transcript and recorded model provenance. It is printable, bilingual and free of scripts, remote assets, keys or automated ethical conclusions. Unknown information is explicitly unknown. Download does not use API quota.
 
 Verification covers state continuity, action allowlists, safe report output, fixed-provider interfaces and source packaging; visual checks cover welcome, workspace, notebook, keyboard palette and mobile touch preview. Public files remain anonymous and contain no original teaching materials.
+
+## Appearance and entry-flow revision
+
+Light/dark appearance is a public preference with local browser persistence. All interactive surfaces share tokens. Configured cards confirm a model and enter directly without a request; incomplete setup opens an inline panel. A document-scoped motion portal crosses the backend redraw and hands a public provider/case label into the actual header. Navigation replay guards survive component remounts; Skip and reduced motion are functional. Cached frontend nodes are rebuilt if a host update replaces their markup. No credentials or input values are read by this motion layer.

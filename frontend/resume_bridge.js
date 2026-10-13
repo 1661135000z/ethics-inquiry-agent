@@ -1,4 +1,6 @@
 export default function(component) {
+  // Restore only a public appearance preference before the workbench mounts.
+  try{const mode=localStorage.getItem('inquire.appearance');if(mode==='light'||mode==='dark')document.documentElement.dataset.inquireTheme=mode;}catch{}
   const {parentElement, data, setTriggerValue} = component;
   const root = parentElement.querySelector('.resume-bridge');
   const storageKey = 'inquire.tab.resume.v1';

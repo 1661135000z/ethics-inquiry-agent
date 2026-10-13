@@ -50,7 +50,7 @@ Set each confirmation flag to `"true"` only after checking that account's free-t
 | Service | Default | Setup / limits |
 |---|---|---|
 | Google Gemini | `gemini-3.5-flash-lite` | Eligible free-tier project; set `GEMINI_FREE_TIER_CONFIRMED = "true"` only after checking the account. Regional restrictions apply. |
-| OpenRouter | `openrouter/free` | The sidebar defaults to the tested `nvidia/nemotron-3-super-120b-a12b:free` model. Select `openrouter/free` for variable routing, or configure another `vendor/model:free` ID. Actual model is recorded. |
+| OpenRouter | `openrouter/free` | Model settings defaults to the tested `nvidia/nemotron-3-super-120b-a12b:free` model. Select `openrouter/free` for variable routing, or configure another `vendor/model:free` ID. Actual model is recorded. |
 | 智谱 GLM | `glm-4.7-flash` | Domestic alternative. Confirm current free eligibility, then set `ZHIPU_FREE_TIER_CONFIRMED = "true"`. |
 
 Only these Gemini/GLM models and OpenRouter free routes are allowed. No paid-model fallback, automatic retry loop, training, or server purchase is needed. **Zero cost cannot be guaranteed by code:** provider terms, account billing, quotas and availability can change. Do not enable paid billing to bypass a limit. Free services may process data for product improvement; use fictional or anonymized scenarios only.
@@ -81,9 +81,9 @@ A Gemini HTTP 404 can indicate unavailable model/resource; the connection test c
 
 ## Progressive welcome and compact workbench
 
-First visit shows only an immersive provider selection and setup area. Gemini and GLM cards select the provider and open configuration; OpenRouter remains an optional alternative. Confirming a configured model unlocks the workbench through a skippable 1.05-second local card-to-status transition. The welcome never repeats on ordinary reruns or starting another inquiry.
+First visit shows an immersive provider selection. Click a configured Gemini, GLM or optional OpenRouter card to enter the workbench directly, without a model request. A card that needs setup expands an inline connection panel instead. The selected model gathers at the center, then morphs into the model status while the real situation workspace is revealed. A shared browser portal keeps this sequence continuous across Python reruns; it is skippable, respects reduced motion and has a bounded cleanup timeout. Ordinary interactions do not replay it.
 
-The main-page **Model settings** panel contains the service, model, visitor key and connection test. On first visit, confirm **Use Gemini / GLM / OpenRouter** to continue with configured developer keys. This confirmation sends no API request. A successful connection test also confirms the current configuration; changing service, model or key invalidates confirmation. Sidebar contains language and scope information.
+The main-page **Model settings** button expands a compact inline panel containing service, model, visitor key and connection test. It does not open a floating popup. After changing configuration, **Use Gemini / GLM / OpenRouter** confirms it without an API request. Opening and closing the panel preserves inquiry data. A successful connection test also confirms the current configuration; changing service, model or key invalidates confirmation. Sidebar contains language and scope information.
 
 A 260px interactive right-hand journey tracks **Choose model → Choose situation → Start conversation**. It is driven by confirmed configuration, selected/typed situation and valid conversation responses. It stays in progress during inquiry; a single answer does not certify completion. On narrow screens, the journey becomes an in-flow horizontal strip. Clicking a step focuses its region; returning to situations preserves the current conversation.
 
@@ -101,6 +101,14 @@ After several messages, the transcript uses a bounded scroll area with native au
 Refresh recovery uses an opaque capability in tab `sessionStorage`, with inquiry snapshots in a bounded server-memory cache (two-hour inactivity timeout, at most 128 workspaces). The snapshot contains inquiry data, public provider/model/language preferences and request count; **no API keys, consent or connection signature**. A recovered workbench requires model confirmation again; visitor keys must be re-entered. No inquiry text is stored in the browser, on disk or in a URL. Process restarts, expiry and capacity eviction can erase recovery; download is the durable backup. Closing the tab ends access to its token.
 
 Animations are original local CSS/Web Animations inspired by Hairline, GSAP timeline sequencing, Motion, Anime.js and AutoAnimate; no React, Node build, external scripts or background animation is required. `prefers-reduced-motion` removes motion. Component focus and local preview state survive unrelated reruns. See [notices](THIRD_PARTY_NOTICES.md).
+
+## Light and dark appearance
+
+The sun/moon controls in the product header switch the complete interface, including native fields, example folders, notebook, keyboard palette and journey. The first visit follows the system preference unless an explicit choice has already been saved. Only the literal `light`/`dark` preference is stored in browser local storage; no credentials or conversation data are stored there. Theme switching preserves the current model, conversation and unsent draft and does not call a model. Refresh recovery also retains the public preference. Browser storage restrictions fall back to current-session behavior.
+
+The transition uses local SVG and Web Animations: a 460ms gathering phase followed by a 720ms morph/reveal, starting the second phase only when the actual destination exists. Slow backend redraws can extend the handoff; a four-second bound prevents a stuck overlay. Skip or Escape remains effective even when pressed before Python completes the handoff. Reduced motion removes the sequence. Completed navigation and transition events are kept at document scope so component remounts cannot replay them.
+
+中文：右上角太阳／月亮按钮切换明暗模式；浏览器只保存外观偏好，不保存密钥或对话。模型已配置时点击卡片即可继续；需要配置时展开页面内设置，不再反复弹窗。转场可跳过，切换主题不会清空草稿。
 
 ## Navigation and human-review tools
 

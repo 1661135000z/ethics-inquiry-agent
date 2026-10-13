@@ -24,6 +24,7 @@ class Workspace:
     view: str = 'conversation'
     saved_view: str = 'conversation'
     note_filter: str = 'all'
+    theme: str = ''
 
     def confirm_model(self, signature):
         self.confirmed_model = signature

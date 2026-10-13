@@ -5,7 +5,7 @@ export default function(component) {
   const make=(tag,cls,text) => {const el=document.createElement(tag);el.className=cls;if(text!==undefined)el.textContent=text;return el;};
   // Copy and status updates keep the same nodes, preserving focus and true progress motion.
   const signature=JSON.stringify(steps.map(step => step.id));
-  if(!root._ui || root._ui.signature!==signature) {
+  if(!root._ui || root._ui.signature!==signature || !root.querySelector('.journey-list')) {
     const list=make('ol','journey-list'); list.setAttribute('aria-label','Inquiry progress');
     const rows=steps.map((step,i) => {
       const row=make('li','journey-step'),button=make('button','journey-button'),marker=make('span','journey-marker',String(i+1)),copy=make('span','journey-copy');

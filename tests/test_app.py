@@ -47,7 +47,10 @@ class AppTests(unittest.TestCase):
         self.assertFalse(at.exception)
         return at
     def confirm(self,at):
-        at.button(key='confirm_model').click().run()
+        if 'confirm_model' in [button.key for button in at.button]:
+            at.button(key='confirm_model').click().run()
+        else:
+            at.button(key='welcome_'+at.session_state['provider']).click().run()
     def first_turn(self,at,text='I face pressure over an audit estimate.'):
         self.confirm(at)
         at.text_area(key='draft').input(text).run()

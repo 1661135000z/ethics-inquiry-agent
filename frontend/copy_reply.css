@@ -1,5 +1,5 @@
 :host {display:block;width:100%;}
 .copy-reply {display:flex;justify-content:flex-end;}
-.copy-button {font:inherit;font-size:11px;color:var(--inquire-accent,#6857c8);padding:4px 8px;border:1px solid #e2dced;border-radius:6px;background:transparent;cursor:pointer;}
-.copy-button:hover {background:#f3effa;}
+.copy-button {font:inherit;font-size:11px;color:var(--inquire-accent,#6857c8);padding:4px 8px;border:1px solid var(--inquire-line,#e2dced);border-radius:6px;background:transparent;cursor:pointer;}
+.copy-button:hover {background:var(--inquire-soft,#f3effa);}
 .copy-button:focus-visible {outline:2px solid #6857c8;outline-offset:2px;}

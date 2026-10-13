@@ -1,5 +1,6 @@
 """Compact, local product styling. No external fonts, user HTML or keys."""
 from html import escape
+from pathlib import Path
 
 STYLE = '''<style>
 :root{--ink:#292934;--muted:#858490;--line:#e9e8ee;--accent:#6857c8;--ease:cubic-bezier(.22,1,.36,1)}
@@ -76,6 +77,10 @@ h1,h2,h3{letter-spacing:-.025em;color:var(--ink);font-weight:600!important}h1{fo
 
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 </style>'''
+
+def appearance_styles():
+    # Read local tokens on every render so appearance updates do not need a reload.
+    return STYLE.replace("</style>", (Path(__file__).resolve().parents[1] / "frontend/theme_tokens.css").read_text() + "</style>")
 
 def relay_html(stage='idle', zh=False, failed=False):
     names=['输入检查','模型追问','输出校验','保存结果'] if zh else ['Check input','Ask model','Validate output','Save result']

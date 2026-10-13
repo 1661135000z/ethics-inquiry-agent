@@ -1,3 +1,11 @@
+# Appearance and entry-flow revision checks
+
+2026-10-13: 98 automated tests pass. New regressions exercise configured-card direct entry, incomplete-card inline setup, confirmation closing setup, retained appearance through reset, document-scoped navigation replay protection, early Skip across backend handoff, reduced motion, theme event deduplication and host-replaced node rebuilding. Existing inquiry, provider, consent, recovery and export tests remain intact.
+
+Actual local browser checks at 1366×768 and 390×844 verified light/dark appearance, visible model-card gathering and handoff, inline settings opening/closing, and disappearance of all transition overlays after completion. A labelled local fixture completed an inquiry; changing theme preserved the conversation and unsent answer. Refresh retained both and the selected light appearance while requiring model reconfirmation and new consent. Mobile preview kept the render sequence unchanged and page width at 390px. Native control contrast issues discovered during testing were corrected. Automated reduced-motion and early-Skip contracts were executed; the OS setting itself was not changed manually. No live provider calls were made for this UI revision. Earlier live observations below are historical.
+
+---
+
 # Product polish release checks
 
 2026-10-13: 90 automated tests pass. New coverage checks keyboard-command allowlists and lifecycle, model-free navigation, draft/tab continuity, notebook quote provenance, reset behavior, HTML escaping, report prerequisites, offline resource restrictions and valid report styles. Existing core, provider, consent and recovery checks remain included.
