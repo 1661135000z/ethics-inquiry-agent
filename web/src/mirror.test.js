@@ -3,6 +3,14 @@ import proxy from '../../edge-functions/api/[[default]].js';
 const host='https://mirror.example';
 afterEach(()=>vi.unstubAllGlobals());
 describe('fixed upstream mirror',()=>{
+ it('accepts ArrayBuffer chunks from the edge runtime without corrupting JSON',async()=>{
+  const bytes=new TextEncoder().encode('{"text":"虚构情境"}');
+  let forwarded;
+  vi.stubGlobal('fetch',async request=>{forwarded=await request.json();return new Response('{}')});
+  const request={url:host+'/api/session',method:'POST',headers:new Headers({Origin:host}),body:new ReadableStream({start(controller){controller.enqueue(bytes.buffer);controller.close()}})};
+  const response=await proxy({request});
+  expect(response.status).toBe(200);expect(forwarded).toEqual({text:'虚构情境'});
+ });
  it('preserves streaming response and host-local session cookie',async()=>{
   let received;
   vi.stubGlobal('fetch',async request=>{received=request;return new Response('event: stage\ndata: {"stage":"request"}\n\n',{headers:{'Content-Type':'text/event-stream','Set-Cookie':'inquire_session=opaque; HttpOnly; Secure; SameSite=Strict; Path=/api'}})});

@@ -11,7 +11,7 @@ export default async function onRequest({request}){
   let sameOrigin=false;try{sameOrigin=new URL(request.headers.get('origin')).origin===url.origin}catch{}
   if(!sameOrigin)return error(403,'请求来源不允许。');
   const reader=request.body?.getReader(),chunks=[];let size=0;
-  try{if(reader)while(true){const part=await reader.read();if(part.done)break;size+=part.value.byteLength;if(size>20000){await reader.cancel();return error(413,'请求过长。')}chunks.push(part.value)}}finally{reader?.releaseLock()}
+  try{if(reader)while(true){const part=await reader.read();if(part.done)break;const chunk=part.value instanceof ArrayBuffer?new Uint8Array(part.value):new Uint8Array(part.value.buffer,part.value.byteOffset,part.value.byteLength);size+=chunk.byteLength;if(size>20000){await reader.cancel();return error(413,'请求过长。')}chunks.push(chunk)}}finally{reader?.releaseLock()}
   body=new Uint8Array(size);let offset=0;for(const chunk of chunks){body.set(chunk,offset);offset+=chunk.length}
  }
  const headers=new Headers({'Accept':request.headers.get('accept')||'application/json'});
