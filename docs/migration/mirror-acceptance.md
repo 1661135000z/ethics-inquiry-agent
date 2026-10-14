@@ -15,11 +15,19 @@ Alternative: https://app.inquire-ethics.dynv6.net/
 - Browser scenario switch retained the accepted conversation; cancellation restored the previous unsent draft. New conversation cleared accepted messages and consent while retaining initial fictional situation, selected model and request count.
 - 21 Python API tests, 21 frontend/proxy/localization tests and TypeScript type checking passed.
 
-## External blockers / not passed
+## Earlier provider limitations
 
-- A subsequent GLM request returned provider HTTP 429. The owner identifies current GLM server capacity as the cause. No quota-exhaustion diagnosis is asserted and no paid fallback is enabled.
+- A subsequent GLM request returned provider HTTP 429. The owner identifies current GLM server capacity as the cause. No quota-exhaustion diagnosis is asserted. The original free-only release had no paid fallback; the subsequent developer-funded backup is described below.
 - Live Gemini inquiry through the custom mirror returned the provider's unsupported-source-region HTTP 400 classification. It did not commit an empty or invalid answer. No region bypass was introduced.
-- Sustained multi-turn mainland dialogue is therefore not yet accepted, despite working page/API transport. Repeat live acceptance after provider capacity recovers or after a separately configured eligible domestic provider is added.
+- The original free-only release did not pass sustained multi-turn dialogue under these provider conditions. A subsequent real backup acceptance passed through the mirror; a mainland no-VPN user transcript test is still distinct from the owner's earlier page-access confirmation.
 - English interface checks covered welcome, configuration, error rendering, live language switching, execution stages, statement headings, empty states and review. This browser check used an explicitly marked local fixture, not a live model. User quotations were preserved without translation.
 - Automated duplicate GLM testing was stopped after approval review rejected unnecessary repeated requests under the observed capacity limitation.
+
+## Live DeepSeek backup acceptance — 2026-10-14
+
+The developer privately configured `DEEPSEEK_API_KEY` in Cloudflare Secrets. The public configuration reported backup availability without exposing its value. A GLM connection test briefly recovered; an actual fictional inquiry then returned the recognized server-capacity error (HTTP 429) and granted session-bound backup eligibility.
+
+Two intentional DeepSeek requests through https://app.inquire-ethics.dynv6.net/ returned contextual questions and passed the existing question/quotation validation. Both streamed real input/request/validate/commit stages and committed model provenance as DeepSeek. Restoring the session reproduced the accepted transcript. Markdown export included the fictional user text and provider provenance; the two-turn human-review packet returned successfully.
+
+Only two DeepSeek calls were made. No automatic retry, top-up, key inspection or provider-region bypass was used. This verifies the live backend/relay workflow; the fee amount was not retrieved or estimated. The current automated suite contains 30 Python API tests and 23 frontend/state/proxy/localization tests, including 15-turn recovery and backup request limits.
 
