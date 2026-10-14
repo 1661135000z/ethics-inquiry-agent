@@ -2,6 +2,8 @@
 
 [**Live Demo — React experience**](https://inquire-experience.inquire-ethics-lab.workers.dev/)
 
+[**Alternative online mirror — same React experience**](https://app.inquire-ethics.dynv6.net/) · Mainland page access user-tested; model availability depends on provider capacity.
+
 A bilingual AI product for exploring objectivity through contextual follow-up questions. Describe your own situation or adapt a fictional example. The agent preserves uncertainty and exact user quotations; professional judgment remains with the human reviewer.
 
 Built with **React, Vite, TypeScript and GSAP**, backed by a portable **Python inquiry engine**, **Cloudflare Workers** and transactional **D1** storage. Google Gemini and domestic Zhipu GLM can be switched manually. Fonts and animation assets are bundled locally.
@@ -18,7 +20,7 @@ Built with **React, Vite, TypeScript and GSAP**, backed by a portable **Python i
 
 [Run, configure and deploy](https://github.com/1661135000z/ethics-inquiry-agent/blob/feat/react-experience/docs/react-experience.md) · [Mirror implementation plan](https://github.com/1661135000z/ethics-inquiry-agent/blob/feat/react-experience/docs/migration/mirror-plan.md)
 
-The demo hostname may be unreachable on some mainland networks. A same-interface mirror is being prepared; no untested URL is presented as available. Free compute and provider quotas still apply. Execution-stage SSE is supported; unvalidated raw token output is not displayed.
+The primary demo hostname may be unreachable on some mainland networks. The alternative uses EdgeOne's confirmed Free plan, a free dynv6 hostname and free HTTPS, with same-origin API forwarding to the existing Python backend. It is not a redirect; fonts and animation assets are served from the mirror. Mainland page loading was confirmed by the owner without a VPN; their GLM inquiry returned provider HTTP 429, so sustained mainland dialogue has not yet passed acceptance. Free compute and provider quotas still apply. Execution-stage SSE is supported; unvalidated raw token output is not displayed.
 
 ## Legacy Streamlit source
 
