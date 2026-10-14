@@ -8,6 +8,11 @@ class MemoryStore:
         self.items = {}
         self.hour = []
         self.day = []
+        self.paid_day=[]
+
+    async def grant_backup(self, token):
+        await self.get(token)
+        self.items[token]['snapshot']['backup_until']=time.time()+1800
 
     async def create(self, token, snapshot):
         now=time.time()
@@ -30,11 +35,18 @@ class MemoryStore:
             raise APIError('duplicate','请求已尝试或仍在处理中，请恢复会话后再试。',409)
         if item['busy'] or version!=item['snapshot']['version']: raise APIError('conflict','会话已更新，请恢复后继续。',409)
         now=time.time()
+        if fingerprint.startswith('paid:'):
+            self.paid_day=[t for t in self.paid_day if t>now-86400]
+            if item['snapshot'].get('backup_until',0)<=now:
+                raise APIError('backup_gate','请先在GLM失败后选择备用模型。',403)
+            if sum(r['fingerprint'].startswith('paid:') for r in item['requests'].values())>=15 or len(self.paid_day)>=60:
+                raise APIError('backup_limit','备用模型请求额度已达到限制，请返回GLM或稍后再试。',429)
         self.hour=[t for t in self.hour if t>now-3600]
         self.day=[t for t in self.day if t>now-86400]
         if item['snapshot']['attempts']>=24 or len(self.hour)>=40 or len(self.day)>=150:
             raise APIError('limit','已达到请求限制，请稍后继续。',429)
         self.hour.append(now); self.day.append(now)
+        if fingerprint.startswith('paid:'):self.paid_day.append(now)
         item['busy']=True
         item['snapshot']['attempts']+=1
         item['requests'][request_id]={'fingerprint':fingerprint}

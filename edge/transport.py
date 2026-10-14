@@ -13,9 +13,9 @@ def request_payload(provider, model, key, messages):
         if model.startswith('gemini-2.5-'): payload['generationConfig']['thinkingConfig']={'thinkingBudget':0}
     else:
         headers['Authorization']='Bearer '+key
-        url='https://open.bigmodel.cn/api/paas/v4/chat/completions' if provider=='zhipu' else 'https://openrouter.ai/api/v1/chat/completions'
+        url={'zhipu':'https://open.bigmodel.cn/api/paas/v4/chat/completions','deepseek':'https://api.deepseek.com/chat/completions','openrouter':'https://openrouter.ai/api/v1/chat/completions'}[provider]
         payload={'model':model,'messages':messages,'temperature':0.3,'max_tokens':1600,'stream':False,'response_format':{'type':'json_object'}}
-        if provider=='zhipu': payload['thinking']={'type':'disabled'}
+        if provider in {'zhipu','deepseek'}: payload['thinking']={'type':'disabled'}
         else:
             payload['reasoning']={'enabled':False}
             payload['provider']={'require_parameters':True}
@@ -23,6 +23,19 @@ def request_payload(provider, model, key, messages):
 
 def parse_response(provider, model, status, data):
     if status!=200:
+        if provider=='zhipu' and status==429:
+            error=data.get('error',{}) if isinstance(data,dict) else {}
+            error=error if isinstance(error,dict) else {}
+            vendor_code=str(error.get('code',''));detail=str(error.get('message',''))[:8192]
+            if vendor_code=='1312' or '访问量过大' in detail or '服务器拥挤' in detail:
+                code,message='glm_capacity','GLM服务器当前拥挤，通常等待片刻再试即可恢复。原对话和输入已保留，也可以选择备用模型。'
+            elif vendor_code in {'1302','1303'}:
+                code,message='glm_rate_limit','GLM当前请求过于集中或并发受限。请等待片刻再试，也可以选择备用模型；这不表示余额不足。'
+            else:
+                code,message='glm_busy','GLM当前繁忙或限流。请等待片刻再试，也可以选择备用模型；不能仅凭429认定额度用完。'
+            raise APIError(code,message+'（HTTP 429）',502)
+        if provider=='deepseek' and status==402:
+            raise APIError('backup_balance','备用模型余额不足，请返回GLM或联系管理员。',502)
         if provider=='gemini' and status==400:
             error=data.get('error',{}) if isinstance(data,dict) else {}
             error=error if isinstance(error,dict) else {}

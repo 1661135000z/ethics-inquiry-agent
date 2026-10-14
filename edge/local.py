@@ -46,7 +46,7 @@ def create_app(service=None):
         return response
 
     @app.exception_handler(APIError)
-    async def api_error(request,error): return JSONResponse({'error':{'code':error.code,'message':error.message}},status_code=error.status)
+    async def api_error(request,error): return JSONResponse({'error':error.public()},status_code=error.status)
 
     @app.get('/api/health')
     async def health(): return {'ok':True,'runtime':'native-python'}
@@ -76,11 +76,13 @@ def create_app(service=None):
         return response
     @app.post('/api/connect')
     async def connect(request:Request):
-        body=await request_body(request);t,_=await service.create()
+        body=await request_body(request)
+        if body.get('provider')=='deepseek':raise APIError('backup_gate','备用模型只用于实际对话，不进行额外连接测试。',403)
+        scope=token(request);t,_=await service.create()
         body.update({'request_id':__import__('secrets').token_hex(16),'version':0,'operation':'submit','consent':True,
                      'text':'I am reviewing an AI audit screening result and do not know who independently checked it.'})
         result=None
-        async for event in service.inquire(t,body):
+        async for event in service.inquire(t,body,fallback_token=scope):
             if event['event']=='complete': result=event['data']
         return {'ok':True,'model':result['session']['records'][-1]['model']}
     @app.post('/api/inquiry')
@@ -91,7 +93,7 @@ def create_app(service=None):
                 async for event in service.inquire(t,body):
                     yield f"event: {event['event']}\ndata: {json.dumps(event['data'],ensure_ascii=False)}\n\n"
             except APIError as e:
-                yield f"event: error\ndata: {json.dumps({'code':e.code,'message':e.message},ensure_ascii=False)}\n\n"
+                yield f"event: error\ndata: {json.dumps(e.public(),ensure_ascii=False)}\n\n"
             except Exception:
                 yield 'event: error\ndata: {"code":"internal","message":"请求未完成，原对话和输入已保留。"}\n\n'
         return StreamingResponse(stream(),media_type='text/event-stream',headers={'Cache-Control':'no-store'})

@@ -1,5 +1,5 @@
 export type Message={role:'user'|'assistant';content:string};
-export type Snapshot={version:number;attempts:number;initial_text:string;case_id:string;session:{messages:Message[];observations:{area:string;quote:string}[];records:{turn:number;provider:string;model:string;tokens?:number;focus:string;time:string;regenerations?:number}[];focus:string}};
+export type Snapshot={version:number;attempts:number;initial_text:string;case_id:string;backup_until?:number;session:{messages:Message[];observations:{area:string;quote:string}[];records:{turn:number;provider:string;model:string;tokens?:number;focus:string;time:string;regenerations?:number}[];focus:string}};
 export type State={screen:'welcome'|'cases'|'chat';onboarded:boolean;archived:boolean;provider:string;model:string;verified:boolean;draft:string;savedDraft:string;selecting:boolean;caseId:string;initialText:string;snapshot:Snapshot;activeRequest:string|null;stage:string;error:string;view:'chat'|'notes'|'review';language:'中文'|'English';theme:'dark'|'light'};
 export const emptySnapshot=():Snapshot=>({version:0,attempts:0,initial_text:'',case_id:'blank',session:{messages:[],observations:[],records:[],focus:'scope'}});
 export const initialState=():State=>({screen:'welcome',onboarded:false,archived:false,provider:'gemini',model:'gemini-3.5-flash-lite',verified:false,draft:'',savedDraft:'',selecting:false,caseId:'blank',initialText:'',snapshot:emptySnapshot(),activeRequest:null,stage:'idle',error:'',view:'chat',language:'中文',theme:'dark'});
@@ -35,15 +35,15 @@ export function restoreState(raw:string|null):State{
   const v=JSON.parse(raw); if(!v||!['welcome','cases','chat'].includes(v.screen)||!Array.isArray(v.snapshot?.session?.messages))return fallback;
   const text=(x:unknown,max=24000)=>typeof x==='string'&&x.length<=max;
   const n=(x:unknown)=>typeof x==='number'&&Number.isSafeInteger(x)&&x>=0;
-  if(!['gemini','zhipu','openrouter'].includes(v.provider)||!text(v.model,120)||
+  if(!['gemini','zhipu','openrouter','deepseek'].includes(v.provider)||!text(v.model,120)||
     !['draft','savedDraft','initialText','caseId'].every(k=>text(v[k]))||
     typeof v.onboarded!=='boolean'||typeof v.selecting!=='boolean'||
     !['chat','notes','review'].includes(v.view)||!['中文','English'].includes(v.language)||!['dark','light'].includes(v.theme))return fallback;
   const s=v.snapshot,session=s.session;
   if(!n(s.version)||!n(s.attempts)||!text(s.initial_text)||!text(s.case_id,120)||!text(session.focus,40)||
-    session.messages.length>24||!session.messages.every((m:Message)=>m&&['user','assistant'].includes(m.role)&&text(m.content))||
+    session.messages.length>30||!session.messages.every((m:Message)=>m&&['user','assistant'].includes(m.role)&&text(m.content))||
     !Array.isArray(session.observations)||session.observations.length>30||!session.observations.every((o:{area:string;quote:string})=>o&&text(o.area,80)&&text(o.quote))||
-    !Array.isArray(session.records)||session.records.length>12||!session.records.every((r:Snapshot['session']['records'][number])=>r&&n(r.turn)&&text(r.provider,40)&&text(r.model,120)&&text(r.focus,40)&&text(r.time,80)))return fallback;
+    !Array.isArray(session.records)||session.records.length>15||!session.records.every((r:Snapshot['session']['records'][number])=>r&&n(r.turn)&&text(r.provider,40)&&text(r.model,120)&&text(r.focus,40)&&text(r.time,80)))return fallback;
   if(v.archived!==undefined&&typeof v.archived!=='boolean')return fallback;
   v.snapshot={version:s.version,attempts:s.attempts,initial_text:s.initial_text,case_id:s.case_id,session:{
    focus:session.focus,messages:session.messages.map((m:Message)=>({role:m.role,content:m.content})),

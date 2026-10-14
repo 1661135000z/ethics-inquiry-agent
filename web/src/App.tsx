@@ -5,12 +5,12 @@ import {Icon} from './Icon';
 import {SituationStudio} from './SituationStudio';
 import {enter,morph,reduced} from './motion';
 import {initialState,reducer,restoreState,publicSnapshot,type Snapshot} from './state';
-import {json,inquiry,type Config,type Provider,type Case} from './api';
+import {json,inquiry,APIError,type Config,type Provider,type Case} from './api';
 import {localizeMessage,cachedRecord} from './i18n';
 import staticCases from './cases.json';
 
 const fallback:Config={providers:[{id:'gemini',models:['gemini-3.5-flash-lite','gemini-3.1-flash-lite','gemini-2.5-flash-lite','gemini-2.5-flash'],configured:false,free_confirmed:false},{id:'zhipu',models:['glm-4.7-flash'],configured:false,free_confirmed:false},{id:'openrouter',models:['openrouter/free'],configured:false,free_confirmed:false}],cases:staticCases,principle:'objectivity'};
-const names:Record<string,string>={gemini:'Gemini',zhipu:'GLM',openrouter:'OpenRouter'};
+const names:Record<string,string>={gemini:'Gemini',zhipu:'GLM',openrouter:'OpenRouter',deepseek:'DeepSeek'};
 const focusNames:Record<string,string>={scope:'探究范围',role:'角色与判断',interests:'关系与利益',pressure:'压力与激励',evidence:'证据与解释',review:'独立复核'};
 const englishFocusNames:Record<string,string>={scope:'Inquiry scope',role:'Role and judgment',interests:'Relationships and interests',pressure:'Pressure and incentives',evidence:'Evidence and explanations',review:'Independent review'};
 
@@ -22,10 +22,11 @@ export default function App(){
  const [keys,setKeys]=useState<Record<string,string>>({}),[access,setAccess]=useState(''),[free,setFree]=useState<Record<string,boolean>>({}),[consent,setConsent]=useState(false);
  const [credentialModes,setCredentialModes]=useState<Record<string,'developer'|'personal'>>({});
  const [preview,setPreview]=useState<string|null>(null),[copyStatus,setCopyStatus]=useState(-1),[ready,setReady]=useState(false),[transitioning,setTransitioning]=useState(false),[recoveryError,setRecoveryError]=useState('');
+ const [backupOffered,setBackupOffered]=useState(false),[backupOpen,setBackupOpen]=useState(false);
  const [resetting,setResetting]=useState(false);
  const container=useRef<HTMLDivElement>(null),badge=useRef<HTMLButtonElement>(null),caseTitle=useRef<HTMLHeadingElement>(null),composer=useRef<HTMLTextAreaElement>(null),controller=useRef<AbortController|null>(null),closePreview=useRef<number|undefined>(undefined),newest=useRef<HTMLDivElement>(null);
  const zh=state.language==='中文',t=(cn:string,en:string)=>zh?cn:en;
- const p=config.providers.find(p=>p.id===state.provider)||fallback.providers[0];
+ const p=(state.provider==='deepseek'?config.paid_backup:undefined)||config.providers.find(p=>p.id===state.provider)||fallback.providers[0];
  const credentialMode=credentialModes[state.provider]||(keys[state.provider]?.trim()?'personal':p.configured?'developer':'personal');
  const messages=state.snapshot.session.messages, busy=!!state.activeRequest;
  const locked=busy||resetting||connecting||transitioning;
@@ -50,13 +51,14 @@ export default function App(){
 
  function chooseProvider(provider:Provider){
   if(locked)return;
-  dispatch({type:'MODEL',provider:provider.id,model:provider.default_model||provider.models[0]});setSelected(provider.id);setConnectionError('');setConsent(false);
+  dispatch({type:'MODEL',provider:provider.id,model:provider.default_model||provider.models[0]});setSelected(provider.id);setConnectionError('');setBackupOffered(false);setBackupOpen(false);setConsent(false);
   if(state.screen!=='welcome')setSettings(true);
  }
- useEffect(()=>{if(selected&&state.screen==='welcome'&&config.demo_access&&p.configured&&credentialMode==='developer'&&!state.verified)void connect()},[selected,state.provider]);
- function credentials(){return {provider:state.provider,model:state.model,api_key:credentialMode==='personal'?keys[state.provider]||'':'',free_confirmed:free[state.provider]===true,access_code:credentialMode==='developer'?access:'',language:state.language}}
+ useEffect(()=>{if(selected&&state.screen==='welcome'&&config.demo_access&&p.configured&&credentialMode==='developer'&&!state.verified)void connect()},[selected,state.provider,ready]);
+ useEffect(()=>{if(ready&&state.provider==='deepseek'&&p.configured&&!state.verified&&!state.archived&&(state.snapshot.backup_until||0)>Date.now()/1000)dispatch({type:'CONFIRM'})},[ready,state.provider,p.configured,state.verified,state.archived,state.snapshot.backup_until]);
+ function credentials(){return {provider:state.provider,model:state.model,api_key:credentialMode==='personal'?keys[state.provider]||'':'',free_confirmed:free[state.provider]===true,access_code:credentialMode==='developer'?access:'',language:state.language,paid_confirmed:state.provider==='deepseek'}}
  async function connect(){
-  if(locked)return;setConnecting(true);setConnectionError('');
+  if(locked||!ready||state.provider==='deepseek')return;setConnecting(true);setConnectionError('');setBackupOffered(false);setBackupOpen(false);
   try{
    if(credentialMode==='developer'&&!config.demo_access&&!access){throw new Error('请输入你在后台 ACCESS_CODE 中设置的值，不是模型 API Key。')}
    if(credentialMode==='personal'&&!keys[state.provider]?.trim()){throw new Error('请输入所选模型服务的 API Key。')}
@@ -68,7 +70,7 @@ export default function App(){
     await morph(card,badge.current,()=>flushSync(()=>dispatch({type:'CONFIRM'})));
     setTransitioning(false);
    }else dispatch({type:'CONFIRM'});
-  }catch(e){setConnectionError(e instanceof Error?e.message:'连接未完成。')}
+  }catch(e){setConnectionError(e instanceof Error?e.message:'连接未完成。');setBackupOffered(state.provider==='zhipu'&&e instanceof APIError&&e.backupAvailable)}
   finally{setConnecting(false)}
  }
  async function send(operation:'submit'|'switch'|'regenerate'='submit'){
@@ -84,7 +86,7 @@ export default function App(){
     // A persistent top-level heading is the target across the scene change.
     await morph(source,caseTitle.current,complete);setTransitioning(false);
    }else complete();
-  }catch(e){dispatch({type:'FAIL',id,message:e instanceof Error?e.message:'请求未完成。'})}
+  }catch(e){dispatch({type:'FAIL',id,message:e instanceof Error?e.message:'请求未完成。'});setBackupOffered(state.provider==='zhipu'&&e instanceof APIError&&e.backupAvailable)}
   finally{controller.current=null}
  }
  async function recover(){
@@ -93,7 +95,7 @@ export default function App(){
  }
  async function restart(){
   if(locked)return;setResetting(true);
-  try{const snapshot=await json<Snapshot>('/api/session',{new:true});dispatch({type:'NEW',snapshot});setConsent(false);setPreview(null)}catch(e){setRecoveryError(e instanceof Error?e.message:'新会话创建失败。')}
+  try{const snapshot=await json<Snapshot>('/api/session',{new:true});dispatch({type:'NEW',snapshot});setConsent(false);setPreview(null);if(state.provider==='deepseek'){dispatch({type:'MODEL',provider:'zhipu',model:config.providers.find(p=>p.id==='zhipu')?.default_model||'glm-4.7-flash'});setSettings(true);setSelected('zhipu');setBackupOffered(false)}}catch(e){setRecoveryError(e instanceof Error?e.message:'新会话创建失败。')}
   finally{setResetting(false)}
  }
  function beginSelection(){if(locked||state.archived)return;dispatch({type:'SELECT_AGAIN'});setConsent(false)}
@@ -110,7 +112,12 @@ export default function App(){
  const currentCase=config.cases.find(c=>c.id===(messages.length?state.snapshot.case_id:state.caseId));
  const title=currentCase?.id!=='blank'&&currentCase?(zh?currentCase.zh:currentCase.en).replace(/^(Example · |Fictional · |示例 · |新编虚构 · )/,''):t('你的探究情境','Your inquiry');
 
- const modelForm=<div className="model-form" data-enter>
+ function useBackup(){
+  if(locked||!backupOffered||!config.paid_backup?.configured)return;
+  dispatch({type:'MODEL',provider:'deepseek',model:'deepseek-flash'});dispatch({type:'CONFIRM'});setSelected(null);setSettings(false);setBackupOffered(false);setBackupOpen(false);setConnectionError('');
+ }
+ const backupSurface=backupOffered&&state.provider==='zhipu'?<div className="backup-offer"><button className="secondary" onClick={()=>setBackupOpen(v=>!v)}>{t('使用DeepSeek备用对话','Use DeepSeek backup')}<Icon name="arrow" size={14}/></button>{backupOpen&&<div className="backup-window"><span className="micro">DEEPSEEK / BACKUP</span><h3>{t('不必等待，继续探究','Continue your inquiry')}</h3><p>{t('由开发者提供，无需你付费。每段对话最多15轮；异常重试也计入备用请求额度。也可以等待GLM恢复后再试。','Provided by the developer at no cost to you. Up to 15 turns per inquiry; failed retries also count toward the backup allowance. You can also wait and retry GLM.')}</p>{config.paid_backup?.configured?<button className="primary" onClick={useBackup} disabled={locked}>{t('切换并继续','Switch and continue')}<Icon name="arrow"/></button>:<p className="muted">{t('管理员尚未配置备用密钥。','The developer has not configured the backup key yet.')}<button className="text-button" onClick={reloadConfiguration}>{t('刷新配置','Refresh configuration')}</button></p>}<button className="text-button" onClick={()=>setBackupOpen(false)}>{t('暂不切换','Keep using GLM')}</button></div>}</div>:null;
+ const modelForm=state.provider==='deepseek'?<div className="model-form"><h3>{t('DeepSeek备用对话','DeepSeek backup inquiry')}</h3><p>{t('每段最多15轮，由开发者提供。无需额外连接测试；如需重新启用，请先尝试GLM。','Up to 15 turns, provided by the developer. No additional connection test. To reactivate the backup, first try GLM.')}</p><button className="secondary" onClick={()=>chooseProvider(config.providers.find(p=>p.id==='zhipu')!)}>{t('返回GLM','Return to GLM')}</button></div>:<div className="model-form" data-enter>
   <div className="form-head"><div><span className="micro">{names[state.provider]} / CONNECTION</span><h3>{t('连接你的模型','Connect your model')}</h3></div><span className="status-dot"/>
   </div>
   {p.configured&&<div className="credential-choice" role="group" aria-label={t('连接方式','Connection method')}>{(['developer','personal'] as const).map(mode=><button key={mode} aria-pressed={credentialMode===mode} className={credentialMode===mode?'active':''} disabled={locked} onClick={()=>{setCredentialModes({...credentialModes,[state.provider]:mode});dispatch({type:'MODEL',provider:state.provider,model:state.model});setConsent(false);setConnectionError('')}}>{mode==='developer'?t('使用后台配置','Use saved configuration'):t('使用自己的密钥','Use my own API key')}</button>)}</div>}
@@ -120,13 +127,16 @@ export default function App(){
   {credentialMode==='personal'&&<label className="check"><input type="checkbox" checked={free[state.provider]||false} onChange={e=>setFree({...free,[state.provider]:e.target.checked})}/>{t('确认此账户与模型具备免费档资格','This account and model are eligible for the free tier')}</label>}
   <div className="form-actions"><p>{t('连接测试只发送一个虚构情境，不改变你的对话。','The connection test sends a fictional situation and leaves your inquiry unchanged.')}</p><button className="primary" onClick={connect} disabled={connecting||transitioning}>{connecting?<><span className="processing"/>{t('正在连接','Connecting')}</>:<>{t('测试连接并继续','Test connection & continue')}<Icon name="arrow"/></>}</button></div>
   {connectionError&&<div className="error" role="alert">{localizeMessage(connectionError,state.language)}<button onClick={()=>chooseProvider(config.providers.find(p=>p.id===(state.provider==='gemini'?'zhipu':'gemini'))!)}>{t('切换模型服务','Switch provider')}<Icon name="arrow" size={14}/></button></div>}
+  {backupSurface}
  </div>;
 
  const composerSurface=<div className="composer-surface" data-enter>
      <div className="composer-head"><strong>{state.screen==='cases'?t('描述你的情境','Describe the situation'):t('继续回答','Continue your inquiry')}</strong><span>{state.draft.length}/4,000</span></div>
      {state.screen==='chat'&&!state.draft&&<div className="starters">{[t('我掌握的信息是……','What I know is…'),t('我还不能确定……','I am not yet sure…'),t('可以核对的资料是……','The records I could check are…')].map(text=><button key={text} onClick={()=>{dispatch({type:'DRAFT',text});composer.current?.focus()}} disabled={locked}>{text}</button>)}</div>}
+     {state.provider==='deepseek'&&<div className="backup-active"><span>{t('DeepSeek备用 · 每段最多15轮','DeepSeek backup · up to 15 turns')}</span><button className="text-button" disabled={locked} onClick={()=>chooseProvider(config.providers.find(p=>p.id==='zhipu')!)}>{t('返回GLM','Return to GLM')}</button></div>}
      <textarea ref={composer} aria-label={t('情境或追问回答','Situation or follow-up answer')} value={state.draft} onChange={e=>dispatch({type:'DRAFT',text:e.target.value})} placeholder={state.screen==='cases'?t('描述需要作出的判断，以及你掌握的信息或疑虑。','Describe the decision, what you know, and what concerns you.'):t('说说你知道什么，以及仍有哪些不确定。','Share what you know and what remains uncertain.')} maxLength={4000} disabled={locked} onKeyDown={e=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();send(state.selecting?'switch':'submit')}}}/>
      {state.error&&!state.archived&&<div className="error" role="alert">{localizeMessage(state.error,state.language)}<button onClick={recover}>{t('恢复已保存对话','Restore saved inquiry')}</button></div>}
+     {backupSurface}
      {!state.verified&&<button className="connection-needed" onClick={()=>setSettings(true)}>{t('确认模型连接后继续，原对话保持不变。','Confirm a model connection to continue; your inquiry is preserved.')}<Icon name="arrow" size={14}/></button>}
      <div className="composer-footer"><label className="check"><input type="checkbox" checked={consent} onChange={e=>setConsent(e.target.checked)} disabled={locked}/>{t('仅发送虚构或匿名内容至所选服务','Send fictional or anonymized content to the selected service')}</label><button className="primary send" onClick={()=>send(state.selecting?'switch':'submit')} disabled={locked||state.archived||!state.verified||!state.draft.trim()||!consent||!ready||transitioning}>{busy?<><span className="processing"/>{t('正在探究','Processing')}</>:<>{state.screen==='cases'?(state.selecting?t('以此开始新对话','Begin a new inquiry'):t('开始探究','Begin inquiry')):t('发送回答','Send answer')}<span className="arrow-island"><Icon name="arrow" size={16}/></span></>}</button></div>
      <details className="execution" open={!!state.error||busy}><summary><span className={busy?'live-dot':''}/>{busy?t('正在执行','Working'):t('执行详情','Execution details')}<span>{t('只展示真实处理阶段','Actual execution stages only')}</span></summary><ol>{['input','request','validate','commit'].map((stage,i)=><li className={state.stage===stage?'active':state.stage==='done'?'done':''} key={stage}><span>{state.stage==='done'?<Icon name="check" size={12}/>:String(i+1).padStart(2,'0')}</span>{[t('检查输入','Check input'),t('请求模型','Request model'),t('校验追问与引用','Validate question & quotes'),t('提交会话记录','Commit inquiry')][i]}</li>)}</ol></details>

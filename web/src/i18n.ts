@@ -1,5 +1,13 @@
 // Apply only to interface diagnostics; never translate user quotations or model replies.
 const diagnostics:Record<string,string>={
+ 'GLM服务器当前拥挤，通常等待片刻再试即可恢复。原对话和输入已保留，也可以选择备用模型。':'GLM servers are currently busy. Waiting briefly and retrying will often help. Your inquiry and input are preserved; you can also use the backup model.',
+ 'GLM当前请求过于集中或并发受限。请等待片刻再试，也可以选择备用模型；这不表示余额不足。':'GLM requests are rate-limited or concurrency is restricted. Wait briefly and retry, or use the backup model. This does not mean the balance is insufficient.',
+ 'GLM当前繁忙或限流。请等待片刻再试，也可以选择备用模型；不能仅凭429认定额度用完。':'GLM is currently busy or rate-limited. Wait briefly and retry, or use the backup model. HTTP 429 alone does not establish that the free quota is exhausted.',
+ '请先在GLM失败后选择备用模型。':'First try GLM, then select the backup if GLM is unavailable.',
+ '备用模型请求额度已达到限制，请返回GLM或稍后再试。':'The backup request allowance has been reached. Return to GLM or try later.',
+ '备用模型只用于实际对话，不进行额外连接测试。':'The backup is used for actual inquiries only, without an additional connection test.',
+ '备用模型余额不足，请返回GLM或联系管理员。':'The developer’s backup balance is insufficient. Return to GLM or contact the administrator.',
+ '已达到15轮，请导出并开始新对话。':'This inquiry has reached 15 turns. Export it and start a new inquiry.',
  '无法连接后端，请检查网络。':'Cannot reach the backend. Check your connection.',
  '请求未完成。':'The request could not be completed.',
  '连接未完成。':'The connection could not be completed.',

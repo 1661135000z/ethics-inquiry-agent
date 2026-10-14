@@ -17,11 +17,12 @@ class Service:
     def configuration(self):
         return {'providers':[{'id':p,'models':list(dict.fromkeys([self.default_model(p),*models])), 'default_model':self.default_model(p),
                  'configured':bool(self.env.get(KEYS[p])) and (bool(self.env.get('ACCESS_CODE')) or self.env.get('DEMO_ACCESS_ENABLED','').lower()=='true'),
-                 'free_confirmed':self.env.get(p.upper()+'_FREE_TIER_CONFIRMED','').lower()=='true'} for p,models in MODELS.items()],
-                 'cases':EXAMPLES,'principle':'objectivity','demo_access':self.env.get('DEMO_ACCESS_ENABLED','').lower()=='true'}
+                 'free_confirmed':self.env.get(p.upper()+'_FREE_TIER_CONFIRMED','').lower()=='true'} for p,models in MODELS.items() if p!='deepseek'],
+                 'cases':EXAMPLES,'principle':'objectivity','demo_access':self.env.get('DEMO_ACCESS_ENABLED','').lower()=='true',
+                 'paid_backup':{'id':'deepseek','models':['deepseek-flash'],'configured':bool(self.env.get('DEEPSEEK_API_KEY')),'free_confirmed':False}}
 
     def default_model(self,provider):
-        configured=self.env.get({'gemini':'GEMINI_MODEL','zhipu':'ZHIPU_MODEL','openrouter':'OPENROUTER_MODEL'}[provider],'')
+        configured=self.env.get({'gemini':'GEMINI_MODEL','zhipu':'ZHIPU_MODEL','openrouter':'OPENROUTER_MODEL','deepseek':'DEEPSEEK_MODEL'}[provider],'')
         if configured in MODELS[provider] or (provider=='openrouter' and re.fullmatch(r'[\w.-]+/[\w.-]+:free',configured)):
             return configured
         return MODELS[provider][0]
@@ -34,7 +35,7 @@ class Service:
 
     async def restore(self, token): return await self.store.get(token)
 
-    async def inquire(self, token, body):
+    async def inquire(self, token, body, fallback_token=None):
         if not isinstance(body,dict): raise APIError('input','请求格式无法识别。')
         provider,model,key=credentials(body,self.env)
         if body.get('consent') is not True: raise APIError('consent','请确认仅发送虚构或匿名内容。')
@@ -50,6 +51,7 @@ class Service:
         version=body.get('version')
         if type(version) is not int: raise APIError('input','缺少会话版本。')
         fingerprint=hashlib.sha256(json.dumps([provider,model,operation,text,language,version,body.get('case_id','blank')],ensure_ascii=False).encode()).hexdigest()
+        if provider=='deepseek':fingerprint='paid:'+fingerprint
         prior=await self.store.reserve(token,version,rid,fingerprint)
         if prior is not None:
             yield {'event':'complete','data':prior}
@@ -61,7 +63,7 @@ class Service:
                 if not session.messages or session.messages[-1]['role']!='assistant': raise APIError('input','暂无可重新生成的追问。')
                 candidate=session.messages[:-1]
             else:
-                if session.turns>=12: raise APIError('limit','已达到12轮，请导出并开始新对话。')
+                if session.turns>=(15 if provider=='deepseek' else 12): raise APIError('limit','已达到15轮，请导出并开始新对话。' if provider=='deepseek' else '已达到12轮，请导出并开始新对话。')
                 if sum(len(m['content']) for m in session.messages)+len(text.strip())>24000: raise APIError('limit','已达到上下文长度限制。')
                 candidate=session.messages+[{'role':'user','content':text.strip()}]
             yield {'event':'stage','data':{'stage':'input'}}
@@ -81,6 +83,7 @@ class Service:
                 session.records=session.records[:-1]+[record]
             else: session.records.append(record)
             state['session']=asdict(session); state['version']+=1
+            if provider=='zhipu':state.pop('backup_until',None)
             if session.turns==1 and operation!='regenerate':
                 state['initial_text']=text.strip()
                 case=body.get('case_id','blank')
@@ -91,6 +94,12 @@ class Service:
         except ModelOutputError:
             await self.store.finish(token,rid)
             raise APIError('validation','回复未通过伦理追问检查，原对话和输入已保留。请重试或切换模型。',422) from None
+        except APIError as error:
+            await self.store.finish(token,rid)
+            if provider=='zhipu' and error.code in {'glm_capacity','glm_rate_limit','glm_busy','network','unavailable','quota'}:
+                await self.store.grant_backup(fallback_token or token)
+                error.backup_available=True
+            raise
         except BaseException:
             await self.store.finish(token,rid)
             raise

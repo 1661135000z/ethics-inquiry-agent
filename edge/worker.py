@@ -61,7 +61,7 @@ def stream_events(service,t,body):
             async for event in service.inquire(t,body):
                 controller.enqueue(enc.encode(f"event: {event['event']}\ndata: {json.dumps(event['data'],ensure_ascii=False)}\n\n"))
         except APIError as e:
-            controller.enqueue(enc.encode(f"event: error\ndata: {json.dumps({'code':e.code,'message':e.message},ensure_ascii=False)}\n\n"))
+            controller.enqueue(enc.encode(f"event: error\ndata: {json.dumps(e.public(),ensure_ascii=False)}\n\n"))
         except Exception:
             controller.enqueue(enc.encode('event: error\ndata: {"code":"internal","message":"请求未完成，原记录已保留。"}\n\n'))
         finally:
@@ -100,10 +100,12 @@ class Default(WorkerEntrypoint):
                 headers['Set-Cookie']=f'inquire_session={t}; HttpOnly; SameSite=Strict; Path=/api; Max-Age=7200'+('; Secure' if request.url.startswith('https:') else '')
                 return Response.json(snapshot,headers=headers)
             if path=='/api/connect' and request.method=='POST':
+                if body.get('provider')=='deepseek':raise APIError('backup_gate','备用模型只用于实际对话，不进行额外连接测试。',403)
+                scope=token(request)
                 t,_=await service.create()
                 body.update({'request_id':secrets.token_hex(16),'version':0,'operation':'submit','consent':True,'text':'I am reviewing an AI audit screening result and do not know who independently checked it.'})
                 result=None
-                async for event in service.inquire(t,body):
+                async for event in service.inquire(t,body,fallback_token=scope):
                     if event['event']=='complete':result=event['data']
                 return Response.json({'ok':True,'model':result['session']['records'][-1]['model']},headers=headers)
             if path=='/api/inquiry' and request.method=='POST':
@@ -119,5 +121,5 @@ class Default(WorkerEntrypoint):
                 headers.update({'Content-Type':'text/markdown; charset=utf-8','Content-Disposition':'attachment; filename="inquire-conversation.md"'})
                 return Response(s.export(language),headers=headers)
             return Response('Not found',status=404,headers=headers)
-        except APIError as e:return Response.json({'error':{'code':e.code,'message':e.message}},status=e.status,headers=headers)
+        except APIError as e:return Response.json({'error':e.public()},status=e.status,headers=headers)
         except Exception:return Response.json({'error':{'code':'internal','message':'请求未完成，请稍后重试。'}},status=500,headers=headers)

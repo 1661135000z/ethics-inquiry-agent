@@ -69,3 +69,11 @@ describe('workspace transitions',()=>{
   expect(reducer(restored,{type:'NEW',snapshot:initialState().snapshot}).archived).toBe(false);
  });
 });
+it('restores all fifteen backup turns without replaying onboarding or storing credentials',()=>{
+ const state={...initialState(),screen:'chat' as const,onboarded:true,provider:'deepseek',model:'deepseek-flash'};
+ state.snapshot.session.messages=Array.from({length:30},(_,i)=>({role:i%2?'assistant' as const:'user' as const,content:'A fictional inquiry'}));
+ state.snapshot.session.records=Array.from({length:15},(_,i)=>({turn:i+1,provider:'deepseek',model:'deepseek-flash',focus:'evidence',time:'2026-10-14T00:00:00Z'}));
+ const restored=restoreState(JSON.stringify(publicSnapshot(state)));
+ expect(restored.screen).toBe('chat');expect(restored.provider).toBe('deepseek');expect(restored.snapshot.session.messages).toHaveLength(30);
+ expect(restored.verified).toBe(false);
+});

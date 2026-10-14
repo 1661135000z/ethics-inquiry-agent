@@ -28,6 +28,7 @@ class Binding:
         with self.connection:return [await s.run() for s in statements]
 
 class D1Tests(unittest.IsolatedAsyncioTestCase):
+    async def asyncTearDown(self):self.binding.connection.close()
     async def asyncSetUp(self):
         self.binding=Binding();self.store=D1Store(self.binding);self.transport=Transport()
         self.service=Service(self.store,self.transport,{'GEMINI_API_KEY':'placeholder','GEMINI_FREE_TIER_CONFIRMED':'true','ACCESS_CODE':'test'})
