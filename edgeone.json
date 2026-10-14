@@ -3,5 +3,5 @@
   "installCommand": "npx --yes pnpm@11.25.0 install --frozen-lockfile",
   "buildCommand": "npx --yes pnpm@11.25.0 build",
   "outputDirectory": "web/dist",
-  "nodeVersion": "22.11.0"
+  "nodeVersion": "22.22.0"
 }
