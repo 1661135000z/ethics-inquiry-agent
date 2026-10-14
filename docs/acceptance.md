@@ -47,3 +47,9 @@ This UI release preserves provider endpoints, objectivity instructions and exist
 - Desktop dark and 390px mobile light/English layouts were visually checked, including dossier and history sheet. English controls/privacy text remain English; original Chinese quotations remain unchanged.
 - Independent review identified animation-failure recovery, archive-print isolation and printable source references; all three were repaired. Print CSS and static references are checked structurally; physical printing and all browser print engines are not claimed as tested.
 - No API credentials, user histories, original teaching materials or private Word manual are included in the public source. The Word user guide is updated separately with a five-page visual check.
+
+### Published release checks
+
+GitHub commit `dae1689` passed the React and Python checks workflow. Cloudflare published Worker version `78956eec-7d6a-4b5b-bce6-cb0615f7c2f5`. The primary browser loaded the new assets, verified the developer Gemini configuration and accepted one real fictional inquiry with source-linked statements. No paid backup call was made in this release check.
+
+The EdgeOne console shows the same commit Running and the account plan Free. The custom mirror returns the new page; JavaScript, CSS and font CSS match the local release by SHA-256. Its `/api/health` returns HTTP 200 with the Python inquiry API ready. Browser navigation to the mirror temporarily encountered a connection closure in this test environment, while normal TLS command-line checks succeeded. The owner previously confirmed mainland page access; this release does not claim a new no-VPN mainland model transcript.
