@@ -16,7 +16,8 @@ Built with **React, Vite, TypeScript and GSAP**, backed by a portable **Python i
 - Contextual inquiry, reported-statement notebook and human-review exports.
 - Transactional regeneration and scenario switching; draft recovery and read-only expired-session archives.
 - Server-owned model keys for a bounded public demo; optional visitor keys stay in page memory only.
-- Atomic request budgets: 40 attempts/hour, 150/day, 24 per conversation lineage. No paid model upgrade.
+- Free models by default; a developer-funded DeepSeek backup is offered only after GLM service failure, never switched automatically. Visitors do not pay.
+- Atomic request budgets: 40 attempts/hour, 150/day, 24 per conversation lineage. Backup inquiries allow up to 15 turns, with 15 backup attempts per session and 60 per day across the deployment.
 
 [Run, configure and deploy](https://github.com/1661135000z/ethics-inquiry-agent/blob/feat/react-experience/docs/react-experience.md) · [Mirror implementation plan](https://github.com/1661135000z/ethics-inquiry-agent/blob/feat/react-experience/docs/migration/mirror-plan.md)
 
