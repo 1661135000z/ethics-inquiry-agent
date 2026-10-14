@@ -20,7 +20,7 @@ export default async function onRequest({request}){
  if(cookie)headers.set('Cookie','inquire_session='+cookie);
  const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),90000);
  try{
-  const upstream=await fetch(new Request(UPSTREAM+url.pathname+url.search,{method:request.method,headers,body,signal:controller.signal,redirect:'manual'}));
+  const upstream=await fetch(new Request(UPSTREAM+url.pathname+url.search,{method:request.method,headers,body:body?.buffer,signal:controller.signal,redirect:'manual'}));
   if(upstream.status>=300&&upstream.status<400)return error(502,'后端返回了意外跳转。');
   const outgoing=new Headers({'Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer'});
   for(const name of ['Content-Type','Content-Disposition']){const value=upstream.headers.get(name);if(value)outgoing.set(name,value)}

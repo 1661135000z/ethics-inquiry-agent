@@ -14,6 +14,16 @@ describe('fixed upstream mirror',()=>{
   expect(result.headers.get('set-cookie')).toContain('inquire_session=opaque');
   expect(await result.text()).toContain('event: stage');
  });
+ it('forwards Unicode JSON using the documented edge Request body types',async()=>{
+  const NativeRequest=Request;
+  vi.stubGlobal('Request',class extends NativeRequest{
+   constructor(url,init){if(init?.body instanceof Uint8Array)throw new TypeError('Unsupported edge body type');super(url,init)}
+  });
+  let forwarded;
+  vi.stubGlobal('fetch',async request=>{forwarded=await request.json();return new Response('{}')});
+  const response=await proxy({request:new NativeRequest(host+'/api/session',{method:'POST',headers:{Origin:host},body:JSON.stringify({text:'虚构情境'})})});
+  expect(response.status).toBe(200);expect(forwarded).toEqual({text:'虚构情境'});
+ });
  it('rejects arbitrary targets, foreign origins and oversized bodies without forwarding',async()=>{
   const fetcher=vi.fn();vi.stubGlobal('fetch',fetcher);
   expect((await proxy({request:new Request(host+'/api/arbitrary')})).status).toBe(404);
