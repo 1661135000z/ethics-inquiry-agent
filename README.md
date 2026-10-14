@@ -13,7 +13,7 @@ The mirror runs the same interface and relays API requests to the same backend. 
 - One contextual question per turn about roles, interests, pressure, evidence or independent review. The agent preserves uncertainty and avoids immediate ethical verdicts.
 - Gemini and GLM model selection; optional personal keys held only in page memory. **DeepSeek appears only after a genuine GLM service failure**, requires a manual switch and is funded by the developer.
 - Transactional conversations: invalid replies or failed requests do not overwrite accepted records. Switching situations, cancelling, restarting and regenerating retain the appropriate drafts and settings.
-- A source-linked clue notebook and compass: exact user quotations jump back to the accepted message; empty areas remain unknown.
+- A source-linked clue notebook and interactive five-axis count radar: exact user quotations jump back to the accepted message; empty areas remain unknown.
 - Pending-message feedback, real execution stages, back-to-latest navigation and collapsible initial context.
 - An in-page human-review dossier, print/PDF layout and the existing downloadable HTML packet after two accepted turns.
 - Explicitly saved, read-only local history with naming, deletion/undo and Markdown export. Records stay in that browser and origin; credentials and unsent drafts are excluded.

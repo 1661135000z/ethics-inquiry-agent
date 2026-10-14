@@ -45,7 +45,7 @@ Model wording varies. Keep an actual exported transcript if demonstrating the ag
 
 ## Workspace controls
 
-**Inquiry clues** organises exact user quotations into five areas. Click a source-turn link to return to the original message. The right-hand compass opens the corresponding area. Counts describe statements, not ethical risk, evidence completeness or verified facts.
+**Inquiry clues** organises exact user quotations into five areas. Click a source-turn link to return to the original message. The five-axis radar plots recorded statement counts, with a shared labelled scale that expands when needed. Empty axes remain at zero. Hover/focus an axis or category to highlight its counterpart; click to open that area. It does not measure risk or prove that enough evidence has been gathered. Counts describe statements, not ethical risk, evidence completeness or verified facts.
 
 A submitted message remains visibly pending until validation and commit succeed. The processing ribbon uses real backend stage events. Use **Back to latest** after reading an earlier message; a long initial situation can be expanded without resending it.
 

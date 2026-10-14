@@ -1,6 +1,7 @@
-import {useEffect,useRef,useState,type ReactNode} from 'react';
+import {useEffect,useLayoutEffect,useRef,useState,type ReactNode} from 'react';
+import gsap from 'gsap';
 import {Icon} from './Icon';
-import {areas,clueGroups,stageState,stats} from './experience';
+import {areas,clueGroups,stageState,stats,radarData} from './experience';
 import type {Snapshot} from './state';
 
 export function LensBackdrop({phase}:{phase:string}){
@@ -15,8 +16,29 @@ export function ServiceStatus({snapshot,provider,model,verified,configured,zh,on
  return <div className="service-status"><button onClick={onSettings} className={verified?'verified':''}><span className="status-dot"/><span>{verified?(provider==='deepseek'?(backupReplied?(zh?'已接收备用回复':'Backup reply accepted'):(zh?'备用已启用 · 待首次响应':'Backup enabled · awaiting reply')):(zh?'本次连接已验证':'Connection verified')):configured?(zh?'后台已配置 · 待验证':'Configured · not verified'):(zh?'需要配置模型':'Model setup needed')}</span><Icon name="settings" size={13}/></button><span className="service-model" title={model}>{model}</span><div className="turn-budget" title={zh?'已接受轮次与请求次数分别计数；重试、连接测试和重新生成可能占用请求额度。':'Accepted turns and request attempts differ. Retries, connection tests and regeneration may consume allowance.'}><span>{zh?'对话':'Inquiry'} <b>{n.accepted}</b>/{n.cap}</span><span>{zh?'请求':'Attempts'} {n.attempts}/24</span></div></div>;
 }
 export function ClueCompass({snapshot,zh,onArea}:{snapshot:Snapshot;zh:boolean;onArea:(id:string)=>void}){
- const groups=clueGroups(snapshot);
- return <section className="clue-compass" aria-label={zh?'探究线索':'Inquiry clues'}><header><span className="micro">{zh?'逐步看清':'A clearer picture'}</span><span className="compass-count">{snapshot.session.observations.length} {zh?'条陈述':'statements'}</span></header><div className="compass-orbit" aria-hidden="true"><svg viewBox="0 0 220 100"><ellipse cx="110" cy="50" rx="88" ry="33"/><ellipse cx="110" cy="50" rx="60" ry="24"/><path d="M22 50h176M110 17v66"/><circle cx="110" cy="50" r="9"/></svg></div><div className="compass-items">{groups.map((g,i)=><button key={g.id} className={`${g.quotes.length?'has-clues':''} ${snapshot.session.focus===g.id?'focused':''}`} onClick={()=>onArea(g.id)}><span className="compass-index">{String(i+1).padStart(2,'0')}</span><span>{zh?g.zh:g.en}</span><b>{g.quotes.length||'—'}</b></button>)}</div><p>{zh?'陈述来自用户，仍需核对。空白意味着未知。':'User-reported statements need verification. Empty means unknown.'}</p></section>;
+ const data=radarData(snapshot),[hovered,setHovered]=useState<string|null>(null),active=hovered||snapshot.session.focus;
+ const selected=data.axes.find(a=>a.id===active),shape=useRef<SVGPolygonElement>(null),root=useRef<SVGSVGElement>(null),previous=useRef(data);
+ useLayoutEffect(()=>{
+  const prior=previous.current;previous.current=data;
+  if(!shape.current||!root.current||prior.points===data.points||matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  try{const animation=gsap.context(()=>{
+   gsap.fromTo(shape.current,{attr:{points:prior.points}},{attr:{points:data.points},duration:.7,ease:'power3.out'});
+   root.current!.querySelectorAll('.radar-data-point').forEach((dot,i)=>gsap.fromTo(dot,{attr:{cx:prior.axes[i].point[0],cy:prior.axes[i].point[1]}},{attr:{cx:data.axes[i].point[0],cy:data.axes[i].point[1]},duration:.7,ease:'power3.out'}));
+  },root);
+  return()=>{try{animation.revert()}catch{}};
+  }catch{shape.current.setAttribute('points',data.points);root.current.querySelectorAll('.radar-data-point').forEach((dot,i)=>{dot.setAttribute('cx',String(data.axes[i].point[0]));dot.setAttribute('cy',String(data.axes[i].point[1]))})}
+ },[data.points]);
+ const label=(a:typeof data.axes[number])=>`${zh?a.zh:a.en} · ${a.count} ${zh?'条陈述':a.count===1?'statement':'statements'}`;
+ return <section className="clue-compass" aria-label={zh?'探究线索':'Inquiry clues'}><header><span className="micro">{zh?'逐步看清':'A clearer picture'}</span><span className="compass-count">{snapshot.session.observations.length} {zh?'条陈述':'statements'}</span></header>
+  <div className="clue-radar"><svg ref={root} viewBox="0 0 240 180" role="group" aria-label={zh?'五类陈述数量雷达图':'Radar of statement counts across five areas'}>
+   <g className="radar-grid" aria-hidden="true">{data.grid.map((points,i)=><polygon key={i} points={points}/>)}{data.axes.map(a=><path key={a.id} className={active===a.id?'active':''} d={`M120 85L${a.end.join(' ')}`}/>)}</g>
+   <polygon ref={shape} className="radar-shape" points={data.points} aria-hidden="true"/>
+   {data.axes.map((a,i)=><g key={a.id} className={`radar-axis ${active===a.id?'active':''} ${a.count?'has-clues':''}`} role="button" tabIndex={0} aria-label={label(a)} onMouseEnter={()=>setHovered(a.id)} onMouseLeave={()=>setHovered(null)} onFocus={()=>setHovered(a.id)} onBlur={()=>setHovered(null)} onClick={()=>onArea(a.id)} onKeyDown={e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();onArea(a.id)}}}>
+    <title>{label(a)}</title><circle className="radar-hit" cx={a.end[0]} cy={a.end[1]} r="13"/><circle className="radar-end" cx={a.end[0]} cy={a.end[1]} r="3"/><circle className="radar-data-point" cx={a.point[0]} cy={a.point[1]} r={a.count?3:0}/><text x={a.label[0]} y={a.label[1]}>{String(i+1).padStart(2,'0')}</text>
+   </g>)}
+   <text className="radar-scale" x="127" y="33" aria-hidden="true">{data.scale}</text>
+  </svg><div className="radar-caption" aria-live="polite">{selected?label(selected):zh?'悬停查看 · 点击回溯':'Hover to inspect · click to trace'}</div><span className="radar-measure">{zh?`数量刻度 0–${data.scale} · 非风险评分`:`Count scale 0–${data.scale} · not a risk score`}</span></div>
+  <div className="compass-items">{data.axes.map((g,i)=><button key={g.id} className={`${g.count?'has-clues':''} ${active===g.id?'focused':''}`} onMouseEnter={()=>setHovered(g.id)} onMouseLeave={()=>setHovered(null)} onFocus={()=>setHovered(g.id)} onBlur={()=>setHovered(null)} onClick={()=>onArea(g.id)}><span className="compass-index">{String(i+1).padStart(2,'0')}</span><span>{zh?g.zh:g.en}</span><b>{g.count||'—'}</b></button>)}</div><p>{zh?'陈述来自用户，仍需核对。空白意味着未知。':'User-reported statements need verification. Empty means unknown.'}</p></section>;
 }
 export function ClueNotebook({snapshot,zh,onLocate,focusedArea}:{snapshot:Snapshot;zh:boolean;onLocate:(turn:number)=>void;focusedArea?:string|null}){
  return <section className="clue-notebook"><div className="notebook-heading"><span className="eyebrow">{zh?'从原话出发':'Start from the source'}</span><h3>{zh?'让每条线索都有出处。':'Every clue has a source.'}</h3><p>{zh?'这些是已记录的用户陈述，并非核实后的事实。':'These are recorded user statements, not verified facts.'}</p></div>{clueGroups(snapshot).map((g,i)=><article id={`clue-${g.id}`} data-clue-area={g.id} key={g.id} className={`clue-section ${focusedArea===g.id?'clue-focused':''}`}><header><span className="clue-number">{String(i+1).padStart(2,'0')}</span><h4>{zh?g.zh:g.en}</h4><span>{g.quotes.length} {zh?'条':'recorded'}</span></header>{g.quotes.length?<div className="clue-quotes">{g.quotes.map((o,j)=><blockquote key={`${o.quote}-${j}`} data-quote={o.quote}><p>{o.quote}</p>{o.turn!==null?<button className="quote-source" onClick={()=>onLocate(o.turn!)}><Icon name="arrow" size={13}/>{zh?`查看第 ${o.turn} 轮原话`:`View source · turn ${o.turn}`}</button>:<span className="muted">{zh?'请在完整对话中核对出处。':'Check the source in the full transcript.'}</span>}</blockquote>)}</div>:<p className="clue-unknown"><span className="unknown-mark"/>{zh?'尚未记录相关陈述；不能据此认定相关问题不存在。':'No related statement recorded. This does not establish that the issue is absent.'}</p>}</article>)}</section>;
