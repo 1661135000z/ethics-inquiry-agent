@@ -1,5 +1,7 @@
 # Using Inquire
 
+The interface opens in English for first-time visitors. Use **中文** to switch to Chinese; the current tab retains your chosen language.
+
 ## Start an inquiry
 
 1. Open the [mainland mirror](https://app.inquire-ethics.dynv6.net/) or the [primary app](https://inquire-experience.inquire-ethics-lab.workers.dev/).
