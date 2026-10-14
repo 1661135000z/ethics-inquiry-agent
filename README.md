@@ -1,189 +1,81 @@
-# Inquire — Ethics Inquiry Agent
+# Inquire · Ethics Inquiry Agent
 
-[**Live Demo — React experience**](https://inquire-experience.inquire-ethics-lab.workers.dev/)
+An interactive audit-ethics assistant that asks a better question before judgment. Built with **React, TypeScript, GSAP and Python**; focused on **objectivity**, contextual follow-up questions and human review.
 
-[**Alternative online mirror — same React experience**](https://app.inquire-ethics.dynv6.net/) · Mainland page access user-tested; model availability depends on provider capacity.
+**[Open the live app](https://inquire-experience.inquire-ethics-lab.workers.dev/) · [Open the mainland mirror](https://app.inquire-ethics.dynv6.net/) · [User guide](docs/user-guide.md) · [Architecture](docs/architecture.md)**
 
-A bilingual AI product for exploring objectivity through contextual follow-up questions. Describe your own situation or adapt a fictional example. The agent preserves uncertainty and exact user quotations; professional judgment remains with the human reviewer.
+The mirror runs the same interface and relays API requests to the same backend. The public demonstration uses server-side credentials: visitors do not need an account, API key or access code. Network availability and model capacity can vary.
 
-Built with **React, Vite, TypeScript and GSAP**, backed by a portable **Python inquiry engine**, **Cloudflare Workers** and transactional **D1** storage. Google Gemini and domestic Zhipu GLM can be switched manually. Fonts and animation assets are bundled locally.
+## What it does
 
-## Experience
+- A progressive welcome → model selection → situation → conversation journey, with GSAP transitions, light/dark themes, bilingual controls and locally bundled Chinese fonts.
+- Your own situation, or four optional editable examples. Hover/focus previews stay in the browser; only explicit submissions call the agent.
+- One contextual question per turn about roles, interests, pressure, evidence or independent review. The agent preserves uncertainty and avoids immediate ethical verdicts.
+- Gemini and GLM model selection; optional personal keys held only in page memory. **DeepSeek appears only after a genuine GLM service failure**, requires a manual switch and is funded by the developer.
+- Transactional conversations: invalid replies or failed requests do not overwrite accepted records. Switching situations, cancelling, restarting and regenerating retain the appropriate drafts and settings.
+- Exact user quotations, provider provenance, observable execution stages, Markdown export and an HTML human-review packet after at least two accepted turns.
+- Refresh recovery, keyboard/touch support and reduced-motion support. Expired server sessions retain a read-only browser copy when available.
 
-- Continuous model → situation → conversation transitions; light and dark themes.
-- Contextual inquiry, reported-statement notebook and human-review exports.
-- Transactional regeneration and scenario switching; draft recovery and read-only expired-session archives.
-- Server-owned model keys for a bounded public demo; optional visitor keys stay in page memory only.
-- Free models by default; a developer-funded DeepSeek backup is offered only after GLM service failure, never switched automatically. Visitors do not pay.
-- Atomic request budgets: 40 attempts/hour, 150/day, 24 per conversation lineage. Backup inquiries allow up to 15 turns, with 15 backup attempts per session and 60 per day across the deployment.
+The assistant is an inquiry aid, not an auditor or a source of verified facts. It does not train a model, browse standards, make audit opinions or show hidden model reasoning. Execution events stream over SSE; model text is displayed **after complete JSON validation**, rather than raw token streaming.
 
-[Run, configure and deploy](docs/react-experience.md) · [Mirror implementation plan](docs/migration/mirror-plan.md)
+## Run locally
 
-[Mirror acceptance](docs/migration/mirror-acceptance.md)
-
-The primary demo hostname may be unreachable on some mainland networks. The alternative uses EdgeOne's confirmed Free plan, a free dynv6 hostname and free HTTPS, with same-origin API forwarding to the existing Python backend. It is not a redirect; fonts and animation assets are served from the mirror. Mainland page loading was confirmed by the owner without a VPN; their GLM inquiry returned provider HTTP 429, so sustained mainland dialogue has not yet passed acceptance. Free compute and provider quotas still apply. Execution-stage SSE is supported; unvalidated raw token output is not displayed.
-
-## Legacy Streamlit source
-
-The original implementation remains runnable for comparison and rollback. Its documentation follows below; the primary demo above is the current React product.
-
-### Legacy deployment
-
-[Open the legacy Streamlit app](https://ethics-inquiry-agent.streamlit.app/)
-
-A bilingual Python + Streamlit learning tool focused on **objectivity**. Describe any audit situation; the agent asks one contextual follow-up question at a time. No scenario is assumed. Optional editable examples include relationships, self-review and two fictional AI-audit situations.
-
-## Run locally / 本地运行
-
-Use Python 3.11 or 3.12 (tested on 3.12). From this folder:
+Use **Node 22.22+**, **pnpm 11.25** and **Python 3.12+** for the native server. Python Workers deployment separately requires Python 3.13+.
 
 ```sh
-python -m venv .venv
-# macOS / Linux
-source .venv/bin/activate
-# Windows PowerShell: .venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
-python -m streamlit run app.py
+pnpm install --frozen-lockfile
+pnpm build
+python -m venv .api-venv
+# macOS / Linux:
+source .api-venv/bin/activate
+# Windows PowerShell: .api-venv\Scripts\Activate.ps1
+python -m pip install -r requirements-api.txt
+cp .env.example .env
+# Fill .env privately, then:
+python -m uvicorn edge.local:app --host 127.0.0.1 --port 8788
 ```
 
-Copy `.streamlit/secrets.toml.example` to `.streamlit/secrets.toml`. Fill in **one** API key privately. Never commit the real file. Environment variables with the same names also work and take precedence. Alternatively, copy `.env.example` to `.env`; it is loaded from the project directory without modifying process environment. Developer configuration priority is environment variables → Streamlit Secrets → `.env`. No API key is bundled, and the app does not simulate a live model when unconfigured.
+Open **http://127.0.0.1:8788**. For live UI editing, leave the Python server running and run `pnpm dev` in a second terminal; Vite proxies `/api` to port 8788. The native server uses process memory; restarting it loses server snapshots. Cloudflare uses D1.
 
-中文：先安装 Python，再按上面步骤安装依赖。把配置模板复制为 `.streamlit/secrets.toml`，只填写你要用的服务。使用者打开已经配置好的在线版无需安装；本地版仍需 Python、依赖、有效密钥和访问模型服务的网络。
+## Credentials and demonstration limits
 
-## AI Model Settings / 模型设置
+Put developer credentials in `.env` locally or **Cloudflare Workers Secrets** online. Never put them in Vite variables, React code, GitHub, exports or a filled example file. `.env.example` documents the variables. Enable free-tier flags only after checking your account's eligibility; provider pricing and quota are external to this app.
 
-**Developer setup:** fill `.env` locally or `.streamlit/secrets.toml`; on Community Cloud, use the Secrets panel. Templates contain empty keys. For Gemini or GLM, set the corresponding `*_FREE_TIER_CONFIRMED` flag to `true` only after confirming your account's current free-model eligibility. API keys are never bundled or displayed from this configuration.
+- `GEMINI_API_KEY`, `ZHIPU_API_KEY`: developer model credentials.
+- `GEMINI_FREE_TIER_CONFIRMED`, `ZHIPU_FREE_TIER_CONFIRMED`: eligibility flags.
+- `DEMO_ACCESS_ENABLED=true`: explicitly allows the bounded public demo without an access code. Set false and configure `ACCESS_CODE` for private access.
+- `DEEPSEEK_API_KEY`: optional **paid** backup credential. It is not a free API; visitors are not charged by the app.
 
-Both developer services can be configured together in Community Cloud **Settings → Secrets**:
+A visitor's personal key overrides the developer key for that request and is not persisted. Changing provider does not silently send content to a second service.
 
-```toml
-GEMINI_API_KEY = "replace-with-your-key"
-GEMINI_MODEL = "gemini-3.5-flash-lite"
-GEMINI_FREE_TIER_CONFIRMED = "false"
+Gemini/GLM inquiries allow up to **12 accepted turns**. DeepSeek mode allows up to **10 accepted turns total in the current inquiry**, including earlier turns. DeepSeek also has a **10-request session allowance** and a **60-request shared daily allowance**; failed calls and regeneration consume request attempts. Starting a new inquiry resets its conversation counter, preserves the 24-attempt lineage counter, returns DeepSeek users to GLM, and requires a fresh GLM failure to offer the backup again. Shared limits remain **40 attempts/hour and 150/day**. These request caps are not a monetary spending guarantee. See [limits and troubleshooting](docs/user-guide.md).
 
-ZHIPU_API_KEY = "replace-with-your-key"
-ZHIPU_MODEL = "glm-4.7-flash"
-ZHIPU_FREE_TIER_CONFIRMED = "false"
+## Source layout
+
+```text
+web/                Current React UI, styles, motion, state and frontend tests
+edge/               Python API, provider calls, policy and transactional storage
+inquiry/            Shared objectivity prompt, validation and review/export logic
+edge-functions/     Fixed-origin EdgeOne API relay
+tests/              Current Python API tests
+scripts/            Worker preparation and portable source packaging
+docs/               Current usage, architecture, deployment and verification
+legacy/             Archived Streamlit release and historical design notes
 ```
 
-Set each confirmation flag to `"true"` only after checking that account's free-tier eligibility. Replace existing entries rather than creating duplicate TOML fields. Retain any OpenRouter settings. Select the service in the main Model settings panel; clear session keys to use developer keys. Developer keys never appear in the browser input fields. Do not put this filled configuration in the repository.
+See [editing the product](docs/editing.md) for exactly which files control the page and agent behavior. The former Streamlit app is self-contained in [`legacy/streamlit/`](legacy/streamlit/README.md); it is not the default entrypoint. No teaching materials, identities or filled credentials belong in this repository.
 
-**Visitor setup:** open **Model settings → Use your own API key**, select a service/model, enter the key in the password field and confirm free eligibility. A nonempty visitor key takes priority for that service; an empty field uses the developer configuration. Keys remain only in that Streamlit session's memory, survive service switching and are removed by **Clear session keys** or session expiry. This app does not write keys to files, logs, exports, GitHub, URLs or shared caches. Browser password masking is visual protection; enter keys only on a trusted HTTPS deployment. A fresh browser session does not inherit another visitor's credentials.
-
-**Test Connection** first checks the account-specific model list for Gemini, then sends one small fictional audit-ethics case through the actual `Session.submit` workflow, including the objectivity prompt, JSON parsing, question-only and quote checks. It consumes one generation request (plus a metadata request for Gemini), does not use the user's case, does not append to the formal conversation, and never automatically falls back to another service. A success badge applies to the current service/key/model configuration; changing it invalidates the badge. A successful test does not establish the quality of all future questions.
-
-中文：在主页面的“模型设置”中选择 Gemini 或智谱 GLM，展开“使用自己的 API Key”，输入密钥并勾选免费档确认，点击“测试连接”。不输入自己的密钥时使用开发者配置。请勿把密钥放入聊天内容；无需把密钥发给项目维护者。Gemini 连接失败时可手动切换智谱，原有对话保留。服务提供方仍按自身政策处理请求，应用不能核实账户计费状态。
-
-## Model choices and costs
-
-| Service | Default | Setup / limits |
-|---|---|---|
-| Google Gemini | `gemini-3.5-flash-lite` | Eligible free-tier project; set `GEMINI_FREE_TIER_CONFIRMED = "true"` only after checking the account. Regional restrictions apply. |
-| OpenRouter | `openrouter/free` | Model settings defaults to the tested `nvidia/nemotron-3-super-120b-a12b:free` model. Select `openrouter/free` for variable routing, or configure another `vendor/model:free` ID. Actual model is recorded. |
-| 智谱 GLM | `glm-4.7-flash` | Domestic alternative. Confirm current free eligibility, then set `ZHIPU_FREE_TIER_CONFIRMED = "true"`. |
-
-Only these Gemini/GLM models and OpenRouter free routes are allowed. No paid-model fallback, automatic retry loop, training, or server purchase is needed. **Zero cost cannot be guaranteed by code:** provider terms, account billing, quotas and availability can change. Do not enable paid billing to bypass a limit. Free services may process data for product improvement; use fictional or anonymized scenarios only.
-
-Optional fallback is off by default. Enabling it sends the conversation to the explicitly selected second service after a network/quota/service failure. It does not retry authentication failures or malformed model output. Requests are capped at 24 per browser session, 40/hour and 150/day per running server process, 12 dialogue turns, 4,000 characters per input and 1,600 output tokens per call. Restarting a process resets its counters: these are shared-demo safeguards, not provider billing controls. Set `ACCESS_CODE` for a shared-demo deployment; it is a simple gate, not full user authentication.
-
-## Deploy to Streamlit Community Cloud
-
-1. Put this project's contents in a public GitHub repository. Do not upload private documents, personal information, `.venv`, `.env`, or real Secrets.
-2. Sign into [Streamlit Community Cloud](https://share.streamlit.io/), create an app from the repository, select `main` and `app.py`, and use Python 3.12 in advanced settings.
-3. Paste the settings into the platform's **Secrets** panel, not into a GitHub file. Configure at least one service and optionally a shared-demo access code.
-4. Deploy, then test the public link in a separate browser. Complete the checks in [evaluation.md](docs/evaluation.md) using a real model before sharing the app.
-5. Share the app link and retain a source ZIP for reproducibility.
-
-## Mainland access / 中国大陆备用方案
-
-Streamlit Cloud, GitHub and overseas model services are not guaranteed accessible on a mainland local network. Test from the reviewer's actual network before submission. An overseas-hosted app can call its provider server-side, but this does not solve inability to open the webpage or account eligibility restrictions.
-
-准备在线链接、源码 ZIP 和真实测试的演示录像。源码可直接发送给使用者，避免依赖 GitHub 下载。使用者也可安装本地版并选择智谱；国内模型仍需有效密钥、免费额度和可用网络。录像只能展示结果，不能替代交互使用。
-
-Build a source-only ZIP with `python scripts/package.py`. It uses an explicit file allowlist, excluding keys, environments and course PDFs.
-
-## Connection diagnosis
-
-Gemini 2.5 names are valid, but Google restricts access for projects that have not used them previously. New projects default to `gemini-3.5-flash-lite`; `gemini-3.1-flash-lite` is another vetted free-tier choice. Legacy 2.5 options remain selectable for eligible projects. Use **Check available models** to query the model list with your current key; only the project's vetted text-generation models are displayed. Model-list access does not prove generation quota or billing eligibility. See [Google's current access notice](https://ai.google.dev/gemini-api/docs/deprecations).
-
-A Gemini HTTP 404 can indicate unavailable model/resource; the connection test checks model availability before generation. A GLM HTTP 401 means authentication was rejected and is not fixed by renaming the model. This adapter uses the domestic `open.bigmodel.cn` endpoint and keys issued at `bigmodel.cn`, not international `z.ai` or a separate coding-plan endpoint. Paste the complete API key without `Bearer`, surrounding quotes or line breaks. Errors display provider/model, HTTP status and a bounded numeric diagnostic code where supplied, never the upstream error message or your key. Do not publish account identifiers or raw provider error bodies.
-
-## Progressive welcome and compact workbench
-
-First visit shows an immersive provider selection. Click a configured Gemini, GLM or optional OpenRouter card to enter the workbench directly, without a model request. A card that needs setup expands an inline connection panel instead. The selected model gathers at the center, then morphs into the model status while the real situation workspace is revealed. A shared browser portal keeps this sequence continuous across Python reruns; it is skippable, respects reduced motion and has a bounded cleanup timeout. Ordinary interactions do not replay it.
-
-The main-page **Model settings** button expands a compact inline panel containing service, model, visitor key and connection test. It does not open a floating popup. After changing configuration, **Use Gemini / GLM / OpenRouter** confirms it without an API request. Opening and closing the panel preserves inquiry data. A successful connection test also confirms the current configuration; changing service, model or key invalidates confirmation. Sidebar contains language and scope information.
-
-A 260px interactive right-hand journey tracks **Choose model → Choose situation → Start conversation**. It is driven by confirmed configuration, selected/typed situation and valid conversation responses. It stays in progress during inquiry; a single answer does not certify completion. On narrow screens, the journey becomes an in-flow horizontal strip. Clicking a step focuses its region; returning to situations preserves the current conversation.
-
-Folder cards use local Streamlit Custom Components v2. Hover or keyboard focus previews details without a Python rerun or model request; moving into the details keeps the preview open, and leaving closes it after 120ms. Click/Enter selects an editable draft. Touch users have a separate Preview control. Details use safe text nodes; component payloads contain no API keys. One-shot triggers prevent replayed selections.
-
-**Choose another situation** and **New conversation** appear only after a valid conversation starts:
-- Choose another situation opens a pending selection while preserving the current conversation and unsent reply. Cancel restores them. A valid first reply for the new situation commits the replacement; network or output errors preserve both the old conversation and new draft.
-- New conversation clears messages, notebook, briefing, consent and execution state, while retaining the initial situation and model configuration. Custom situations retain their original first user message. Download records before restarting.
-- Model switches preserve conversation and request counters. Changing service/model resets sending consent.
-
-Conversation, notebook and review briefing share tabs. **Execution details**, initially collapsed, retains real Input check → Model request → Output validation → Save result events. Failed requests expand it automatically and preserve the input. Save means current-session memory, not disk. Provider records show the actual model and fallback used.
-
-After several messages, the transcript uses a bounded scroll area with native autoscroll, keeping the composer close to the conversation. Each assistant question has a browser-only **Copy** action. **Regenerate last question** consumes a model request and validates a replacement before updating the latest question and provenance; it preserves earlier turns, the latest user answer and your unsent draft. Failure preserves the original response. A narrow validation guard rejects observed “unknown reviewer → nobody reviewed” presuppositions; it is not a comprehensive factuality check. **Help me respond** fills editable response starters without sending them or inventing facts. Revoking sending consent or changing fallback services blocks further calls until consent is renewed.
-
-Refresh recovery uses an opaque capability in tab `sessionStorage`, with inquiry snapshots in a bounded server-memory cache (two-hour inactivity timeout, at most 128 workspaces). The snapshot contains inquiry data, public provider/model/language preferences and request count; **no API keys, consent or connection signature**. A recovered workbench requires model confirmation again; visitor keys must be re-entered. No inquiry text is stored in the browser, on disk or in a URL. Process restarts, expiry and capacity eviction can erase recovery; download is the durable backup. Closing the tab ends access to its token.
-
-Animations are original local CSS/Web Animations inspired by Hairline, GSAP timeline sequencing, Motion, Anime.js and AutoAnimate; no React, Node build, external scripts or background animation is required. `prefers-reduced-motion` removes motion. Component focus and local preview state survive unrelated reruns. See [notices](THIRD_PARTY_NOTICES.md).
-
-## Light and dark appearance
-
-The sun/moon controls in the product header switch the complete interface, including native fields, example folders, notebook, keyboard palette and journey. The first visit follows the system preference unless an explicit choice has already been saved. Only the literal `light`/`dark` preference is stored in browser local storage; no credentials or conversation data are stored there. Theme switching preserves the current model, conversation and unsent draft and does not call a model. Refresh recovery also retains the public preference. Browser storage restrictions fall back to current-session behavior.
-
-The transition uses local SVG and Web Animations: a 460ms gathering phase followed by a 720ms morph/reveal, starting the second phase only when the actual destination exists. Slow backend redraws can extend the handoff; a four-second bound prevents a stuck overlay. Skip or Escape remains effective even when pressed before Python completes the handoff. Reduced motion removes the sequence. Completed navigation and transition events are kept at document scope so component remounts cannot replay them.
-
-中文：右上角太阳／月亮按钮切换明暗模式；浏览器只保存外观偏好，不保存密钥或对话。模型已配置时点击卡片即可继续；需要配置时展开页面内设置，不再反复弹窗。转场可跳过，切换主题不会清空草稿。
-
-## Navigation and human-review tools
-
-The welcome uses an original, locally rendered document-and-lens illustration. Motion runs on actual entry or state changes; reduced-motion preferences keep all controls usable without movement.
-
-Open **Jump to…** or press **Ctrl/Cmd K** to search model settings, situations, writing, conversation, notebook and briefing. **/** focuses the composer when you are not already typing. These actions only navigate: they never send a draft, reset a conversation or call a model. Available destinations reflect the current inquiry state.
-
-Tabs retain their logical selection across language changes. Cancelling a pending situation switch restores the previous tab and unsent draft. The inquiry-lens banner uses short, predefined guidance for the accepted question's topic; it does not expose internal reasoning or claim to detect threats conclusively.
-
-Notebook filters show literal user statements by topic, with their source user-turn numbers. Counts describe extracted statements, not verified evidence or completeness. Missing information remains unknown rather than evidence of absence; check the full transcript.
-
-After two inquiry turns, **Download review packet · HTML** creates a self-contained, bilingual document containing the original situation, current question, quoted statements, transcript and recorded model provenance. Open it offline and use your browser's Print / Save as PDF. It contains no scripts, remote resources, credentials or automated ethical verdict. Downloading and filtering use no API quota. Treat exported statements as untrusted text and review them yourself.
-
-中文：快捷导航只定位页面，不发送内容；探究记录可按主题筛选并查看原始轮次。两轮对话后，可下载离线复核资料包并打印为 PDF。记录中的陈述不等于已验证证据，仍需人工复核。
-
-## Local typography
-
-Noto Sans SC variable-font WOFF2 subsets are bundled under `static/fonts/` with the SIL Open Font License. Unicode-range loading retrieves only needed subsets; `font-display: swap` and system fallbacks keep text readable while loading. English and Chinese use one font family, with no Google Fonts/CDN requests. Streamlit static serving is enabled in the checked-in configuration. Keep static files and license files in deployments and portable ZIPs.
-
-Font preparation is a development-only step: `scripts/build_fonts.py` records the official source and produces the committed subsets. Running the app needs neither fontTools nor Brotli. See the font manifest for provenance and artifact sizes.
-
-## Use and scope
-
-1. Choose English or 中文, open Model settings if needed, and confirm the configured service.
-2. Type your own fictional/anonymized situation, or load and edit an optional example. Hover previews; click selects. Loading a case never submits it.
-3. Confirm sharing with the selected service(s); send and answer the follow-up. Unknown facts can remain unknown.
-4. After one follow-up answer, prepare a human-review briefing or download the conversation. The notebook quotes user statements, not verified audit evidence.
-
-The prompt focuses on objectivity, relevant facts, pressures, conflicting information and independent review. A small state manager retains context, validates the response and records provider/model provenance. It is not a fixed branching quiz or a trained custom model. It cannot certify compliance, replace professional judgment or give an audit opinion. Validation rejects malformed answers and some premature verdicts, but cannot prove that every valid-looking question is neutral, accurate or free of bias. Exact quote matching cannot prove completeness or preserve every contextual nuance; read the full transcript and check original evidence.
-
-The app does not intentionally persist conversations to disk. Provider policies still apply. Download before resetting/leaving. Exported user/model text is untrusted; read it as text and do not follow embedded links/instructions automatically.
-
-## Development
+## Check and deploy
 
 ```sh
 python -m unittest discover -s tests -v
+pnpm test
+pnpm build
+python scripts/package_react.py
 ```
 
-`inquiry/core.py`: state, prompt and response checks. `inquiry/providers.py`: HTTP adapters and cost guards. `inquiry/examples.py`: optional scenarios. `inquiry/ui_state.py`: navigation and transactional scenario switching. `inquiry/resume.py`: bounded process-memory refresh recovery. `inquiry/components.py` and `frontend/`: local v2 components. `inquiry/presentation.py`: compact local style. `app.py`: UI and session-only credentials. Tests use fake responses; passing them is **not** evidence of live provider quality or mainland reachability.
+The ZIP at `dist/inquire-react-source.zip` includes the built UI and native Python server, excluding private configuration, dependencies and the archive. GitHub Actions checks the current application on `main` and the development branch. [Deployment instructions](docs/deployment.md) cover Cloudflare and the identical-interface EdgeOne mirror. Deployments do not automatically upgrade a paid plan.
 
-## Official references
+## Licenses and attribution
 
-Pricing and access should be rechecked before deployment:
-
-- [Gemini pricing](https://ai.google.dev/gemini-api/docs/pricing), [regional availability](https://ai.google.dev/gemini-api/docs/available-regions)
-- [OpenRouter free variants](https://openrouter.ai/docs/guides/routing/model-variants/free), [free router](https://openrouter.ai/openrouter/free)
-- [GLM-4.7-Flash API](https://docs.bigmodel.cn/cn/guide/models/free/glm-4.7-flash)
-- [智谱 model overview](https://docs.bigmodel.cn/cn/guide/start/model-overview)
-- [Streamlit deployment](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/deploy), [Secrets management](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/secrets-management)
+Third-party notices are in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Local Noto Sans SC subsets retain the SIL Open Font License. GSAP follows its own Standard License. No Base44 template source or assets were copied.

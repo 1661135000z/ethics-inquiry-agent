@@ -1,4 +1,4 @@
-"""Build a minimal Worker project without changing Streamlit dependencies."""
+"""Build a minimal Worker project for the current React frontend and Python API."""
 import json
 from pathlib import Path
 import shutil

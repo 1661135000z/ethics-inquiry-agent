@@ -4,13 +4,14 @@ from zipfile import ZipFile, ZIP_DEFLATED
 ROOT=Path(__file__).resolve().parents[1]
 
 def source_files():
-    files=[ROOT/name for name in ['README.md','requirements-api.txt','.env.example','.gitignore','THIRD_PARTY_NOTICES.md','package.json','pnpm-lock.yaml','pnpm-workspace.yaml','pyproject.toml','wrangler.jsonc','edgeone.json','docs/migration/mirror-plan.md','docs/react-experience.md','scripts/prepare_worker.py','scripts/package_react.py','web/index.html','web/package.json','web/tsconfig.json','web/vite.config.ts']]
-    for folder in ['edge','inquiry','tests_next']:
+    files=[ROOT/name for name in ['README.md','requirements-api.txt','.env.example','.gitignore','THIRD_PARTY_NOTICES.md','package.json','pnpm-lock.yaml','pnpm-workspace.yaml','pyproject.toml','wrangler.jsonc','edgeone.json','scripts/prepare_worker.py','scripts/package_react.py','web/index.html','web/package.json','web/tsconfig.json','web/vite.config.ts']]
+    for folder in ['edge','inquiry','tests']:
         files.extend(sorted((ROOT/folder).glob('*.py')))
-    files.extend([ROOT/'edge/schema.sql',ROOT/'docs/migration/mirror-acceptance.md'])
+    files.extend([ROOT/'edge/schema.sql',ROOT/'docs/acceptance.md'])
     for folder in ['web/src','web/public','web/dist','edge-functions']:
         files.extend(sorted(p for p in (ROOT/folder).rglob('*') if p.is_file() and p.suffix in {'.ts','.tsx','.json','.css','.js','.html','.svg','.woff2','.txt'}))
-    return files
+    files.extend(sorted((ROOT/'docs').glob('*.md')))
+    return list(dict.fromkeys(files))
 
 def build():
     if not (ROOT/'web/dist/index.html').is_file():raise RuntimeError('Build the frontend before packaging.')

@@ -39,11 +39,11 @@ class MemoryStore:
             self.paid_day=[t for t in self.paid_day if t>now-86400]
             if item['snapshot'].get('backup_until',0)<=now:
                 raise APIError('backup_gate','请先在GLM失败后选择备用模型。',403)
-            if sum(r['fingerprint'].startswith('paid:') for r in item['requests'].values())>=15 or len(self.paid_day)>=60:
+            if sum(r['fingerprint'].startswith('paid:') for r in item['requests'].values())>=10 or len(self.paid_day)>=60:
                 raise APIError('backup_limit','备用模型请求额度已达到限制，请返回GLM或稍后再试。',429)
         self.hour=[t for t in self.hour if t>now-3600]
         self.day=[t for t in self.day if t>now-86400]
-        if item['snapshot']['attempts']>=24 or len(self.hour)>=40 or len(self.day)>=150:
+        if item['snapshot']['attempts']>=24 or len(self.hour)>=40 or len(self.day)>=100:
             raise APIError('limit','已达到请求限制，请稍后继续。',429)
         self.hour.append(now); self.day.append(now)
         if fingerprint.startswith('paid:'):self.paid_day.append(now)

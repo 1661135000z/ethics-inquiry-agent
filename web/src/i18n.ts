@@ -7,7 +7,7 @@ const diagnostics:Record<string,string>={
  '备用模型请求额度已达到限制，请返回GLM或稍后再试。':'The backup request allowance has been reached. Return to GLM or try later.',
  '备用模型只用于实际对话，不进行额外连接测试。':'The backup is used for actual inquiries only, without an additional connection test.',
  '备用模型余额不足，请返回GLM或联系管理员。':'The developer’s backup balance is insufficient. Return to GLM or contact the administrator.',
- '已达到15轮，请导出并开始新对话。':'This inquiry has reached 15 turns. Export it and start a new inquiry.',
+ '已达到10轮，请导出并开始新对话。':'This inquiry has reached 10 turns. Export it and start a new inquiry.',
  '无法连接后端，请检查网络。':'Cannot reach the backend. Check your connection.',
  '请求未完成。':'The request could not be completed.',
  '连接未完成。':'The connection could not be completed.',

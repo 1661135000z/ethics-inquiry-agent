@@ -47,17 +47,17 @@ class BackupTests(unittest.IsolatedAsyncioTestCase):
         with self.assertRaises(APIError):
             [e async for e in self.service.inquire(self.token,{**self.body,'provider':'deepseek','model':'deepseek-flash','request_id':'backup-request-0001'})]
         self.assertEqual(len(self.transport.calls),1)
-    async def test_memory_and_d1_enforce_fifteen_paid_attempts(self):
+    async def test_memory_and_d1_enforce_ten_paid_attempts(self):
         for store in (MemoryStore(),D1Store(Binding())):
             if isinstance(store,D1Store):self.addCleanup(store.db.connection.close)
             service=Service(store,BackupTransport(),self.env);token,_=await service.create()
             with self.assertRaises(APIError):[e async for e in service.inquire(token,self.body)]
-            for index in range(15):
+            for index in range(10):
                 body={**self.body,'provider':'deepseek','model':'deepseek-flash','paid_confirmed':True,'request_id':f'backup-request-{index:04d}','version':index}
                 [e async for e in service.inquire(token,body)]
             with self.assertRaises(APIError):
-                [e async for e in service.inquire(token,{**body,'request_id':'backup-request-over','version':15})]
-            self.assertEqual(len(service.transport.calls),16)
+                [e async for e in service.inquire(token,{**body,'request_id':'backup-request-over','version':10})]
+            self.assertEqual(len(service.transport.calls),11)
     def test_deepseek_payload_is_fixed_and_non_thinking(self):
         url,headers,payload=request_payload('deepseek','deepseek-flash','backup-placeholder',[{'role':'user','content':'A fictional question'}])
         self.assertEqual(url,'https://api.deepseek.com/chat/completions')

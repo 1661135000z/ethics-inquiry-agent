@@ -3,7 +3,7 @@ import {localizeMessage,cachedRecord} from './i18n';
 describe('interface localization',()=>{
  it('explains GLM capacity and backup limits in English',()=>{
   expect(localizeMessage('GLM服务器当前拥挤，通常等待片刻再试即可恢复。原对话和输入已保留，也可以选择备用模型。（HTTP 429）','English')).toContain('busy');
-  expect(localizeMessage('已达到15轮，请导出并开始新对话。','English')).toContain('15 turns');
+  expect(localizeMessage('已达到10轮，请导出并开始新对话。','English')).toContain('10 turns');
  });
  it('renders stored provider errors in the current language and preserves HTTP status',()=>{
   const raw='Gemini 不接受当前请求来源的地区，请切换 GLM；这不是访问码错误。（HTTP 400）';

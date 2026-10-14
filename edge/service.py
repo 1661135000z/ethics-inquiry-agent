@@ -63,7 +63,7 @@ class Service:
                 if not session.messages or session.messages[-1]['role']!='assistant': raise APIError('input','暂无可重新生成的追问。')
                 candidate=session.messages[:-1]
             else:
-                if session.turns>=(15 if provider=='deepseek' else 12): raise APIError('limit','已达到15轮，请导出并开始新对话。' if provider=='deepseek' else '已达到12轮，请导出并开始新对话。')
+                if session.turns>=(10 if provider=='deepseek' else 12): raise APIError('limit','已达到10轮，请导出并开始新对话。' if provider=='deepseek' else '已达到12轮，请导出并开始新对话。')
                 if sum(len(m['content']) for m in session.messages)+len(text.strip())>24000: raise APIError('limit','已达到上下文长度限制。')
                 candidate=session.messages+[{'role':'user','content':text.strip()}]
             yield {'event':'stage','data':{'stage':'input'}}

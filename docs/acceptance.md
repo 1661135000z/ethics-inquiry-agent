@@ -31,3 +31,7 @@ Two intentional DeepSeek requests through https://app.inquire-ethics.dynv6.net/ 
 
 Only two DeepSeek calls were made. No automatic retry, top-up, key inspection or provider-region bypass was used. This verifies the live backend/relay workflow; the fee amount was not retrieved or estimated. The current automated suite contains 30 Python API tests and 23 frontend/state/proxy/localization tests, including 15-turn recovery and backup request limits.
 
+
+## Delivery organisation and current backup limit
+
+The React application is the default root implementation; Streamlit and superseded planning notes are archived under `legacy/`. Current Python tests are under `tests/`. The owner reduced the DeepSeek limit from fifteen to **ten** accepted turns and ten paid attempts per session; the earlier live two-turn acceptance remains historical evidence, not a fresh ten-turn test. Cached older fifteen-turn histories remain readable.
