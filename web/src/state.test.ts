@@ -59,4 +59,13 @@ describe('workspace transitions',()=>{
   const pending=reducer(selected,{type:'REQUEST',id:'switch'});
   expect(reducer(pending,{type:'CANCEL_SELECT'})).toEqual(pending);
  });
+ it('keeps cached dialogue read-only when the backend session expires',()=>{
+  const snapshot={...initialState().snapshot,version:2,initial_text:'Original situation',session:{...initialState().snapshot.session,messages:[{role:'user' as const,content:'Original situation'},{role:'assistant' as const,content:'Who could verify it?'}]}};
+  const state={...initialState(),onboarded:true,screen:'chat' as const,snapshot,draft:'Unsent answer'};
+  const restored=reducer(state,{type:'RESTORE',snapshot:initialState().snapshot});
+  expect(restored.snapshot).toEqual(snapshot);
+  expect(restored.draft).toBe('Unsent answer');
+  expect(restored.archived).toBe(true);
+  expect(reducer(restored,{type:'NEW',snapshot:initialState().snapshot}).archived).toBe(false);
+ });
 });
