@@ -16,6 +16,10 @@ A recognised capacity error means the provider is crowded; retrying later may wo
 
 DeepSeek mode permits at most **10 accepted turns in the current inquiry**, not ten additional turns after switching. There are also ten paid request attempts per server session and sixty across the deployment per day. Failures and regeneration consume attempts; reaching ten displayed turns is therefore not guaranteed. Backup eligibility lasts 30 minutes after a recognised GLM failure.
 
+## Return to the welcome screen
+
+Click the top-left Inquire logo to return home. Your conversation, unsent draft, model settings and request counts remain intact. Choose **Continue your inquiry** to return to the same view, including a pending situation selection. Home navigation makes no model call. It is temporarily unavailable while a request, connection or transition is running. Choosing a model card still tests or configures that service.
+
 ## Change or restart
 
 **Choose another situation** opens selection without deleting the accepted conversation. Submit the replacement to commit it only after a valid first reply; cancel restores the old draft. **New inquiry** clears the transcript, observations and execution records, retains the original situation and model preference, and clears sending consent. When using DeepSeek, it returns to GLM.

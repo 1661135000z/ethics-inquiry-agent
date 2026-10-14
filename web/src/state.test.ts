@@ -77,3 +77,20 @@ it('retains previously accepted fifteen-turn archives after the backup limit is 
  expect(restored.screen).toBe('chat');expect(restored.provider).toBe('deepseek');expect(restored.snapshot.session.messages).toHaveLength(30);
  expect(restored.verified).toBe(false);
 });
+
+describe('home navigation',()=>{
+ it('returns home and resumes without resetting conversation, draft, model or request counts',()=>{
+  const s={...initialState(),screen:'chat' as const,onboarded:true,verified:true,draft:'Unsent answer',view:'notes' as const};s.snapshot.session.messages=[{role:'user',content:'Situation'},{role:'assistant',content:'Who checked it?'}];s.snapshot.attempts=3;
+  const home=reducer(s,{type:'HOME'});expect(home.screen).toBe('welcome');expect(home.snapshot).toEqual(s.snapshot);expect(home.verified).toBe(true);
+  const back=reducer(home,{type:'RESUME'});expect(back.screen).toBe('chat');expect(back.draft).toBe(s.draft);expect(back.view).toBe('notes');expect(back.snapshot.attempts).toBe(3);
+ });
+ it('preserves an in-progress situation switch and ignores home during a request',()=>{
+  const s={...initialState(),screen:'cases' as const,onboarded:true,selecting:true,draft:'Replacement',savedDraft:'Old answer'};
+  expect(reducer(reducer(s,{type:'HOME'}),{type:'RESUME'})).toEqual(s);
+  const busy={...s,activeRequest:'r'};expect(reducer(busy,{type:'HOME'})).toBe(busy);
+ });
+ it('keeps intentional welcome navigation after session restoration and refresh',()=>{
+  const s=initialState();s.onboarded=true;s.snapshot.session.messages=[{role:'user',content:'Situation'},{role:'assistant',content:'Who checked it?'}];
+  const restored=restoreState(JSON.stringify(publicSnapshot(s)));expect(reducer(restored,{type:'RESTORE',snapshot:s.snapshot}).screen).toBe('welcome');
+ });
+});
