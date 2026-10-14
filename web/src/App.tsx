@@ -15,6 +15,7 @@ const focusNames:Record<string,string>={scope:'探究范围',role:'角色与判�
 export default function App(){
  const [state,dispatch]=useReducer(reducer,null,()=>{try{return restoreState(sessionStorage.getItem('inquire.workspace.v1'))}catch{return initialState()}});
  const [config,setConfig]=useState<Config>(fallback);
+ const [configLoading,setConfigLoading]=useState(true),[configError,setConfigError]=useState('');
  const [settings,setSettings]=useState(false),[selected,setSelected]=useState<string|null>(null),[connecting,setConnecting]=useState(false),[connectionError,setConnectionError]=useState('');
  const [keys,setKeys]=useState<Record<string,string>>({}),[access,setAccess]=useState(''),[free,setFree]=useState<Record<string,boolean>>({}),[consent,setConsent]=useState(false);
  const [credentialModes,setCredentialModes]=useState<Record<string,'developer'|'personal'>>({});
@@ -28,10 +29,14 @@ export default function App(){
  const locked=busy||resetting||connecting||transitioning;
  useEffect(()=>{
   let alive=true;
-  json<Config>('/api/config').then(c=>{if(alive)setConfig(c)}).catch(()=>{});
+  json<Config>('/api/config').then(c=>{if(alive){setConfig(c);setConfigError('')}}).catch(()=>{if(alive)setConfigError('无法读取后台模型配置。请重试；你的对话不会被清除。')}).finally(()=>{if(alive)setConfigLoading(false)});
   json<Snapshot>('/api/session',{}).then(s=>{if(alive){dispatch({type:'RESTORE',snapshot:s});setReady(true)}}).catch(e=>{if(alive)setRecoveryError(e.message)});
   return()=>{alive=false};
  },[]);
+ async function reloadConfiguration(){
+  if(configLoading)return;setConfigLoading(true);setConfigError('');
+  try{setConfig(await json<Config>('/api/config'))}catch{setConfigError('无法读取后台模型配置。请重试；你的对话不会被清除。')}finally{setConfigLoading(false)}
+ }
  useEffect(()=>{try{sessionStorage.setItem('inquire.workspace.v1',JSON.stringify(publicSnapshot(state)))}catch{};document.documentElement.dataset.theme=state.theme;document.documentElement.lang=zh?'zh-CN':'en'},[state,zh]);
  useLayoutEffect(()=>enter(container.current),[state.screen]);
  useLayoutEffect(()=>{
@@ -127,11 +132,12 @@ export default function App(){
    <div className="top-actions"><button className="text-button language" onClick={()=>dispatch({type:'LANGUAGE',language:zh?'English':'中文'})}>{zh?'EN':'中文'}</button><button className="icon-button" aria-label={state.theme==='dark'?'切换浅色模式':'切换深色模式'} onClick={()=>dispatch({type:'THEME',theme:state.theme==='dark'?'light':'dark'})}><Icon name={state.theme==='dark'?'sun':'moon'}/></button></div>
   </header>
   {config.test_mode&&<div className="test-banner">{t('本地测试演示 · 使用明确标注的模拟回复，不是实时模型','Local test fixture · simulated replies, not a live model')}</div>}
+  {configError&&<div className="error" role="alert">{t(configError,'Could not load saved model configuration. Retry without clearing your inquiry.')}<button onClick={reloadConfiguration} disabled={configLoading}>{t('重试配置','Retry configuration')}</button></div>}
   {state.screen==='welcome'?<main className="welcome">
    <div className="welcome-copy" data-enter><span className="eyebrow"><span className="fine-line"/>{t('一个更好的问题，始于探究','A better question starts with inquiry')}</span><h1>{t('判断之前，','Before judgment,')}<br/><span>{t('先问清楚。','ask a better question.')}</span></h1><p>{t('选择一个模型，展开你的伦理情境。','Choose a model. Open your ethical inquiry.')}</p></div>
    <div className={`models ${selected?'has-selection':''}`}>
     {config.providers.filter(p=>p.id!=='openrouter').map((provider,i)=><article key={provider.id} data-model={provider.id} data-enter className={`model-card ${selected===provider.id?'selected':''}`} onPointerMove={tilt} onPointerLeave={resetTilt}>
-     <div className="card-bezel"><button className="model-main" onClick={()=>chooseProvider(provider)} disabled={connecting||transitioning} aria-expanded={selected===provider.id}><div className="card-top"><span className="provider-symbol">{provider.id==='gemini'?<Icon name="spark" size={30}/>:<span className="glm-symbol"><i/><i/><i/></span>}</span><span className="model-availability">{provider.configured?t('开发者配置可用','Developer configured'):t('使用自己的密钥','Bring your own key')}</span></div><div className="provider-title">{names[provider.id]}<span>0{i+1}</span></div><p>{provider.id==='gemini'?t('Google 的语言模型','Google language models'):t('智谱 · 国内模型服务','Zhipu · domestic model service')}</p><div className="model-cta"><span>{selected===provider.id?t('正在配置','Configure connection'):t('选择并连接','Choose & connect')}</span><span className="arrow-island"><Icon name="arrow"/></span></div></button></div>
+     <div className="card-bezel"><button className="model-main" onClick={()=>chooseProvider(provider)} disabled={connecting||transitioning||configLoading} aria-expanded={selected===provider.id}><div className="card-top"><span className="provider-symbol">{provider.id==='gemini'?<Icon name="spark" size={30}/>:<span className="glm-symbol"><i/><i/><i/></span>}</span><span className="model-availability">{configLoading?t('正在读取配置','Loading configuration'):provider.configured?t('开发者配置可用','Developer configured'):t('使用自己的密钥','Bring your own key')}</span></div><div className="provider-title">{names[provider.id]}<span>0{i+1}</span></div><p>{provider.id==='gemini'?t('Google 的语言模型','Google language models'):t('智谱 · 国内模型服务','Zhipu · domestic model service')}</p><div className="model-cta"><span>{selected===provider.id?t('正在配置','Configure connection'):t('选择并连接','Choose & connect')}</span><span className="arrow-island"><Icon name="arrow"/></span></div></button></div>
     </article>)}
    </div>
    {selected&&modelForm}

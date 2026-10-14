@@ -54,7 +54,7 @@ The generated isolated project excludes Streamlit dependencies and development e
 
 No automatic paid upgrade. The service caps 12 accepted turns, 24 attempts per conversation lineage, 40 attempts/hour and 150/day per deployment. Connection checks count too. Failed requests count toward budgets. At most 128 active sessions. D1 atomically reserves attempts and commits only validated responses; duplicate request IDs cannot call a model again. Free platform limits still apply independently. This is a small demonstration, not an abuse-resistant public production service.
 
-Static loading, Python initialization and model inference are different delays. Deployment reported 1,151ms Worker startup; this is not CPU/request measurement. Complete Gemini/GLM calls and real CPU metrics must pass before asserting free-tier suitability. Global Cloudflare access is not guaranteed from mainland networks; test with the actual viewer's network. Local native Python and the preserved Streamlit release remain alternatives.
+Static loading, Python initialization and model inference are different delays. Deployment reported 1,151ms Worker startup; this is not CPU/request measurement. Both configured providers have completed live inquiries, including continuing one conversation across providers. The 2026-10-14 dashboard sample across mixed API routes showed CPU P50 25.38ms, P90 54.4ms and P99 55.99ms, with zero reported CPU/memory-limit errors; memory P99 was 58.66MB. This small, delayed aggregate is not per-inquiry profiling. It exceeds the published 10ms free CPU baseline, so long-term free-tier reliability is **not established**. Do not upgrade billing automatically; use the included native Python backup if resource errors occur. See https://developers.cloudflare.com/workers/platform/limits/. Global Cloudflare access is not guaranteed from mainland networks; test with the actual viewer's network. Local native Python and the preserved Streamlit release remain alternatives.
 
 ## Interaction and inquiry contract
 
@@ -79,3 +79,11 @@ python -m unittest discover -s tests
 Gemini HTTP400 is classified from recognized error categories without echoing provider bodies: unsupported request location, free-tier region, rejected key, invalid parameters or unmet prerequisites. Do not automatically enable billing or retry a client error. Switch to GLM when the source region is unsupported.
 
 Local simulated browser QA is explicitly labelled; it is not proof of live model connectivity. Keep endpoint and CPU checks distinct from mock transport tests.
+
+## Release acceptance — 2026-10-14
+
+- Live Gemini: two contextual follow-up turns accepted and persisted in D1. Live GLM: connection and continuation of the same conversation accepted. No private credential was read or included in evidence.
+- Live cancellation and refresh: accepted transcript and unsent draft retained; refresh clears credential verification and consent without replaying welcome. A two-turn human review HTML downloaded successfully.
+- Local simulated 390px touch QA: preview does not select a scenario, selection populates the editable draft, regeneration retains unsent input, cancellation restores it, and light-theme dialogue has no horizontal overflow. Pointer hover was inspected in code; no automated pointer-hover claim is made.
+- Fixed narrow-screen journey connectors crossing step labels; lines now occupy dedicated gaps. This final CSS repair is locally verified but its cloud publication is pending because deployment approval could not complete. Configuration loading/error retry was deployed before that blockage.
+- Mainland access without VPN remains unmeasured. SSE shows real execution stages and only validated complete replies, not token streaming. GitHub checks package the native backup; automatic Cloudflare deployment is not configured.
