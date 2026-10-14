@@ -18,6 +18,8 @@ Built with **React, Vite, TypeScript and GSAP**, backed by a portable **Python i
 
 [Run, configure and deploy](docs/react-experience.md) · [Mirror implementation plan](docs/migration/mirror-plan.md)
 
+[Mirror acceptance](docs/migration/mirror-acceptance.md)
+
 The primary demo hostname may be unreachable on some mainland networks. The alternative uses EdgeOne's confirmed Free plan, a free dynv6 hostname and free HTTPS, with same-origin API forwarding to the existing Python backend. It is not a redirect; fonts and animation assets are served from the mirror. Mainland page loading was confirmed by the owner without a VPN; their GLM inquiry returned provider HTTP 429, so sustained mainland dialogue has not yet passed acceptance. Free compute and provider quotas still apply. Execution-stage SSE is supported; unvalidated raw token output is not displayed.
 
 ## Legacy Streamlit source

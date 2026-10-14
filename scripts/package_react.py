@@ -7,7 +7,7 @@ def source_files():
     files=[ROOT/name for name in ['README.md','requirements-api.txt','.env.example','.gitignore','THIRD_PARTY_NOTICES.md','package.json','pnpm-lock.yaml','pnpm-workspace.yaml','pyproject.toml','wrangler.jsonc','edgeone.json','docs/migration/mirror-plan.md','docs/react-experience.md','scripts/prepare_worker.py','scripts/package_react.py','web/index.html','web/package.json','web/tsconfig.json','web/vite.config.ts']]
     for folder in ['edge','inquiry','tests_next']:
         files.extend(sorted((ROOT/folder).glob('*.py')))
-    files.append(ROOT/'edge/schema.sql')
+    files.extend([ROOT/'edge/schema.sql',ROOT/'docs/migration/mirror-acceptance.md'])
     for folder in ['web/src','web/public','web/dist','edge-functions']:
         files.extend(sorted(p for p in (ROOT/folder).rglob('*') if p.is_file() and p.suffix in {'.ts','.tsx','.json','.css','.js','.html','.svg','.woff2','.txt'}))
     return files
