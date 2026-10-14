@@ -87,3 +87,13 @@ class APITests(unittest.IsolatedAsyncioTestCase):
         with self.assertRaises(APIError): await self.events({**self.body,'text':'Another scenario with the same request ID.'})
 
 if __name__ == '__main__': unittest.main()
+
+class DemoAccessTests(unittest.TestCase):
+    def test_demo_is_explicit_opt_in_and_still_requires_free_model(self):
+        from edge.policy import credentials
+        body={'provider':'zhipu','model':'glm-4.7-flash'}
+        env={'ZHIPU_API_KEY':'backend-only-placeholder','ZHIPU_FREE_TIER_CONFIRMED':'true'}
+        with self.assertRaises(APIError): credentials(body,env)
+        self.assertEqual(credentials(body,{**env,'DEMO_ACCESS_ENABLED':'true'})[2],env['ZHIPU_API_KEY'])
+        with self.assertRaises(APIError): credentials(body,{**env,'DEMO_ACCESS_ENABLED':'true','ZHIPU_FREE_TIER_CONFIRMED':'false'})
+        self.assertEqual(credentials({**body,'api_key':'visitor-placeholder','free_confirmed':True},{**env,'DEMO_ACCESS_ENABLED':'true'})[2],'visitor-placeholder')

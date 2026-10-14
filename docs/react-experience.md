@@ -34,7 +34,7 @@ ZHIPU_FREE_TIER_CONFIRMED=false
 ACCESS_CODE=
 ```
 
-Create a private access code to protect developer-funded calls. Only set a free-confirmation flag to `true` after checking that account's current free eligibility. The API refuses unapproved models, but does not control changes in provider pricing; do not enable paid billing for this demo.
+By default create a private access code to protect developer-funded calls. The live demonstration explicitly opts into `DEMO_ACCESS_ENABLED=true`: configured eligible provider keys can be used without a visitor key or access code, while all atomic request budgets remain active. Set this flag to false to restore private-code access. The private code is never prefilled in a browser. Only set a free-confirmation flag to `true` after checking that account's current free eligibility. The API refuses unapproved models, but does not control changes in provider pricing; do not enable paid billing for this demo.
 
 Visitor keys override the developer key for that request only. Password fields stay in page memory and clear on refresh; they are sent over HTTPS to the Python backend, then to the selected provider. They are not written to D1, exports, browser storage, bundles or application logs. Provider switching never sends data automatically to a second service. A new selection requires fresh sending consent. Connection testing sends only a fictional audit example and does not modify the user's dialogue.
 
@@ -58,7 +58,7 @@ Static loading, Python initialization and model inference are different delays. 
 
 ## Interaction and inquiry contract
 
-Welcome shows only model selection. An explicit saved-configuration/personal-key choice separates ACCESS_CODE from provider keys. Inline credentials lead to an inquiry studio through a GSAP shared-element transition. The studio shares the welcome page’s centered typography, ambient contours and nested surfaces. The primary editable context sits beside optional expandable examples; local hover/focus previews do not call Python, and touch has a separate preview action. Light/dark themes, Chinese font subsets and animation assets are bundled locally. Reduced motion removes transitions; there is no search palette or skip button.
+Welcome shows only model selection. An explicit saved-configuration/personal-key choice separates developer credentials from provider keys. When bounded public demo mode is enabled, selecting a configured model connects automatically without displaying a private access-code field. Inline credentials lead to an inquiry studio through a GSAP shared-element transition. The studio shares the welcome page’s centered typography, ambient contours and nested surfaces. The primary editable context sits beside optional expandable examples; local hover/focus previews do not call Python, and touch has a separate preview action. Light/dark themes, Chinese font subsets and animation assets are bundled locally. Reduced motion removes transitions; there is no search palette or skip button.
 
 The journey derives from real UI state. Switching situations preserves the accepted conversation and unsent answer until a validated first reply commits the replacement. Cancel restores the draft. New conversation keeps the original situation and model preferences while clearing consent and records. Regeneration replaces only the latest validated question and preserves the unsent answer.
 
@@ -90,3 +90,9 @@ Local simulated browser QA is explicitly labelled; it is not proof of live model
 
 - Expired backend recovery now preserves cached accepted dialogue as a read-only archive, retains the unsent draft, and offers a local Markdown download. Starting a new inquiry releases archive mode. A restarted native fixture proved this in the browser and produced a complete cached export. Closing the tab still discards its sessionStorage.
 - Current frontend state suite: 14 tests, including the expired-session regression observed failing before the fix.
+
+## Same-interface mirror
+
+`edgeone.json` builds the exact React frontend. `edge-functions/api/[[default]].js` relays only known API routes to the fixed existing Python Worker; no developer key or private code is copied. It rejects foreign POST origins and bodies over 20,000 bytes, preserves host-local session cookies, passes SSE without buffering, and disables API caching. The mirror shares the backend quota and depends on its availability. A redirect would not solve blocked browser access; this relay does not redirect the visitor.
+
+Deployment requires a registered free EdgeOne project and verification of server-to-server upstream reachability, response streaming and mainland no-VPN access. A mirror is not considered live until these checks pass; no invented hostname is listed. Existing Cloudflare CPU/free-tier limits remain.

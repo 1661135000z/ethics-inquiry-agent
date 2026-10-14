@@ -1,7 +1,7 @@
 import type {Snapshot} from './state';
 export type Provider={id:string;models:string[];default_model?:string;configured:boolean;free_confirmed:boolean};
 export type Case={id:string;en:string;zh:string;text_en:string;text_zh:string;source:string};
-export type Config={providers:Provider[];cases:Case[];principle:string;test_mode?:boolean};
+export type Config={providers:Provider[];cases:Case[];principle:string;test_mode?:boolean;demo_access?:boolean};
 export class APIError extends Error{constructor(public code:string,message:string,public status=400){super(message)}}
 export async function json<T>(path:string,body?:unknown):Promise<T>{
  let r:Response;try{r=await fetch(path,{method:body?'POST':'GET',headers:body?{'Content-Type':'application/json'}:{},credentials:'same-origin',body:body?JSON.stringify(body):undefined})}catch{throw new APIError('network','无法连接后端，请检查网络。')}

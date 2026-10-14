@@ -76,7 +76,7 @@ class Default(WorkerEntrypoint):
         try:
             if path=='/api/health':return Response.json({'ok':True,'runtime':'python-worker','inquiry_api_ready':hasattr(self.env,'DB')},headers=headers)
             if not hasattr(self.env,'DB'):raise APIError('configuration','数据库尚未配置。',503)
-            env={k:str(getattr(self.env,k,'')) for k in [*KEYS.values(),'GEMINI_FREE_TIER_CONFIRMED','ZHIPU_FREE_TIER_CONFIRMED','GEMINI_MODEL','ZHIPU_MODEL','OPENROUTER_MODEL','ACCESS_CODE']}
+            env={k:str(getattr(self.env,k,'')) for k in [*KEYS.values(),'GEMINI_FREE_TIER_CONFIRMED','ZHIPU_FREE_TIER_CONFIRMED','GEMINI_MODEL','ZHIPU_MODEL','OPENROUTER_MODEL','ACCESS_CODE','DEMO_ACCESS_ENABLED']}
             service=Service(D1Store(self.env.DB),WorkerTransport(),env)
             if request.method=='POST':
                 origin=request.headers.get('origin')

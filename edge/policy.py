@@ -27,7 +27,7 @@ def credentials(body, env):
         free = body.get('free_confirmed') is True
     else:
         access = env.get('ACCESS_CODE','')
-        if not access or body.get('access_code') != access:
+        if env.get('DEMO_ACCESS_ENABLED','').lower() != 'true' and (not access or body.get('access_code') != access):
             raise APIError('access','访问码与后台 ACCESS_CODE 不一致。请填写该变量的值，或选择使用自己的 API Key。',403)
         key = env.get(KEYS[provider],'')
         free = env.get(provider.upper()+'_FREE_TIER_CONFIRMED','').lower() == 'true'

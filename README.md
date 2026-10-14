@@ -1,16 +1,30 @@
-# Inquire — Audit ethics agent
+# Inquire — Ethics Inquiry Agent
 
-## New React experience — independent preview
+[**Live Demo — React experience**](https://inquire-experience.inquire-ethics-lab.workers.dev/)
 
-This branch adds React + Vite + GSAP with a portable Python API and Cloudflare Python Worker/D1 adapter. The original Streamlit source and deployment are preserved below.
+A bilingual AI product for exploring objectivity through contextual follow-up questions. Describe your own situation or adapt a fictional example. The agent preserves uncertainty and exact user quotations; professional judgment remains with the human reviewer.
 
-[Open the new preview](https://inquire-experience.inquire-ethics-lab.workers.dev/) · [Run, configure and deploy React](docs/react-experience.md)
+Built with **React, Vite, TypeScript and GSAP**, backed by a portable **Python inquiry engine**, **Cloudflare Workers** and transactional **D1** storage. Google Gemini and domestic Zhipu GLM can be switched manually. Fonts and animation assets are bundled locally.
 
-Private keys must be configured separately for the new backend. There is no automatic migration of Streamlit Secrets. Developer keys require an access code; visitor keys remain only in page memory. The new browser recovery cache holds non-secret drafts/transcripts in tab sessionStorage. Live successful provider calls and CPU-limit validation are still separate release gates; local simulated QA is clearly labelled.
+## Experience
 
-## Preserved Streamlit version
+- Continuous model → situation → conversation transitions; light and dark themes.
+- Contextual inquiry, reported-statement notebook and human-review exports.
+- Transactional regeneration and scenario switching; draft recovery and read-only expired-session archives.
+- Server-owned model keys for a bounded public demo; optional visitor keys stay in page memory only.
+- Atomic request budgets: 40 attempts/hour, 150/day, 24 per conversation lineage. No paid model upgrade.
 
-[Open the live app](https://ethics-inquiry-agent.streamlit.app/)
+[Run, configure and deploy](docs/react-experience.md) · [Mirror implementation plan](docs/migration/mirror-plan.md)
+
+The demo hostname may be unreachable on some mainland networks. A same-interface mirror is being prepared; no untested URL is presented as available. Free compute and provider quotas still apply. Execution-stage SSE is supported; unvalidated raw token output is not displayed.
+
+## Legacy Streamlit source
+
+The original implementation remains runnable for comparison and rollback. Its documentation follows below; the primary demo above is the current React product.
+
+### Legacy deployment
+
+[Open the legacy Streamlit app](https://ethics-inquiry-agent.streamlit.app/)
 
 A bilingual Python + Streamlit learning tool focused on **objectivity**. Describe any audit situation; the agent asks one contextual follow-up question at a time. No scenario is assumed. Optional editable examples include relationships, self-review and two fictional AI-audit situations.
 

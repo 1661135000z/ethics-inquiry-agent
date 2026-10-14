@@ -16,9 +16,9 @@ class Service:
 
     def configuration(self):
         return {'providers':[{'id':p,'models':list(dict.fromkeys([self.default_model(p),*models])), 'default_model':self.default_model(p),
-                 'configured':bool(self.env.get(KEYS[p])) and bool(self.env.get('ACCESS_CODE')),
+                 'configured':bool(self.env.get(KEYS[p])) and (bool(self.env.get('ACCESS_CODE')) or self.env.get('DEMO_ACCESS_ENABLED','').lower()=='true'),
                  'free_confirmed':self.env.get(p.upper()+'_FREE_TIER_CONFIRMED','').lower()=='true'} for p,models in MODELS.items()],
-                 'cases':EXAMPLES,'principle':'objectivity'}
+                 'cases':EXAMPLES,'principle':'objectivity','demo_access':self.env.get('DEMO_ACCESS_ENABLED','').lower()=='true'}
 
     def default_model(self,provider):
         configured=self.env.get({'gemini':'GEMINI_MODEL','zhipu':'ZHIPU_MODEL','openrouter':'OPENROUTER_MODEL'}[provider],'')
