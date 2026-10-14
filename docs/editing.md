@@ -6,7 +6,9 @@ Run the Python API on port 8788 and `pnpm dev` in a second terminal. Open Vite's
 |---|---|
 | Page sections, buttons, inline model settings, backup offer | `web/src/App.tsx` |
 | Situation examples and previews | `web/src/SituationStudio.tsx`, `inquiry/examples.py` |
-| Colours, type size, spacing, responsive layout | `web/src/style.css` |
+| Colours, type size, spacing, responsive layout | `web/src/style.css`, `web/src/experience.css` |
+| Clue compass, notebook, dossier, help and status | `web/src/ExperiencePanels.tsx`, `web/src/experience.ts` |
+| Explicit local history and its privacy whitelist | `web/src/HistoryPanel.tsx`, `web/src/history.ts` |
 | Entry and shared-element transitions | `web/src/motion.ts` |
 | Errors translated between interface languages | `web/src/i18n.ts` |
 | Navigation, drafts, reset and recovery rules | `web/src/state.ts` |

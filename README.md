@@ -13,7 +13,11 @@ The mirror runs the same interface and relays API requests to the same backend. 
 - One contextual question per turn about roles, interests, pressure, evidence or independent review. The agent preserves uncertainty and avoids immediate ethical verdicts.
 - Gemini and GLM model selection; optional personal keys held only in page memory. **DeepSeek appears only after a genuine GLM service failure**, requires a manual switch and is funded by the developer.
 - Transactional conversations: invalid replies or failed requests do not overwrite accepted records. Switching situations, cancelling, restarting and regenerating retain the appropriate drafts and settings.
-- Exact user quotations, provider provenance, observable execution stages, Markdown export and an HTML human-review packet after at least two accepted turns.
+- A source-linked clue notebook and compass: exact user quotations jump back to the accepted message; empty areas remain unknown.
+- Pending-message feedback, real execution stages, back-to-latest navigation and collapsible initial context.
+- An in-page human-review dossier, print/PDF layout and the existing downloadable HTML packet after two accepted turns.
+- Explicitly saved, read-only local history with naming, deletion/undo and Markdown export. Records stay in that browser and origin; credentials and unsent drafts are excluded.
+- Configured versus verified model status, separate turn/request counts and bilingual guide, privacy and about panels.
 - Refresh recovery, keyboard/touch support and reduced-motion support. Expired server sessions retain a read-only browser copy when available.
 
 The assistant is an inquiry aid, not an auditor or a source of verified facts. It does not train a model, browse standards, make audit opinions or show hidden model reasoning. Execution events stream over SSE; model text is displayed **after complete JSON validation**, rather than raw token streaming.

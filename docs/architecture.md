@@ -32,3 +32,11 @@ The mirror relay permits only known routes, bounded bodies and matching POST ori
 ## Deliberate limits
 
 There is no custom model training, standards lookup, autonomous audit decision, external audit-tool execution or raw token streaming. SSE streams observable processing events and the final validated response. Human-review packets are assembled from accepted records without another model call. Developer-funded access is a bounded demonstration, not an unrestricted production API. Free hosting and provider capacity are separate limits; mainland access requires testing on the actual network.
+
+## Experience layer
+
+`experience.ts` derives counts, categories and source turns from accepted snapshots. `ExperiencePanels.tsx` renders the lens motif, observable stages, clue notebook, dossier and help. It does not request additional reasoning or infer a risk score. Pending input is ephemeral reducer state and is removed on failure; accepted records are unchanged until the backend commit.
+
+`history.ts` sanitises explicit local archives using the public snapshot whitelist, excluding drafts, credentials and backup authorisation. `HistoryPanel.tsx` displays them independently in a native dialog. localStorage is origin-specific, capped at twenty records and two megabytes of parsed input. It is not an encrypted vault or a server synchronisation feature. Printing a selected archive hides the live workbench so the two dossiers cannot be combined inadvertently.
+
+The shared-element transition commits state exactly once and measures its destination after rendering. Animation preparation, timeline or cleanup failures fall back to the accepted state rather than blocking a validated reply. Reduced-motion bypasses the cinematic timeline. Processing animations correspond to events received from the backend; no hidden reasoning or fictitious tools are shown.

@@ -6,7 +6,7 @@
 2. Choose GLM or Gemini. The public demo uses saved server credentials; you do not need a personal key or access code. If needed, use the inline model settings to test the connection or supply your own key.
 3. Type a fictional or anonymised situation. Optional examples can be previewed and edited; they are not assumptions the agent makes about you.
 4. Confirm permission to send the text to the selected provider, then submit. Answer the agent's follow-up question with what you know; state what remains unknown.
-5. Inspect reported statements and execution details. After two accepted turns, download the human-review packet; export the conversation before leaving.
+5. Use **Inquiry clues** to inspect recorded statements and jump back to their source turn. **Human review** previews the dossier; after two accepted turns, print/save it as PDF or download the HTML packet.
 
 A turn is one accepted user message plus the agent's validated question. Questions explore objectivity through your role, relationships, incentives, competing explanations, evidence and independent review. They do not certify ethical compliance.
 
@@ -42,3 +42,21 @@ This is an illustrative test script, not a claimed live model transcript:
 - Check that the agent preserves “I do not know”, asks a relevant follow-up, and does not declare the judgment acceptable or unethical. After two turns, export the conversation and review packet.
 
 Model wording varies. Keep an actual exported transcript if demonstrating the agent in a submission; do not replace it with this sample script.
+
+## Workspace controls
+
+**Inquiry clues** organises exact user quotations into five areas. Click a source-turn link to return to the original message. The right-hand compass opens the corresponding area. Counts describe statements, not ethical risk, evidence completeness or verified facts.
+
+A submitted message remains visibly pending until validation and commit succeed. The processing ribbon uses real backend stage events. Use **Back to latest** after reading an earlier message; a long initial situation can be expanded without resending it.
+
+The model status distinguishes **Configured · not tested** from a successful connection test or accepted response. An expired or changed configuration can require testing again without removing accepted records. Conversation turns and request attempts are separate counters.
+
+## Save and revisit a local archive
+
+Open **History**, give the inquiry a name and choose **Save on this device**. Saving is optional and stores only accepted conversation, observations and provenance in this browser's localStorage. It excludes API keys, access codes, sending consent, unsent drafts and DeepSeek eligibility. At most the twenty most recently saved records are kept.
+
+Choose a record to read its conversation, clues and review preview. Rename it, export Markdown, or delete it and use **Undo** while the panel remains open. Historical viewing does not call a model or replace the current online inquiry. A historical dossier may be printed; its server download link is disabled because the current server session may represent a different conversation.
+
+These saved archives survive tab closure until you delete them or clear site storage. They are not synchronised: the primary and mirror domains have separate local archives. Avoid confidential data, including on shared devices. Browser storage restrictions may prevent saving; the active inquiry still works. Download an export before clearing site data.
+
+Use **Help** for the short guide, privacy details and product scope. Theme and language changes do not translate user quotations or discard the live conversation.

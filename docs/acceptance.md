@@ -35,3 +35,15 @@ Only two DeepSeek calls were made. No automatic retry, top-up, key inspection or
 ## Delivery organisation and current backup limit
 
 The React application is the default root implementation; Streamlit and superseded planning notes are archived under `legacy/`. Current Python tests are under `tests/`. The owner reduced the DeepSeek limit from fifteen to **ten** accepted turns and ten paid attempts per session; the earlier live two-turn acceptance remains historical evidence, not a fresh ten-turn test. Cached older fifteen-turn histories remain readable.
+
+## Lens experience verification — 2026-10-15
+
+This UI release preserves provider endpoints, objectivity instructions and existing cost limits. A local browser fixture uses clearly labelled fictional model replies; these UI checks are not new live-provider claims.
+
+- 36 frontend tests, 30 Python API tests and TypeScript checking passed. Regression coverage includes safe archive sanitisation/export, exact source matching, pending failure, real-stage progress and animation exceptions that must still commit accepted state once.
+- Browser workflow passed: configured model connection, welcome-to-situation transition cleanup, two accepted turns, visible pending input and stage updates, source navigation, unread/back-to-latest, dossier preview and HTML download.
+- Explicit archive save, read-only inspection, rename, delete/undo and Markdown export passed. Opening/closing history retained the unsent draft and request count. No extra model requests were made by archive or dossier operations.
+- Cancelling situation selection restored the previous unsent draft. New inquiry cleared accepted turns and retained initial context and the inherited request-attempt count.
+- Desktop dark and 390px mobile light/English layouts were visually checked, including dossier and history sheet. English controls/privacy text remain English; original Chinese quotations remain unchanged.
+- Independent review identified animation-failure recovery, archive-print isolation and printable source references; all three were repaired. Print CSS and static references are checked structurally; physical printing and all browser print engines are not claimed as tested.
+- No API credentials, user histories, original teaching materials or private Word manual are included in the public source. The Word user guide is updated separately with a five-page visual check.
