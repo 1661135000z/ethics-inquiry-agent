@@ -1,0 +1,7 @@
+{
+  "name": "inquire-mirror",
+  "installCommand": "npx --yes --package=node@22.22.0 --package=pnpm@11.25.0 --call \"pnpm install --frozen-lockfile\"",
+  "buildCommand": "npx --yes --package=node@22.22.0 --package=pnpm@11.25.0 --call \"pnpm build\"",
+  "outputDirectory": "web/dist",
+  "nodeVersion": "22.11.0"
+}

@@ -1,0 +1,1 @@
+{"name":"inquire-experience","private":true,"scripts":{"dev":"pnpm --dir web dev","build":"pnpm --dir web build","test":"pnpm --dir web test"},"devDependencies":{"npm":"11.13.0","wrangler":"4.150.0"}}

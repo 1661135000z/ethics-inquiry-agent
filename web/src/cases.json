@@ -1,0 +1,42 @@
+[
+  {
+    "id": "blank",
+    "en": "Write my own situation",
+    "zh": "自行输入情境",
+    "source": "",
+    "text_en": "",
+    "text_zh": ""
+  },
+  {
+    "id": "relationships",
+    "en": "Example · Personal ties and fees",
+    "zh": "示例 · 私人关系与收费压力",
+    "source": "Hypothetical scenario · 假设情境",
+    "text_en": "I manage the audit of a listed company. Its CFO is a close friend from university. The CFO wants me to go easy on an aggressive revenue recognition judgment that may be defensible under the standard, and has hinted that next quarter's tax advisory renewal depends on a smooth audit. Help me examine the objectivity issues.",
+    "text_zh": "我是一家上市公司客户的审计经理。CFO是我的大学好友。他希望我对一项激进、但可能有准则依据的收入确认判断宽松处理，并暗示下季度税务咨询合同续约取决于审计是否顺利。请帮助我思考其中的客观性问题。"
+  },
+  {
+    "id": "controls",
+    "en": "Example · Designing and auditing controls",
+    "zh": "示例 · 设计并审计内部控制",
+    "source": "Hypothetical scenario · 假设情境",
+    "text_en": "A medium-sized manufacturing client wants our firm to design a new internal-control system and subsequently audit it. The client asks for the same partner to lead both engagements to save time and fees. Help me explore the objectivity implications.",
+    "text_zh": "一家中型制造业客户希望我们的事务所设计新的内部控制系统，并在之后审计该系统。为节省时间和费用，客户要求同一位合伙人领导两项业务。请帮助我思考客观性方面的问题。"
+  },
+  {
+    "id": "dashboard",
+    "en": "Fictional · The clean dashboard",
+    "zh": "新编虚构 · “低风险”仪表盘",
+    "source": "Original fictional teaching scenario; not a real incident",
+    "text_en": "I am an audit senior. Our AI screening dashboard classifies year-end journal entries as low risk. The manager asks us to close the testing section today. I noticed that a batch of manually uploaded entries is not visible in the dashboard, but I do not know whether it was screened elsewhere. I feel uneasy about accepting the result.",
+    "text_zh": "我是一名高级审计员。我们的AI筛查仪表盘将期末分录评为低风险，经理要求今天完成该部分测试。我发现一批手工上传的分录没有显示在仪表盘里，但不知道是否已在其他地方筛查。我对直接接受这个结果有些疑虑。"
+  },
+  {
+    "id": "vendor",
+    "en": "Fictional · A recommended AI tool",
+    "zh": "新编虚构 · 被推荐的AI工具",
+    "source": "Original fictional teaching scenario; not a real incident",
+    "text_en": "Our audit team is considering an AI tool recommended by a partner. The vendor offers a referral reward to the firm if a client adopts it. A colleague asks me to describe the tool as independently validated in an audit planning note, but I have only seen the vendor's demonstration. I need to decide how to respond objectively.",
+    "text_zh": "审计团队正在考虑合伙人推荐的一款AI工具。如果客户采用，供应商会向事务所提供推荐奖励。同事让我在审计计划记录中将工具描述为已经独立验证，但我只看过供应商的演示。我需要思考如何客观地回应。"
+  }
+]
