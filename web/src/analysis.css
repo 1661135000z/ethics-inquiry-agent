@@ -12,3 +12,12 @@
  .is-chat .journey .clue-compass{display:block;width:100%;min-width:0}
  .clue-radar svg{max-width:100%;margin-inline:auto}
 }
+
+/* Hover previews share one stable grid footprint; only visibility changes. */
+.compass-detail-stack{display:grid;grid-template-columns:minmax(0,1fr);margin-top:15px;min-width:0}
+.compass-detail-slot{grid-area:1/1;min-width:0;min-height:0;max-height:280px;overflow:auto;scrollbar-width:thin;scrollbar-gutter:stable;visibility:hidden;pointer-events:none;overscroll-behavior:contain}
+.compass-detail-slot.is-active{visibility:visible;pointer-events:auto}
+.compass-detail-slot>.dimension-detail{margin-top:0}
+.compass-detail-empty{grid-area:1/1;margin:0!important;padding:14px 0;border-top:1px solid var(--line);font-size:10px!important;color:var(--faint);line-height:1.9}
+.compass-items button:hover{transform:none}
+.radar-caption{height:36px;min-height:36px;display:flex;align-items:center;justify-content:center}

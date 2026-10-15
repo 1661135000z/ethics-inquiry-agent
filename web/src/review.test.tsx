@@ -1,7 +1,7 @@
 import {RecordedExample} from './RecordedExample';
 import {it,expect} from 'vitest';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {ReviewPreview} from './ExperiencePanels';
+import {ReviewPreview,ClueCompass} from './ExperiencePanels';
 import {initialState} from './state';
 it('retains static source attribution when interactive links are hidden for printing',()=>{
  const snapshot=initialState().snapshot;snapshot.initial_text='Fictional input';snapshot.session.messages=[{role:'user',content:'I do not know whether the data are complete.'},{role:'assistant',content:'Who can verify that?'}];snapshot.session.observations=[{area:'evidence',quote:'I do not know whether the data are complete.'}];
@@ -40,4 +40,14 @@ it('renders only model-provided options with discussion actions',async()=>{
  const {OptionComparison}=await import('./InquirySupport');const b={conflict:'Concern',stakeholders:'Team',options:[{action:'Check original records',tradeoff:'Access required'},{action:'Seek independent review',tradeoff:'Reviewer availability unknown'}],recommendation:'Check first',uncertainties:['Access'],basis:['f1'],language:'English',stale:false,as_of_turn:2};
  const html=renderToStaticMarkup(<OptionComparison brief={b} zh={false} onDiscuss={()=>{}}/>);
  expect(html).toContain('Check original records');expect(html).toContain('Reviewer availability unknown');expect(html.match(/Examine this option/g)).toHaveLength(2);expect(html).not.toContain('Recommended option');
+});
+it('keeps all compass detail panels in a stable stack while exposing only the selected one',()=>{
+ const snapshot=initialState().snapshot;
+ const render=(activeArea:string)=>renderToStaticMarkup(<ClueCompass snapshot={{...snapshot,session:{...snapshot.session,analysis:{schema:1,facts:[],ready:false,brief:null,language:'English',origin:'semantic'}}}} zh={false} activeArea={activeArea} onArea={()=>{}}/>);
+ for(const area of ['role','interests','pressure','evidence','review']){
+  const html=render(area);
+  expect(html.match(/class="compass-detail-slot/g)).toHaveLength(5);
+  expect(html.match(/class="compass-detail-slot is-active"/g)).toHaveLength(1);
+  expect(html.match(/aria-hidden="true" inert=""/g)).toHaveLength(4);
+ }
 });
