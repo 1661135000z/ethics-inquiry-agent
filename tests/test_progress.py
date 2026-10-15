@@ -135,3 +135,8 @@ class ReviewRegressionTests(unittest.TestCase):
   text=analysis_markdown(a,'中文')
   for value in ['探索覆盖度','信息充分度','建议准备度','已探索 · 仍未知','不知道']:self.assertIn(value,text)
   self.assertNotIn('exploring',text)
+ def test_repeated_unknown_cannot_become_old_reported_fact_via_ambiguous_turn_label(self):
+  a=empty_analysis();a['question_target']={'area':'review','facet':'reviewer'}
+  raw=json.dumps({'response':'Let us leave that uncertain.','analysis':{'updates':[u('pressure','incentive','不知道',1)],'engagements':[dict(area='pressure',facet='incentive',quote='不知道',turn=1,state='unknown')]}})
+  b=parse_turn(raw,['不知道','不知道'],a,'中文')[3]
+  self.assertEqual(b['dimensions']['pressure']['coverage'],0);self.assertEqual(b['dimensions']['pressure']['information'],0);self.assertEqual(b['dimensions']['review']['coverage'],1)

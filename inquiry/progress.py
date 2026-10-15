@@ -32,7 +32,7 @@ def record_engagements(a,updates,user_texts,previous_target=None):
  a=deepcopy(a);items=a.setdefault('engagements',[]);candidates=updates[:12] if isinstance(updates,list) else []
  if user_texts and isinstance(previous_target,dict) and previous_target.get('area') in defs():
   text=user_texts[-1];state=short_response_state(text)
-  if state:candidates=[e for e in candidates if isinstance(e,dict) and e.get('turn')!=len(user_texts)]+[dict(previous_target,quote=text,turn=len(user_texts),state=state)]
+  if state:candidates=[e for e in candidates if isinstance(e,dict) and e.get('turn')!=len(user_texts) and not (isinstance(e.get('quote'),str) and short_response_state(e['quote']))]+[dict(previous_target,quote=text,turn=len(user_texts),state=state)]
  for e in candidates:
   if not isinstance(e,dict):continue
   area,facet,quote,turn,state=(e.get(k) for k in ['area','facet','quote','turn','state'])

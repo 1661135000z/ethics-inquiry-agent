@@ -114,7 +114,7 @@ def parse_turn(raw, user_texts, previous, language, previous_quotes=None, previo
     prior_target=(previous or {}).get('question_target') or ({'area':previous_focus,'facet':None} if previous_focus in AREAS else None)
     from inquiry.progress import source_turns
     updates=source_turns(updates,user_texts)
-    if user_texts and short_response_state(user_texts[-1]):updates=[u for u in updates if isinstance(u,dict) and u.get('turn')!=len(user_texts)] if isinstance(updates,list) else []
+    if user_texts and short_response_state(user_texts[-1]):updates=[u for u in updates if isinstance(u,dict) and u.get('turn')!=len(user_texts) and not (isinstance(u.get('quote'),str) and short_response_state(u['quote']))] if isinstance(updates,list) else []
     analysis=apply_updates(previous,updates,user_texts)
     metadata=value.get('analysis') if isinstance(value.get('analysis'),dict) else {}
     analysis=record_engagements(analysis,[] if regenerating else source_turns(metadata.get('engagements',[]),user_texts),user_texts,None if regenerating else prior_target)
