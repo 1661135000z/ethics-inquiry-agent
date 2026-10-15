@@ -31,3 +31,9 @@ Changing the Python example list changes `/api/config`; the browser uses the ser
 - Run `python scripts/sync_analysis_assets.py` after changing preset evidence or definitions, then test and rebuild. Do not edit generated `web/src/cases.json` or `dimensions.json` independently.
 - `web/src/analysis.ts` handles source-checked browser restoration and preset previews; `ExperiencePanels.tsx` displays gaps, coverage and the decision brief. `analysis.css` adds only these information layouts.
 - Historical messages stay verbatim. `recorded-example.json` stores labelled Chinese translations separately from original English; do not rewrite the original test transcript as a new live response.
+
+### Context guidance and change feedback
+
+- `web/src/inquiryUX.ts` derives missing facets, optional editorial prompts and accepted-turn corrections from the same source-linked analysis. It does not classify user text, change coverage, invent options or call a model.
+- `web/src/InquirySupport.tsx` renders gap guidance, per-turn updates, brief revision feedback and model-provided option comparison. Use `inquiryUX.css` for their desktop/mobile styles. Update both languages for every editorial prompt.
+- `App.tsx` appends starter text without overwriting drafts, preserves consent and request gates, handles document scrolling on phones and listens to visual-viewport changes while typing. Tests in `inquiryUX.test.ts` cover missing information, uncertainty, completion, corrections, unchanged input and brief status changes.

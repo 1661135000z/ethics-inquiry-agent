@@ -84,3 +84,15 @@ After the first successful model transition, the existing **Inside Inquire** pan
 The composer grows with your input within a bounded height. Expand its follow-up reference to see the question you are answering. An explicit **Retry this input** resends a failed draft only when the current connection and sending permission allow it; this uses an API attempt. There are no automatic retries. Changes in distinct information coverage briefly highlight the relevant radar axis; source navigation highlights its category. Printed review previews include statement IDs, source turns and space for human-review notes.
 
 The **About Inquire** tab contains the author's contact details and project origins.
+
+## Add context and follow changes
+
+After an accepted reply, **Context you can add next** shows information still missing in the five areas. The current model focus comes first, followed by explicit uncertainty. Select an area to see a specific prompt, relevant recorded wording and **Why this prompt**. The small number counts open information needs, not risk. Fully supported areas drop out of this list; none needs to be filled artificially. If you do not know, describe how it could be checked or say that no route is known.
+
+**Start here** fills an empty draft. With existing text, **Add to draft** appends without replacing it. Nothing is sent until you review the draft and send with consent. The selected area highlights on the radar. These interactions make no API request.
+
+Under an accepted reply, expand **Context added** to inspect exact quotations. A validated correction opens **Earlier information revised**, showing the earlier and new statements with a source link. Older quotations remain attributable, including a revised-later label. Unclassified or repeated answers do not gain invented progress.
+
+When the model supplies a valid decision brief, compare its proposed actions and stated trade-offs. **Examine this option** appends a discussion question to your draft. The brief marks unreassessed context and labels updated advice. The most recent previous suggestion is retained in the workspace across views, home navigation and refresh, with source-checked restoration. A new inquiry clears it. This is a single prior version, not a full advice-version archive. The accepted fact-correction record remains source-linked after refresh.
+
+On phones, the conversation uses normal page scrolling. **Back to latest** returns to the latest accepted reply without forcing you away from earlier messages. When the browser reports a reduced visual viewport while the input is focused, supplementary guidance hides temporarily so text and sending controls remain accessible. It returns when the viewport or focus changes. Device keyboard behaviour can vary.

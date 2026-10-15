@@ -14,6 +14,7 @@ The mirror runs the same interface and relays API requests to the same backend. 
 - Gemini and GLM model selection; optional personal keys held only in page memory. **DeepSeek appears only after a genuine GLM service failure**, requires a manual switch and is funded by the developer.
 - Transactional conversations: invalid replies or failed requests do not overwrite accepted records. Switching situations, cancelling, restarting and regenerating retain the appropriate drafts and settings.
 - A source-linked five-dimensional context model: preset wording seeds the preview, and the same dialogue call extracts new facts, uncertainty and corrections. The radar reflects distinct information needs, not quotation volume or ethical risk. Repeated facts cannot fill it.
+- Optional gap guidance beside the composer: specific information needs, relevant recorded quotes and editable answer starters. Accepted replies show additions and source-linked corrections. Conditional briefs compare model-proposed actions and track guidance changes while displayed, without extra model calls.
 - An evidence-linked Ethical Decision Brief with options, trade-offs and conditional suggestions. New information marks prior guidance for reassessment; the conversation continues.
 - Pending-message feedback, real execution stages, back-to-latest navigation and collapsible initial context.
 - An in-page human-review dossier, print/PDF layout and the existing downloadable HTML packet after two accepted turns.

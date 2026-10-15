@@ -30,3 +30,14 @@ it('uses current language for the modal close label instead of the previous docu
  try{const html=renderToStaticMarkup(<Sheet title="Inside Inquire" subtitle="Guide" closeLabel="Close" onClose={()=>{}}>Example</Sheet>);expect(html).toContain('Inside Inquire · Close');}
  finally{vi.unstubAllGlobals()}
 });
+it('offers source-led gaps as optional draft actions, without invented case details',async()=>{
+ const {GapGuide}=await import('./InquirySupport');const {blankAnalysis}=await import('./analysis');
+ const s=initialState().snapshot;s.session.analysis=blankAnalysis();s.session.focus='review';
+ const html=renderToStaticMarkup(<GapGuide snapshot={s} zh={false} locked={false} draft="" onDraft={()=>{}} onArea={()=>{}}/>);
+ expect(html).toContain('Who could independently review');expect(html).toContain('Start here');expect(html).toContain('optional');expect(html).not.toContain('My independent reviewer is');
+});
+it('renders only model-provided options with discussion actions',async()=>{
+ const {OptionComparison}=await import('./InquirySupport');const b={conflict:'Concern',stakeholders:'Team',options:[{action:'Check original records',tradeoff:'Access required'},{action:'Seek independent review',tradeoff:'Reviewer availability unknown'}],recommendation:'Check first',uncertainties:['Access'],basis:['f1'],language:'English',stale:false,as_of_turn:2};
+ const html=renderToStaticMarkup(<OptionComparison brief={b} zh={false} onDiscuss={()=>{}}/>);
+ expect(html).toContain('Check original records');expect(html).toContain('Reviewer availability unknown');expect(html.match(/Examine this option/g)).toHaveLength(2);expect(html).not.toContain('Recommended option');
+});
