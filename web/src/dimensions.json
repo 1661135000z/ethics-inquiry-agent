@@ -1,0 +1,97 @@
+{
+  "role": {
+    "en": "Role & responsibility",
+    "zh": "角色与责任",
+    "facets": {
+      "position": [
+        "Role and decision authority",
+        "角色及决策权限"
+      ],
+      "decision": [
+        "The decision and affected stakeholders",
+        "待作判断及受影响者"
+      ],
+      "responsibility": [
+        "Professional responsibilities and consequences",
+        "职业责任及可能后果"
+      ]
+    },
+    "boundary": "Professional position, decision, duties and affected people. Friendship alone belongs to interests, not pressure."
+  },
+  "interests": {
+    "en": "Relationships & interests",
+    "zh": "关系与利益",
+    "facets": {
+      "relationship": [
+        "Relevant personal or business ties, including explicit absence",
+        "相关私人或业务关系，包括明确不存在的关系"
+      ],
+      "stake": [
+        "Who stands to gain or lose",
+        "谁可能得益或受损"
+      ],
+      "influence": [
+        "How ties or interests could affect judgment",
+        "关系或利益怎样影响判断"
+      ]
+    },
+    "boundary": "Friendship, kinship, commercial ties, stakes and bias. A university classmate is a relationship; it is not by itself a threat, incentive or promotion pressure."
+  },
+  "pressure": {
+    "en": "Pressure & incentives",
+    "zh": "压力与激励",
+    "facets": {
+      "request": [
+        "A demand, deadline or explicit absence of pressure",
+        "要求、期限或明确没有压力"
+      ],
+      "incentive": [
+        "Consequences, rewards or threats attached to the decision",
+        "与决定挂钩的后果、奖励或威胁"
+      ],
+      "response": [
+        "How the person can respond to the pressure",
+        "当事人如何应对压力"
+      ]
+    },
+    "boundary": "An actual demand/deadline or linked reward/threat (e.g. promotion tied to silence), and its effect. Mentioning a manager, responsibility, friendship or uncertainty alone is not pressure."
+  },
+  "evidence": {
+    "en": "Evidence & alternatives",
+    "zh": "证据与其他解释",
+    "facets": {
+      "basis": [
+        "Available records and their reliability",
+        "已有资料及可靠性"
+      ],
+      "uncertainty": [
+        "Known limits, competing explanations and how to verify them",
+        "已知局限、其他解释及核实方法"
+      ],
+      "alternatives": [
+        "Possible actions, consequences and contrary evidence",
+        "可选行动、可能后果及相反证据"
+      ]
+    },
+    "boundary": "Information quality, contrary evidence, uncertainty, options and consequences. Unknown is not proof of absence; acknowledging a limit can cover uncertainty only if the checking approach is also stated."
+  },
+  "review": {
+    "en": "Independent review",
+    "zh": "独立复核",
+    "facets": {
+      "reviewer": [
+        "An independent person and their authority",
+        "独立复核人员及权限"
+      ],
+      "route": [
+        "A usable reporting or escalation route",
+        "可用的报告或升级渠道"
+      ],
+      "safeguard": [
+        "Feasible safeguards and their limits",
+        "可行应对措施及局限"
+      ]
+    },
+    "boundary": "Independent checks, reporting routes, safeguards and their feasibility. Do not infer that a reviewer exists, is independent or has checked anything."
+  }
+}

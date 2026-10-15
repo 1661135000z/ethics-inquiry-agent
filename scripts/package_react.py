@@ -4,7 +4,7 @@ from zipfile import ZipFile, ZIP_DEFLATED
 ROOT=Path(__file__).resolve().parents[1]
 
 def source_files():
-    files=[ROOT/name for name in ['README.md','requirements-api.txt','.env.example','.gitignore','THIRD_PARTY_NOTICES.md','package.json','pnpm-lock.yaml','pnpm-workspace.yaml','pyproject.toml','wrangler.jsonc','edgeone.json','scripts/prepare_worker.py','scripts/package_react.py','web/index.html','web/package.json','web/tsconfig.json','web/vite.config.ts']]
+    files=[ROOT/name for name in ['README.md','requirements-api.txt','.env.example','.gitignore','THIRD_PARTY_NOTICES.md','package.json','pnpm-lock.yaml','pnpm-workspace.yaml','pyproject.toml','wrangler.jsonc','edgeone.json','scripts/prepare_worker.py','scripts/package_react.py','scripts/sync_analysis_assets.py','scripts/evaluate_semantics.py','tests/semantic_cases.json','web/index.html','web/package.json','web/tsconfig.json','web/vite.config.ts']]
     for folder in ['edge','inquiry','tests']:
         files.extend(sorted((ROOT/folder).glob('*.py')))
     files.extend([ROOT/'edge/schema.sql',ROOT/'docs/acceptance.md'])

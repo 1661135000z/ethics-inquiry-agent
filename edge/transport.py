@@ -9,12 +9,12 @@ def request_payload(provider, model, key, messages):
         url=f'https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent'
         payload={'systemInstruction':{'parts':[{'text':'\n'.join(m['content'] for m in messages if m['role']=='system')}]},
                  'contents':[{'role':'model' if m['role']=='assistant' else 'user','parts':[{'text':m['content']}]} for m in messages if m['role']!='system'],
-                 'generationConfig':{'temperature':0.3,'maxOutputTokens':1600,'responseMimeType':'application/json'}}
+                 'generationConfig':{'temperature':0.3,'maxOutputTokens':3000,'responseMimeType':'application/json'}}
         if model.startswith('gemini-2.5-'): payload['generationConfig']['thinkingConfig']={'thinkingBudget':0}
     else:
         headers['Authorization']='Bearer '+key
         url={'zhipu':'https://open.bigmodel.cn/api/paas/v4/chat/completions','deepseek':'https://api.deepseek.com/chat/completions','openrouter':'https://openrouter.ai/api/v1/chat/completions'}[provider]
-        payload={'model':model,'messages':messages,'temperature':0.3,'max_tokens':1600,'stream':False,'response_format':{'type':'json_object'}}
+        payload={'model':model,'messages':messages,'temperature':0.3,'max_tokens':1600 if provider=='deepseek' else 3000,'stream':False,'response_format':{'type':'json_object'}}
         if provider in {'zhipu','deepseek'}: payload['thinking']={'type':'disabled'}
         else:
             payload['reasoning']={'enabled':False}

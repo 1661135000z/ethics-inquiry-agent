@@ -5,7 +5,137 @@
     "zh": "自行输入情境",
     "source": "",
     "text_en": "",
-    "text_zh": ""
+    "text_zh": "",
+    "analysis_en": {
+      "schema": 1,
+      "facts": [],
+      "dimensions": {
+        "role": {
+          "coverage": 0,
+          "status": "unexplored",
+          "known": [],
+          "uncertain": [],
+          "missing": [
+            "position",
+            "decision",
+            "responsibility"
+          ]
+        },
+        "interests": {
+          "coverage": 0,
+          "status": "unexplored",
+          "known": [],
+          "uncertain": [],
+          "missing": [
+            "relationship",
+            "stake",
+            "influence"
+          ]
+        },
+        "pressure": {
+          "coverage": 0,
+          "status": "unexplored",
+          "known": [],
+          "uncertain": [],
+          "missing": [
+            "request",
+            "incentive",
+            "response"
+          ]
+        },
+        "evidence": {
+          "coverage": 0,
+          "status": "unexplored",
+          "known": [],
+          "uncertain": [],
+          "missing": [
+            "basis",
+            "uncertainty",
+            "alternatives"
+          ]
+        },
+        "review": {
+          "coverage": 0,
+          "status": "unexplored",
+          "known": [],
+          "uncertain": [],
+          "missing": [
+            "reviewer",
+            "route",
+            "safeguard"
+          ]
+        }
+      },
+      "ready": false,
+      "brief": null,
+      "language": "English",
+      "origin": "curated"
+    },
+    "analysis_zh": {
+      "schema": 1,
+      "facts": [],
+      "dimensions": {
+        "role": {
+          "coverage": 0,
+          "status": "unexplored",
+          "known": [],
+          "uncertain": [],
+          "missing": [
+            "position",
+            "decision",
+            "responsibility"
+          ]
+        },
+        "interests": {
+          "coverage": 0,
+          "status": "unexplored",
+          "known": [],
+          "uncertain": [],
+          "missing": [
+            "relationship",
+            "stake",
+            "influence"
+          ]
+        },
+        "pressure": {
+          "coverage": 0,
+          "status": "unexplored",
+          "known": [],
+          "uncertain": [],
+          "missing": [
+            "request",
+            "incentive",
+            "response"
+          ]
+        },
+        "evidence": {
+          "coverage": 0,
+          "status": "unexplored",
+          "known": [],
+          "uncertain": [],
+          "missing": [
+            "basis",
+            "uncertainty",
+            "alternatives"
+          ]
+        },
+        "review": {
+          "coverage": 0,
+          "status": "unexplored",
+          "known": [],
+          "uncertain": [],
+          "missing": [
+            "reviewer",
+            "route",
+            "safeguard"
+          ]
+        }
+      },
+      "ready": false,
+      "brief": null,
+      "language": "中文",
+      "origin": "curated"
+    }
   },
   {
     "id": "relationships",
@@ -13,7 +143,245 @@
     "zh": "示例 · 私人关系与收费压力",
     "source": "Hypothetical scenario · 假设情境",
     "text_en": "I manage the audit of a listed company. Its CFO is a close friend from university. The CFO wants me to go easy on an aggressive revenue recognition judgment that may be defensible under the standard, and has hinted that next quarter's tax advisory renewal depends on a smooth audit. Help me examine the objectivity issues.",
-    "text_zh": "我是一家上市公司客户的审计经理。CFO是我的大学好友。他希望我对一项激进、但可能有准则依据的收入确认判断宽松处理，并暗示下季度税务咨询合同续约取决于审计是否顺利。请帮助我思考其中的客观性问题。"
+    "text_zh": "我是一家上市公司客户的审计经理。CFO是我的大学好友。他希望我对一项激进、但可能有准则依据的收入确认判断宽松处理，并暗示下季度税务咨询合同续约取决于审计是否顺利。请帮助我思考其中的客观性问题。",
+    "analysis_en": {
+      "schema": 1,
+      "facts": [
+        {
+          "id": "Facaa9af56872",
+          "area": "role",
+          "facet": "position",
+          "quote": "I manage the audit of a listed company.",
+          "turn": 1,
+          "source": "initial",
+          "kind": "reported",
+          "status": "active",
+          "basis": "Explicit initial scenario wording; not independently verified.",
+          "replaces": []
+        },
+        {
+          "id": "F57477bcfada9",
+          "area": "interests",
+          "facet": "relationship",
+          "quote": "Its CFO is a close friend from university.",
+          "turn": 1,
+          "source": "initial",
+          "kind": "reported",
+          "status": "active",
+          "basis": "Explicit initial scenario wording; not independently verified.",
+          "replaces": []
+        },
+        {
+          "id": "Ff4c5182459ef",
+          "area": "evidence",
+          "facet": "uncertainty",
+          "quote": "an aggressive revenue recognition judgment that may be defensible under the standard",
+          "turn": 1,
+          "source": "initial",
+          "kind": "uncertain",
+          "status": "active",
+          "basis": "Explicit initial scenario wording; not independently verified.",
+          "replaces": []
+        },
+        {
+          "id": "Fd79cf56e4539",
+          "area": "pressure",
+          "facet": "incentive",
+          "quote": "has hinted that next quarter's tax advisory renewal depends on a smooth audit",
+          "turn": 1,
+          "source": "initial",
+          "kind": "reported",
+          "status": "active",
+          "basis": "Explicit initial scenario wording; not independently verified.",
+          "replaces": []
+        }
+      ],
+      "dimensions": {
+        "role": {
+          "coverage": 1,
+          "status": "partial",
+          "known": [
+            "Facaa9af56872"
+          ],
+          "uncertain": [],
+          "missing": [
+            "decision",
+            "responsibility"
+          ]
+        },
+        "interests": {
+          "coverage": 1,
+          "status": "partial",
+          "known": [
+            "F57477bcfada9"
+          ],
+          "uncertain": [],
+          "missing": [
+            "stake",
+            "influence"
+          ]
+        },
+        "pressure": {
+          "coverage": 1,
+          "status": "partial",
+          "known": [
+            "Fd79cf56e4539"
+          ],
+          "uncertain": [],
+          "missing": [
+            "request",
+            "response"
+          ]
+        },
+        "evidence": {
+          "coverage": 0,
+          "status": "partial",
+          "known": [],
+          "uncertain": [
+            "Ff4c5182459ef"
+          ],
+          "missing": [
+            "basis",
+            "uncertainty",
+            "alternatives"
+          ]
+        },
+        "review": {
+          "coverage": 0,
+          "status": "unexplored",
+          "known": [],
+          "uncertain": [],
+          "missing": [
+            "reviewer",
+            "route",
+            "safeguard"
+          ]
+        }
+      },
+      "ready": false,
+      "brief": null,
+      "language": "English",
+      "origin": "curated"
+    },
+    "analysis_zh": {
+      "schema": 1,
+      "facts": [
+        {
+          "id": "Ff63a2d90ac31",
+          "area": "role",
+          "facet": "position",
+          "quote": "我是一家上市公司客户的审计经理。",
+          "turn": 1,
+          "source": "initial",
+          "kind": "reported",
+          "status": "active",
+          "basis": "情境原文明确提供此信息；尚未经独立核实。",
+          "replaces": []
+        },
+        {
+          "id": "Fbf0ce36eb951",
+          "area": "interests",
+          "facet": "relationship",
+          "quote": "CFO是我的大学好友。",
+          "turn": 1,
+          "source": "initial",
+          "kind": "reported",
+          "status": "active",
+          "basis": "情境原文明确提供此信息；尚未经独立核实。",
+          "replaces": []
+        },
+        {
+          "id": "Fe8bfa88486a7",
+          "area": "evidence",
+          "facet": "uncertainty",
+          "quote": "一项激进、但可能有准则依据的收入确认判断",
+          "turn": 1,
+          "source": "initial",
+          "kind": "uncertain",
+          "status": "active",
+          "basis": "情境原文明确提供此信息；尚未经独立核实。",
+          "replaces": []
+        },
+        {
+          "id": "Fe7677b26f322",
+          "area": "pressure",
+          "facet": "incentive",
+          "quote": "暗示下季度税务咨询合同续约取决于审计是否顺利",
+          "turn": 1,
+          "source": "initial",
+          "kind": "reported",
+          "status": "active",
+          "basis": "情境原文明确提供此信息；尚未经独立核实。",
+          "replaces": []
+        }
+      ],
+      "dimensions": {
+        "role": {
+          "coverage": 1,
+          "status": "partial",
+          "known": [
+            "Ff63a2d90ac31"
+          ],
+          "uncertain": [],
+          "missing": [
+            "decision",
+            "responsibility"
+          ]
+        },
+        "interests": {
+          "coverage": 1,
+          "status": "partial",
+          "known": [
+            "Fbf0ce36eb951"
+          ],
+          "uncertain": [],
+          "missing": [
+            "stake",
+            "influence"
+          ]
+        },
+        "pressure": {
+          "coverage": 1,
+          "status": "partial",
+          "known": [
+            "Fe7677b26f322"
+          ],
+          "uncertain": [],
+          "missing": [
+            "request",
+            "response"
+          ]
+        },
+        "evidence": {
+          "coverage": 0,
+          "status": "partial",
+          "known": [],
+          "uncertain": [
+            "Fe8bfa88486a7"
+          ],
+          "missing": [
+            "basis",
+            "uncertainty",
+            "alternatives"
+          ]
+        },
+        "review": {
+          "coverage": 0,
+          "status": "unexplored",
+          "known": [],
+          "uncertain": [],
+          "missing": [
+            "reviewer",
+            "route",
+            "safeguard"
+          ]
+        }
+      },
+      "ready": false,
+      "brief": null,
+      "language": "中文",
+      "origin": "curated"
+    }
   },
   {
     "id": "controls",
@@ -21,7 +389,217 @@
     "zh": "示例 · 设计并审计内部控制",
     "source": "Hypothetical scenario · 假设情境",
     "text_en": "A medium-sized manufacturing client wants our firm to design a new internal-control system and subsequently audit it. The client asks for the same partner to lead both engagements to save time and fees. Help me explore the objectivity implications.",
-    "text_zh": "一家中型制造业客户希望我们的事务所设计新的内部控制系统，并在之后审计该系统。为节省时间和费用，客户要求同一位合伙人领导两项业务。请帮助我思考客观性方面的问题。"
+    "text_zh": "一家中型制造业客户希望我们的事务所设计新的内部控制系统，并在之后审计该系统。为节省时间和费用，客户要求同一位合伙人领导两项业务。请帮助我思考客观性方面的问题。",
+    "analysis_en": {
+      "schema": 1,
+      "facts": [
+        {
+          "id": "F29fd2dc35bcd",
+          "area": "role",
+          "facet": "decision",
+          "quote": "design a new internal-control system and subsequently audit it",
+          "turn": 1,
+          "source": "initial",
+          "kind": "reported",
+          "status": "active",
+          "basis": "Explicit initial scenario wording; not independently verified.",
+          "replaces": []
+        },
+        {
+          "id": "F15ac95268216",
+          "area": "interests",
+          "facet": "relationship",
+          "quote": "the same partner to lead both engagements",
+          "turn": 1,
+          "source": "initial",
+          "kind": "reported",
+          "status": "active",
+          "basis": "Explicit initial scenario wording; not independently verified.",
+          "replaces": []
+        },
+        {
+          "id": "Fdfe7dba3b7a4",
+          "area": "pressure",
+          "facet": "request",
+          "quote": "The client asks for the same partner to lead both engagements to save time and fees.",
+          "turn": 1,
+          "source": "initial",
+          "kind": "reported",
+          "status": "active",
+          "basis": "Explicit initial scenario wording; not independently verified.",
+          "replaces": []
+        }
+      ],
+      "dimensions": {
+        "role": {
+          "coverage": 1,
+          "status": "partial",
+          "known": [
+            "F29fd2dc35bcd"
+          ],
+          "uncertain": [],
+          "missing": [
+            "position",
+            "responsibility"
+          ]
+        },
+        "interests": {
+          "coverage": 1,
+          "status": "partial",
+          "known": [
+            "F15ac95268216"
+          ],
+          "uncertain": [],
+          "missing": [
+            "stake",
+            "influence"
+          ]
+        },
+        "pressure": {
+          "coverage": 1,
+          "status": "partial",
+          "known": [
+            "Fdfe7dba3b7a4"
+          ],
+          "uncertain": [],
+          "missing": [
+            "incentive",
+            "response"
+          ]
+        },
+        "evidence": {
+          "coverage": 0,
+          "status": "unexplored",
+          "known": [],
+          "uncertain": [],
+          "missing": [
+            "basis",
+            "uncertainty",
+            "alternatives"
+          ]
+        },
+        "review": {
+          "coverage": 0,
+          "status": "unexplored",
+          "known": [],
+          "uncertain": [],
+          "missing": [
+            "reviewer",
+            "route",
+            "safeguard"
+          ]
+        }
+      },
+      "ready": false,
+      "brief": null,
+      "language": "English",
+      "origin": "curated"
+    },
+    "analysis_zh": {
+      "schema": 1,
+      "facts": [
+        {
+          "id": "Fadaf36fb5536",
+          "area": "role",
+          "facet": "decision",
+          "quote": "设计新的内部控制系统，并在之后审计该系统",
+          "turn": 1,
+          "source": "initial",
+          "kind": "reported",
+          "status": "active",
+          "basis": "情境原文明确提供此信息；尚未经独立核实。",
+          "replaces": []
+        },
+        {
+          "id": "F9fb3b288c2d7",
+          "area": "interests",
+          "facet": "relationship",
+          "quote": "同一位合伙人领导两项业务",
+          "turn": 1,
+          "source": "initial",
+          "kind": "reported",
+          "status": "active",
+          "basis": "情境原文明确提供此信息；尚未经独立核实。",
+          "replaces": []
+        },
+        {
+          "id": "Ff58f972f03f9",
+          "area": "pressure",
+          "facet": "request",
+          "quote": "为节省时间和费用，客户要求同一位合伙人领导两项业务。",
+          "turn": 1,
+          "source": "initial",
+          "kind": "reported",
+          "status": "active",
+          "basis": "情境原文明确提供此信息；尚未经独立核实。",
+          "replaces": []
+        }
+      ],
+      "dimensions": {
+        "role": {
+          "coverage": 1,
+          "status": "partial",
+          "known": [
+            "Fadaf36fb5536"
+          ],
+          "uncertain": [],
+          "missing": [
+            "position",
+            "responsibility"
+          ]
+        },
+        "interests": {
+          "coverage": 1,
+          "status": "partial",
+          "known": [
+            "F9fb3b288c2d7"
+          ],
+          "uncertain": [],
+          "missing": [
+            "stake",
+            "influence"
+          ]
+        },
+        "pressure": {
+          "coverage": 1,
+          "status": "partial",
+          "known": [
+            "Ff58f972f03f9"
+          ],
+          "uncertain": [],
+          "missing": [
+            "incentive",
+            "response"
+          ]
+        },
+        "evidence": {
+          "coverage": 0,
+          "status": "unexplored",
+          "known": [],
+          "uncertain": [],
+          "missing": [
+            "basis",
+            "uncertainty",
+            "alternatives"
+          ]
+        },
+        "review": {
+          "coverage": 0,
+          "status": "unexplored",
+          "known": [],
+          "uncertain": [],
+          "missing": [
+            "reviewer",
+            "route",
+            "safeguard"
+          ]
+        }
+      },
+      "ready": false,
+      "brief": null,
+      "language": "中文",
+      "origin": "curated"
+    }
   },
   {
     "id": "dashboard",
@@ -29,7 +607,245 @@
     "zh": "新编虚构 · “低风险”仪表盘",
     "source": "Original fictional teaching scenario; not a real incident",
     "text_en": "I am an audit senior. Our AI screening dashboard classifies year-end journal entries as low risk. The manager asks us to close the testing section today. I noticed that a batch of manually uploaded entries is not visible in the dashboard, but I do not know whether it was screened elsewhere. I feel uneasy about accepting the result.",
-    "text_zh": "我是一名高级审计员。我们的AI筛查仪表盘将期末分录评为低风险，经理要求今天完成该部分测试。我发现一批手工上传的分录没有显示在仪表盘里，但不知道是否已在其他地方筛查。我对直接接受这个结果有些疑虑。"
+    "text_zh": "我是一名高级审计员。我们的AI筛查仪表盘将期末分录评为低风险，经理要求今天完成该部分测试。我发现一批手工上传的分录没有显示在仪表盘里，但不知道是否已在其他地方筛查。我对直接接受这个结果有些疑虑。",
+    "analysis_en": {
+      "schema": 1,
+      "facts": [
+        {
+          "id": "F76504f91d44a",
+          "area": "role",
+          "facet": "position",
+          "quote": "I am an audit senior.",
+          "turn": 1,
+          "source": "initial",
+          "kind": "reported",
+          "status": "active",
+          "basis": "Explicit initial scenario wording; not independently verified.",
+          "replaces": []
+        },
+        {
+          "id": "F1e628d048ef1",
+          "area": "evidence",
+          "facet": "basis",
+          "quote": "a batch of manually uploaded entries is not visible in the dashboard",
+          "turn": 1,
+          "source": "initial",
+          "kind": "reported",
+          "status": "active",
+          "basis": "Explicit initial scenario wording; not independently verified.",
+          "replaces": []
+        },
+        {
+          "id": "Ffabdd065aaf8",
+          "area": "evidence",
+          "facet": "uncertainty",
+          "quote": "I do not know whether it was screened elsewhere.",
+          "turn": 1,
+          "source": "initial",
+          "kind": "uncertain",
+          "status": "active",
+          "basis": "Explicit initial scenario wording; not independently verified.",
+          "replaces": []
+        },
+        {
+          "id": "F41f9da9b2721",
+          "area": "pressure",
+          "facet": "request",
+          "quote": "The manager asks us to close the testing section today.",
+          "turn": 1,
+          "source": "initial",
+          "kind": "reported",
+          "status": "active",
+          "basis": "Explicit initial scenario wording; not independently verified.",
+          "replaces": []
+        }
+      ],
+      "dimensions": {
+        "role": {
+          "coverage": 1,
+          "status": "partial",
+          "known": [
+            "F76504f91d44a"
+          ],
+          "uncertain": [],
+          "missing": [
+            "decision",
+            "responsibility"
+          ]
+        },
+        "interests": {
+          "coverage": 0,
+          "status": "unexplored",
+          "known": [],
+          "uncertain": [],
+          "missing": [
+            "relationship",
+            "stake",
+            "influence"
+          ]
+        },
+        "pressure": {
+          "coverage": 1,
+          "status": "partial",
+          "known": [
+            "F41f9da9b2721"
+          ],
+          "uncertain": [],
+          "missing": [
+            "incentive",
+            "response"
+          ]
+        },
+        "evidence": {
+          "coverage": 1,
+          "status": "partial",
+          "known": [
+            "F1e628d048ef1"
+          ],
+          "uncertain": [
+            "Ffabdd065aaf8"
+          ],
+          "missing": [
+            "uncertainty",
+            "alternatives"
+          ]
+        },
+        "review": {
+          "coverage": 0,
+          "status": "unexplored",
+          "known": [],
+          "uncertain": [],
+          "missing": [
+            "reviewer",
+            "route",
+            "safeguard"
+          ]
+        }
+      },
+      "ready": false,
+      "brief": null,
+      "language": "English",
+      "origin": "curated"
+    },
+    "analysis_zh": {
+      "schema": 1,
+      "facts": [
+        {
+          "id": "Fcc197c798c7b",
+          "area": "role",
+          "facet": "position",
+          "quote": "我是一名高级审计员。",
+          "turn": 1,
+          "source": "initial",
+          "kind": "reported",
+          "status": "active",
+          "basis": "情境原文明确提供此信息；尚未经独立核实。",
+          "replaces": []
+        },
+        {
+          "id": "Fbed75299b541",
+          "area": "evidence",
+          "facet": "basis",
+          "quote": "一批手工上传的分录没有显示在仪表盘里",
+          "turn": 1,
+          "source": "initial",
+          "kind": "reported",
+          "status": "active",
+          "basis": "情境原文明确提供此信息；尚未经独立核实。",
+          "replaces": []
+        },
+        {
+          "id": "Fe24e668662dd",
+          "area": "evidence",
+          "facet": "uncertainty",
+          "quote": "不知道是否已在其他地方筛查",
+          "turn": 1,
+          "source": "initial",
+          "kind": "uncertain",
+          "status": "active",
+          "basis": "情境原文明确提供此信息；尚未经独立核实。",
+          "replaces": []
+        },
+        {
+          "id": "Fdad1cf206651",
+          "area": "pressure",
+          "facet": "request",
+          "quote": "经理要求今天完成该部分测试",
+          "turn": 1,
+          "source": "initial",
+          "kind": "reported",
+          "status": "active",
+          "basis": "情境原文明确提供此信息；尚未经独立核实。",
+          "replaces": []
+        }
+      ],
+      "dimensions": {
+        "role": {
+          "coverage": 1,
+          "status": "partial",
+          "known": [
+            "Fcc197c798c7b"
+          ],
+          "uncertain": [],
+          "missing": [
+            "decision",
+            "responsibility"
+          ]
+        },
+        "interests": {
+          "coverage": 0,
+          "status": "unexplored",
+          "known": [],
+          "uncertain": [],
+          "missing": [
+            "relationship",
+            "stake",
+            "influence"
+          ]
+        },
+        "pressure": {
+          "coverage": 1,
+          "status": "partial",
+          "known": [
+            "Fdad1cf206651"
+          ],
+          "uncertain": [],
+          "missing": [
+            "incentive",
+            "response"
+          ]
+        },
+        "evidence": {
+          "coverage": 1,
+          "status": "partial",
+          "known": [
+            "Fbed75299b541"
+          ],
+          "uncertain": [
+            "Fe24e668662dd"
+          ],
+          "missing": [
+            "uncertainty",
+            "alternatives"
+          ]
+        },
+        "review": {
+          "coverage": 0,
+          "status": "unexplored",
+          "known": [],
+          "uncertain": [],
+          "missing": [
+            "reviewer",
+            "route",
+            "safeguard"
+          ]
+        }
+      },
+      "ready": false,
+      "brief": null,
+      "language": "中文",
+      "origin": "curated"
+    }
   },
   {
     "id": "vendor",
@@ -37,6 +853,216 @@
     "zh": "新编虚构 · 被推荐的AI工具",
     "source": "Original fictional teaching scenario; not a real incident",
     "text_en": "Our audit team is considering an AI tool recommended by a partner. The vendor offers a referral reward to the firm if a client adopts it. A colleague asks me to describe the tool as independently validated in an audit planning note, but I have only seen the vendor's demonstration. I need to decide how to respond objectively.",
-    "text_zh": "审计团队正在考虑合伙人推荐的一款AI工具。如果客户采用，供应商会向事务所提供推荐奖励。同事让我在审计计划记录中将工具描述为已经独立验证，但我只看过供应商的演示。我需要思考如何客观地回应。"
+    "text_zh": "审计团队正在考虑合伙人推荐的一款AI工具。如果客户采用，供应商会向事务所提供推荐奖励。同事让我在审计计划记录中将工具描述为已经独立验证，但我只看过供应商的演示。我需要思考如何客观地回应。",
+    "analysis_en": {
+      "schema": 1,
+      "facts": [
+        {
+          "id": "F3ac39733ec82",
+          "area": "role",
+          "facet": "decision",
+          "quote": "Our audit team is considering an AI tool recommended by a partner.",
+          "turn": 1,
+          "source": "initial",
+          "kind": "reported",
+          "status": "active",
+          "basis": "Explicit initial scenario wording; not independently verified.",
+          "replaces": []
+        },
+        {
+          "id": "Fe551dde439cc",
+          "area": "interests",
+          "facet": "stake",
+          "quote": "The vendor offers a referral reward to the firm if a client adopts it.",
+          "turn": 1,
+          "source": "initial",
+          "kind": "reported",
+          "status": "active",
+          "basis": "Explicit initial scenario wording; not independently verified.",
+          "replaces": []
+        },
+        {
+          "id": "F7714c449b9db",
+          "area": "evidence",
+          "facet": "basis",
+          "quote": "I have only seen the vendor's demonstration.",
+          "turn": 1,
+          "source": "initial",
+          "kind": "reported",
+          "status": "active",
+          "basis": "Explicit initial scenario wording; not independently verified.",
+          "replaces": []
+        }
+      ],
+      "dimensions": {
+        "role": {
+          "coverage": 1,
+          "status": "partial",
+          "known": [
+            "F3ac39733ec82"
+          ],
+          "uncertain": [],
+          "missing": [
+            "position",
+            "responsibility"
+          ]
+        },
+        "interests": {
+          "coverage": 1,
+          "status": "partial",
+          "known": [
+            "Fe551dde439cc"
+          ],
+          "uncertain": [],
+          "missing": [
+            "relationship",
+            "influence"
+          ]
+        },
+        "pressure": {
+          "coverage": 0,
+          "status": "unexplored",
+          "known": [],
+          "uncertain": [],
+          "missing": [
+            "request",
+            "incentive",
+            "response"
+          ]
+        },
+        "evidence": {
+          "coverage": 1,
+          "status": "partial",
+          "known": [
+            "F7714c449b9db"
+          ],
+          "uncertain": [],
+          "missing": [
+            "uncertainty",
+            "alternatives"
+          ]
+        },
+        "review": {
+          "coverage": 0,
+          "status": "unexplored",
+          "known": [],
+          "uncertain": [],
+          "missing": [
+            "reviewer",
+            "route",
+            "safeguard"
+          ]
+        }
+      },
+      "ready": false,
+      "brief": null,
+      "language": "English",
+      "origin": "curated"
+    },
+    "analysis_zh": {
+      "schema": 1,
+      "facts": [
+        {
+          "id": "Fa9c00e4b2b9b",
+          "area": "role",
+          "facet": "decision",
+          "quote": "审计团队正在考虑合伙人推荐的一款AI工具。",
+          "turn": 1,
+          "source": "initial",
+          "kind": "reported",
+          "status": "active",
+          "basis": "情境原文明确提供此信息；尚未经独立核实。",
+          "replaces": []
+        },
+        {
+          "id": "Fbbdd2072c72f",
+          "area": "interests",
+          "facet": "stake",
+          "quote": "如果客户采用，供应商会向事务所提供推荐奖励。",
+          "turn": 1,
+          "source": "initial",
+          "kind": "reported",
+          "status": "active",
+          "basis": "情境原文明确提供此信息；尚未经独立核实。",
+          "replaces": []
+        },
+        {
+          "id": "F3217220ed915",
+          "area": "evidence",
+          "facet": "basis",
+          "quote": "我只看过供应商的演示",
+          "turn": 1,
+          "source": "initial",
+          "kind": "reported",
+          "status": "active",
+          "basis": "情境原文明确提供此信息；尚未经独立核实。",
+          "replaces": []
+        }
+      ],
+      "dimensions": {
+        "role": {
+          "coverage": 1,
+          "status": "partial",
+          "known": [
+            "Fa9c00e4b2b9b"
+          ],
+          "uncertain": [],
+          "missing": [
+            "position",
+            "responsibility"
+          ]
+        },
+        "interests": {
+          "coverage": 1,
+          "status": "partial",
+          "known": [
+            "Fbbdd2072c72f"
+          ],
+          "uncertain": [],
+          "missing": [
+            "relationship",
+            "influence"
+          ]
+        },
+        "pressure": {
+          "coverage": 0,
+          "status": "unexplored",
+          "known": [],
+          "uncertain": [],
+          "missing": [
+            "request",
+            "incentive",
+            "response"
+          ]
+        },
+        "evidence": {
+          "coverage": 1,
+          "status": "partial",
+          "known": [
+            "F3217220ed915"
+          ],
+          "uncertain": [],
+          "missing": [
+            "uncertainty",
+            "alternatives"
+          ]
+        },
+        "review": {
+          "coverage": 0,
+          "status": "unexplored",
+          "known": [],
+          "uncertain": [],
+          "missing": [
+            "reviewer",
+            "route",
+            "safeguard"
+          ]
+        }
+      },
+      "ready": false,
+      "brief": null,
+      "language": "中文",
+      "origin": "curated"
+    }
   }
 ]

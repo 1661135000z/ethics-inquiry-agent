@@ -1,5 +1,6 @@
+import {cleanAnalysis,type Analysis} from './analysis';
 export type Message={role:'user'|'assistant';content:string};
-export type Snapshot={version:number;attempts:number;initial_text:string;case_id:string;backup_until?:number;session:{messages:Message[];observations:{area:string;quote:string}[];records:{turn:number;provider:string;model:string;tokens?:number;focus:string;time:string;regenerations?:number}[];focus:string}};
+export type Snapshot={version:number;attempts:number;initial_text:string;case_id:string;backup_until?:number;session:{analysis?:Analysis;messages:Message[];observations:{area:string;quote:string}[];records:{turn:number;provider:string;model:string;tokens?:number;focus:string;time:string;regenerations?:number}[];focus:string}};
 export type State={screen:'welcome'|'cases'|'chat';onboarded:boolean;archived:boolean;provider:string;model:string;verified:boolean;draft:string;savedDraft:string;selecting:boolean;caseId:string;initialText:string;snapshot:Snapshot;activeRequest:string|null;pendingText:string|null;pendingOperation:string|null;stage:string;error:string;view:'chat'|'notes'|'review';language:'中文'|'English';theme:'dark'|'light'};
 export const emptySnapshot=():Snapshot=>({version:0,attempts:0,initial_text:'',case_id:'blank',session:{messages:[],observations:[],records:[],focus:'scope'}});
 export const initialState=():State=>({screen:'welcome',onboarded:false,archived:false,provider:'gemini',model:'gemini-3.5-flash-lite',verified:false,draft:'',savedDraft:'',selecting:false,caseId:'blank',initialText:'',snapshot:emptySnapshot(),activeRequest:null,pendingText:null,pendingOperation:null,stage:'idle',error:'',view:'chat',language:'English',theme:'dark'});
@@ -48,6 +49,7 @@ export function restoreState(raw:string|null):State{
     !Array.isArray(session.records)||session.records.length>15||!session.records.every((r:Snapshot['session']['records'][number])=>r&&n(r.turn)&&text(r.provider,40)&&text(r.model,120)&&text(r.focus,40)&&text(r.time,80)))return fallback;
   if(v.archived!==undefined&&typeof v.archived!=='boolean')return fallback;
   v.snapshot={version:s.version,attempts:s.attempts,initial_text:s.initial_text,case_id:s.case_id,session:{
+   ...(cleanAnalysis(session.analysis,session.messages)?{analysis:cleanAnalysis(session.analysis,session.messages)}:{}),
    focus:session.focus,messages:session.messages.map((m:Message)=>({role:m.role,content:m.content})),
    observations:session.observations.map((o:{area:string;quote:string})=>({area:o.area,quote:o.quote})),
    records:session.records.map((r:Snapshot['session']['records'][number])=>({turn:r.turn,provider:r.provider,model:r.model,focus:r.focus,time:r.time,...(n(r.tokens)?{tokens:r.tokens}:{}),...(n(r.regenerations)?{regenerations:r.regenerations}:{})}))}};

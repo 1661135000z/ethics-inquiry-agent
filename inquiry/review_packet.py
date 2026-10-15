@@ -3,6 +3,7 @@
 from html import escape
 
 from inquiry.core import AREAS, Session
+from inquiry.analysis import analysis_markdown
 
 
 _STYLE = """:root { color-scheme: light; --ink: #242622; --muted: #67695f; --line: #deded3; --accent: #a43c2d; }
@@ -152,6 +153,7 @@ def build_review_packet(session: Session, language="English") -> str:
     else:
         provenance = f'<p class="unknown">{label("No model provenance records available.", "暂无模型来源记录。")}</p>'
 
+    semantic = ('<section><h2>'+label("Five-dimensional context and guidance", "五维信息与初步建议")+'</h2><p class="verbatim">'+_text(analysis_markdown(session.analysis,language))+'</p></section>') if session.analysis.get("facts") else ""
     title = label("Human-review briefing", "人工复核简报")
     question = _text(latest_question) if latest_question is not None else label("No follow-up question recorded.", "尚未记录追问。")
     return f'''<!doctype html>
@@ -177,6 +179,7 @@ def build_review_packet(session: Session, language="English") -> str:
 <section>{section_head(2, label("User-reported excerpts by inquiry area", "按探究主题整理的用户原文"))}
 <p class="intro">{label("Literal excerpts from user messages. Unknowns remain unknown; an extracted statement is not a completed check or a cleared issue.", "摘录保留用户消息的原文。未知仍是未知；提取到陈述不代表已完成检查或已排除相关问题。")}</p>
 <div class="areas">{''.join(groups)}</div></section>
+{semantic}
 <section>{section_head(3, label("Human next steps", "人工下一步"))}<div class="next-steps"><p class="verbatim">{_text(next_steps)}</p></div></section>
 <section>{section_head(4, label("Full conversation transcript", "完整对话记录"))}{''.join(transcript)}</section>
 <section>{section_head(5, label("Model provenance", "模型来源记录"))}

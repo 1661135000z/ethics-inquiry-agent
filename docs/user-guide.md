@@ -51,7 +51,13 @@ Model wording varies. Keep an actual exported transcript if demonstrating the ag
 
 ## Workspace controls
 
-**Inquiry clues** organises exact user quotations into five areas. Click a source-turn link to return to the original message. The five-axis radar plots recorded statement counts, with a shared labelled scale that expands when needed. Empty axes remain at zero. Hover/focus an axis or category to highlight its counterpart; click to open that area. It does not measure risk or prove that enough evidence has been gathered. Counts describe statements, not ethical risk, evidence completeness or verified facts.
+**Inquiry clues** shows five evidence-linked areas: role/responsibility, relationships/interests, pressure/incentives, evidence/alternatives and independent review. A university friendship belongs primarily to relationships; it is not automatically pressure. A threat linking promotion to silence supplies a separate basis for pressure.
+
+The radar shows three distinct information needs per area, labelled **Unexplored**, **Partly explored** or **Substantial context**. It is not a risk score, independent verification or a requirement to make every area grow equally. Quotation count and turn count do not determine coverage. Unknown reports remain visible but do not count as resolved information. Hover/focus or activate an area to read known statements and remaining gaps. The agent's next focus highlights its corresponding area.
+
+Selecting an unchanged example immediately previews source-checked initial statements, without calling a model. Editing an example or writing your own situation clears that curated preview; the full text is semantically analysed on submission in the **same model request** as the first question. Model updates retain exact quotations, user-turn sources, classification explanations and explicit corrections. A correction can supersede earlier information and reopen a gap; records remain user-reported and may be wrong.
+
+The agent normally responds with a short insight and one concrete follow-up. When the five areas have sufficient reported context, it can compare options and suggest a conditional next step while continuing to ask questions. You can request advice earlier; uncertainty must be made clear. The **Ethical decision brief**, when a valid source-supported brief is generated, shows the conflict, reported stakeholders, options and trade-offs, preliminary advice and unresolved issues. Important new information marks older guidance as needing reassessment until a fresh valid brief replaces it. It never grants ethical clearance or ends the dialogue automatically. If you switch language, saved quotations and earlier advice keep their original wording; subsequent model responses use your selected language.
 
 A submitted message remains visibly pending until validation and commit succeed. The processing ribbon uses real backend stage events. Use **Back to latest** after reading an earlier message; a long initial situation can be expanded without resending it.
 
@@ -59,7 +65,7 @@ The model status distinguishes **Configured · not tested** from a successful co
 
 ## Save and revisit a local archive
 
-Open **History**, give the inquiry a name and choose **Save on this device**. Saving is optional and stores only accepted conversation, observations and provenance in this browser's localStorage. It excludes API keys, access codes, sending consent, unsent drafts and DeepSeek eligibility. At most the twenty most recently saved records are kept.
+Open **History**, give the inquiry a name and choose **Save on this device**. Saving is optional and stores only accepted conversation, evidence-linked analysis, observations and provenance in this browser's localStorage. It excludes API keys, access codes, sending consent, unsent drafts and DeepSeek eligibility. At most the twenty most recently saved records are kept.
 
 Choose a record to read its conversation, clues and review preview. Rename it, export Markdown, or delete it and use **Undo** while the panel remains open. Historical viewing does not call a model or replace the current online inquiry. A historical dossier may be printed; its server download link is disabled because the current server session may represent a different conversation.
 
@@ -71,8 +77,8 @@ Use **Help** for the short guide, privacy details and product scope. Theme and l
 
 After the first successful model transition, the existing **Inside Inquire** panel opens with a short guide. It opens after the situation page settles and can be dismissed with its close button, Escape or **Explore my situation**. Only that explicit action focuses the input; ordinary dismissal restores the invoking control. Viewing is remembered per browser and domain when storage is available. It does not interrupt an existing dialogue or active editing. Use the help icon beside the language switch to reopen it.
 
-**Real example** contains an actual two-turn test from 12 October 2026 with a fictional situation. The original English user inputs, model questions and OpenRouter provenance are preserved, including in the Chinese interface. It is a historical record, not a simulated live response. Reading it makes no model requests, does not spend the backup allowance and does not replace your current conversation.
+**Real example** contains an actual two-turn test from 12 October 2026 with a fictional situation. English displays the original inputs and model questions. Chinese displays labelled manual translations, with expandable original English for checking. Model provenance remains unchanged; switching language retains the selected example turn. It is a historical record, not a simulated live response. Reading it makes no model requests, does not spend the backup allowance and does not replace your current conversation.
 
-The composer grows with your input within a bounded height. Expand its follow-up reference to see the question you are answering. An explicit **Retry this input** resends a failed draft only when the current connection and sending permission allow it; this uses an API attempt. There are no automatic retries. Newly recorded clues briefly highlight the relevant radar axis; source navigation highlights its category. Printed review previews include statement IDs, source turns and space for human-review notes.
+The composer grows with your input within a bounded height. Expand its follow-up reference to see the question you are answering. An explicit **Retry this input** resends a failed draft only when the current connection and sending permission allow it; this uses an API attempt. There are no automatic retries. Changes in distinct information coverage briefly highlight the relevant radar axis; source navigation highlights its category. Printed review previews include statement IDs, source turns and space for human-review notes.
 
 The **About Inquire** tab contains the author's contact details and project origins.

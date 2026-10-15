@@ -98,3 +98,35 @@ class DemoAccessTests(unittest.TestCase):
         self.assertEqual(credentials({**body,'api_key':'visitor-placeholder','free_confirmed':True},{**env,'DEMO_ACCESS_ENABLED':'true'})[2],'visitor-placeholder')
 
 if __name__ == '__main__': unittest.main()
+
+class SemanticFlowTests(unittest.IsolatedAsyncioTestCase):
+    asyncSetUp = APITests.asyncSetUp
+    events = APITests.events
+    async def test_preset_seeds_reach_same_call_and_full_context_drives_next_turn(self):
+        from inquiry.examples import EXAMPLES
+        case=next(c for c in EXAMPLES if c['id']=='relationships')
+        self.transport.raw=json.dumps({'question':'Which independent records could test the revenue judgment?','response':'The friendship and renewal link merit separate consideration. Which independent records could test the revenue judgment?','focus':'evidence','analysis':{'updates':[]}})
+        result=(await self.events({**self.body,'text':case['text_en'],'case_id':'relationships'}))[-1]['data']
+        self.assertEqual(len(self.transport.calls),1)
+        self.assertEqual(result['session']['analysis']['origin'],'semantic')
+        self.assertTrue(any(f['area']=='interests' for f in result['session']['analysis']['facts']))
+        prompt=self.transport.calls[0][3][0]['content']
+        self.assertIn('close friend from university',prompt)
+        self.assertIn('information gaps',prompt)
+        self.transport.raw=json.dumps({'question':'谁可以帮助你核实这些原始记录？','response':'可以先明确核实渠道。谁可以帮助你核实这些原始记录？','focus':'review','analysis':{'updates':[]}})
+        result2=(await self.events({**self.body,'version':1,'request_id':'semantic-next-2','text':'I can request the underlying sales contracts.','language':'中文'}))[-1]['data']
+        self.assertEqual(len(self.transport.calls),2)
+        self.assertEqual(result2['session']['analysis']['facts'],result['session']['analysis']['facts'])
+        self.assertIn('中文',self.transport.calls[-1][3][0]['content'])
+        self.assertIn('The friendship',result2['session']['messages'][1]['content'])
+        self.assertIn('谁可以',result2['session']['messages'][-1]['content'])
+
+    async def test_analysis_failure_preserves_accepted_facts_and_brief(self):
+        await self.events(self.body)
+        before=await self.service.restore(self.token)
+        self.transport.raw=json.dumps({'question':'Who could review the records?','response':'You should sign this audit. Who could review the records?','focus':'review','analysis':{'updates':[]}})
+        with self.assertRaises(APIError):
+            await self.events({**self.body,'version':1,'request_id':'semantic-fail-2','text':'I do not know whether anyone reviewed the records.'})
+        after=await self.service.restore(self.token)
+        self.assertEqual(after['session'],before['session'])
+        self.assertEqual(after['version'],before['version'])

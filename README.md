@@ -10,15 +10,16 @@ The mirror runs the same interface and relays API requests to the same backend. 
 
 - A progressive welcome → model selection → situation → conversation journey, with GSAP transitions, light/dark themes, bilingual controls and locally bundled Chinese fonts.
 - Your own situation, or four optional editable examples. Hover/focus previews stay in the browser; only explicit submissions call the agent.
-- One contextual question per turn about roles, interests, pressure, evidence or independent review. The agent preserves uncertainty and avoids immediate ethical verdicts.
+- A brief contextual insight and one core question per turn. A shared evidence state records roles, relationships, pressure, evidence and independent review, and informs the next follow-up. Conditional preliminary guidance can follow sufficient context or an earlier user request; judgment remains human.
 - Gemini and GLM model selection; optional personal keys held only in page memory. **DeepSeek appears only after a genuine GLM service failure**, requires a manual switch and is funded by the developer.
 - Transactional conversations: invalid replies or failed requests do not overwrite accepted records. Switching situations, cancelling, restarting and regenerating retain the appropriate drafts and settings.
-- A source-linked clue notebook and interactive five-axis count radar: exact user quotations jump back to the accepted message; empty areas remain unknown.
+- A source-linked five-dimensional context model: preset wording seeds the preview, and the same dialogue call extracts new facts, uncertainty and corrections. The radar reflects distinct information needs, not quotation volume or ethical risk. Repeated facts cannot fill it.
+- An evidence-linked Ethical Decision Brief with options, trade-offs and conditional suggestions. New information marks prior guidance for reassessment; the conversation continues.
 - Pending-message feedback, real execution stages, back-to-latest navigation and collapsible initial context.
 - An in-page human-review dossier, print/PDF layout and the existing downloadable HTML packet after two accepted turns.
 - Explicitly saved, read-only local history with naming, deletion/undo and Markdown export. Records stay in that browser and origin; credentials and unsent drafts are excluded.
 - Configured versus verified model status, separate turn/request counts and a bilingual guide that opens naturally after the first model connection. The existing help panel remains available at any time.
-- A read-only, genuine recorded inquiry with original English messages and model provenance; viewing never calls a model or replaces the live inquiry.
+- A read-only genuine recorded inquiry with original English messages, labelled Chinese translations and model provenance; viewing never calls a model or replaces the live inquiry.
 - Refresh recovery, keyboard/touch support and reduced-motion support. Expired server sessions retain a read-only browser copy when available.
 
 The assistant is an inquiry aid, not an auditor or a source of verified facts. It does not train a model, browse standards, make audit opinions or show hidden model reasoning. Execution events stream over SSE; model text is displayed **after complete JSON validation**, rather than raw token streaming.

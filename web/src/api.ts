@@ -1,6 +1,7 @@
+import type {Analysis} from './analysis';
 import type {Snapshot} from './state';
 export type Provider={id:string;models:string[];default_model?:string;configured:boolean;free_confirmed:boolean};
-export type Case={id:string;en:string;zh:string;text_en:string;text_zh:string;source:string};
+export type Case={id:string;en:string;zh:string;text_en:string;text_zh:string;source:string;analysis_en?:unknown;analysis_zh?:unknown};
 export type Config={providers:Provider[];cases:Case[];principle:string;test_mode?:boolean;demo_access?:boolean;paid_backup?:Provider};
 export class APIError extends Error{constructor(public code:string,message:string,public status=400,public backupAvailable=false){super(message)}}
 export async function json<T>(path:string,body?:unknown):Promise<T>{

@@ -25,3 +25,8 @@ class TransportTests(unittest.TestCase):
             self.assertNotIn('private-test-key',url)
             self.assertEqual(headers['x-goog-api-key'],'private-test-key')
             self.assertEqual('thinkingConfig' in payload['generationConfig'],model.startswith('gemini-2.5-'))
+
+class PaidOutputBudgetTests(unittest.TestCase):
+    def test_deepseek_original_paid_output_cap_remains_1600(self):
+        _,_,payload=request_payload('deepseek','deepseek-flash','placeholder',[{'role':'user','content':'Fictional inquiry'}])
+        self.assertEqual(payload['max_tokens'],1600)

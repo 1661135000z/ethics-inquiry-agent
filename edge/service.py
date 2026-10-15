@@ -6,8 +6,9 @@ import hashlib
 import json
 import secrets
 import re
-from inquiry.core import Session, system_prompt, parse_reply, ModelOutputError
+from inquiry.core import Session, system_prompt, parse_turn, ModelOutputError
 from inquiry.examples import EXAMPLES
+from inquiry.analysis import seed_case, DEFINITIONS
 from .policy import APIError, credentials, MODELS, KEYS
 
 class Service:
@@ -18,7 +19,7 @@ class Service:
         return {'providers':[{'id':p,'models':list(dict.fromkeys([self.default_model(p),*models])), 'default_model':self.default_model(p),
                  'configured':bool(self.env.get(KEYS[p])) and (bool(self.env.get('ACCESS_CODE')) or self.env.get('DEMO_ACCESS_ENABLED','').lower()=='true'),
                  'free_confirmed':self.env.get(p.upper()+'_FREE_TIER_CONFIRMED','').lower()=='true'} for p,models in MODELS.items() if p!='deepseek'],
-                 'cases':EXAMPLES,'principle':'objectivity','demo_access':self.env.get('DEMO_ACCESS_ENABLED','').lower()=='true',
+                 'cases':[{**c,'analysis_en':seed_case(c,'English'),'analysis_zh':seed_case(c,'中文')} for c in EXAMPLES], 'dimensions':DEFINITIONS,'principle':'objectivity','demo_access':self.env.get('DEMO_ACCESS_ENABLED','').lower()=='true',
                  'paid_backup':{'id':'deepseek','models':['deepseek-flash'],'configured':bool(self.env.get('DEEPSEEK_API_KEY')),'free_confirmed':False}}
 
     def default_model(self,provider):
@@ -66,15 +67,19 @@ class Service:
                 if session.turns>=(10 if provider=='deepseek' else 12): raise APIError('limit','已达到10轮，请导出并开始新对话。' if provider=='deepseek' else '已达到12轮，请导出并开始新对话。')
                 if sum(len(m['content']) for m in session.messages)+len(text.strip())>24000: raise APIError('limit','已达到上下文长度限制。')
                 candidate=session.messages+[{'role':'user','content':text.strip()}]
+            if not session.messages and operation!='regenerate':
+                selected=next((c for c in EXAMPLES if c['id']==body.get('case_id')),None)
+                if selected:
+                    session.analysis=seed_case({**selected, 'text_zh':text.strip(), 'text_en':text.strip()},language)
             yield {'event':'stage','data':{'stage':'input'}}
             yield {'event':'stage','data':{'stage':'request'}}
-            raw,meta=await self.transport.complete(provider,model,key,[{'role':'system','content':system_prompt(language,session.observations)},*candidate])
+            prompt=system_prompt(language,session.observations,session.analysis)
+            if provider=='deepseek':prompt+='\nCompact output budget: 1600 tokens. Use short source-complete quotes and classification explanations; only new/corrected updates. Keep any requested brief very concise, and finish valid JSON.'
+            raw,meta=await self.transport.complete(provider,model,key,[{'role':'system','content':prompt},*candidate])
             yield {'event':'stage','data':{'stage':'validate'}}
-            question,focus,quotes=parse_reply(raw,[m['content'] for m in candidate if m['role']=='user'])
+            question,focus,quotes,analysis=parse_turn(raw,[m['content'] for m in candidate if m['role']=='user'],session.analysis,language,session.observations)
             session.messages=candidate+[{'role':'assistant','content':question}]
-            for quote in quotes:
-                if quote not in session.observations: session.observations.append(quote)
-            session.observations=session.observations[-30:]; session.focus=focus
+            session.observations=quotes[-30:]; session.focus=focus; session.analysis=analysis
             record={'turn':session.turns,'time':datetime.now(timezone.utc).isoformat(),
                     'provider':provider,'model':str(meta.get('model',model))[:120],
                     'tokens':meta.get('tokens') if type(meta.get('tokens')) is int else None,'focus':focus}

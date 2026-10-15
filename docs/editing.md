@@ -23,3 +23,11 @@ Run the Python API on port 8788 and `pnpm dev` in a second terminal. Open Vite's
 For a text change, update both branches of `t('中文','English')`. For CSS, edit the existing component rule and inspect mobile overrides rather than stacking conflicting fixes. Do not change state or API logic just to move a button. Keep passwords out of JSX defaults, Vite configuration and checked-in files.
 
 Changing the Python example list changes `/api/config`; the browser uses the server's list. `web/src/cases.json` is a bundled fallback, so keep it consistent if editing examples. UI-only edits still need `pnpm test` and `pnpm build`. Backend edits need `python -m unittest discover -s tests -v`. Do not use live paid API calls for tests that mocked responses can cover.
+
+
+### Five-dimensional behaviour
+
+- Change the area definitions, facet boundaries, source validation or advice gate in `inquiry/analysis.py`; change conversational style and structured output in `inquiry/core.py`.
+- Run `python scripts/sync_analysis_assets.py` after changing preset evidence or definitions, then test and rebuild. Do not edit generated `web/src/cases.json` or `dimensions.json` independently.
+- `web/src/analysis.ts` handles source-checked browser restoration and preset previews; `ExperiencePanels.tsx` displays gaps, coverage and the decision brief. `analysis.css` adds only these information layouts.
+- Historical messages stay verbatim. `recorded-example.json` stores labelled Chinese translations separately from original English; do not rewrite the original test transcript as a new live response.

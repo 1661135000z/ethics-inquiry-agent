@@ -1,0 +1,8 @@
+[
+ {"id":"university_tie_en","language":"English","text":"Fictional situation: I am an audit senior deciding whether to raise a revenue-reporting concern. The CFO and I were at university together and still meet for coffee.","required":["interests"],"forbidden_reported":["pressure"]},
+ {"id":"personal_tie_paraphrase","language":"English","text":"Fictional audit context. The finance director and I lived in the same student house years ago. Our families still meet socially. I need to assess a questionable accounting estimate.","required":["interests"],"forbidden_reported":["pressure"]},
+ {"id":"indirect_promotion_threat_zh","language":"中文","text":"虚构情境：我是审计组员。负责人说，如果我继续上报这个差异，下一轮晋级名单上就不会有我的名字。我正在考虑怎样保留相关记录。","required":["role","pressure"],"forbidden_reported":["interests"]},
+ {"id":"mixed_dimensions","language":"English","text":"Fictional situation: I lead the audit evidence work. The CFO is my cousin. My supervisor said my promotion depends on leaving the issue out of the report. I have the original contract, but no delivery log.","required":["role","interests","pressure","evidence"],"forbidden_reported":[]},
+ {"id":"ambiguous_input","language":"English","text":"Fictional audit concern: Something about the output does not sit right with me. I cannot yet say what information is missing or what decision I am expected to make.","required":[],"forbidden_reported":["interests","pressure","review"]},
+ {"id":"responsibility_not_pressure_zh","language":"中文","text":"虚构情境：我负责准备这份审计计划，并向项目负责人说明证据基础。这是我的工作职责；目前没有提到期限、奖惩或私人关系。","required":["role"],"forbidden_reported":["interests"]}
+]

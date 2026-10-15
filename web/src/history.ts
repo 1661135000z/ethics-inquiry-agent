@@ -1,3 +1,4 @@
+import {analysisMarkdown} from './analysis';
 import {initialState,publicSnapshot,restoreState,type State,type Snapshot} from './state';
 export const HISTORY_KEY='inquire.history.v1';
 export type Archive={id:string;name:string;savedAt:number;provider:string;model:string;language:State['language'];snapshot:Snapshot};
@@ -28,5 +29,5 @@ export function archiveMarkdown(item:Archive,language:State['language']):string{
  const heading=zh?'本机探究档案':'Saved inquiry';
  const note=zh?'已接受对话的只读存档。用户陈述仍需核对，本记录不构成伦理结论。':'Read-only archive of accepted dialogue. User statements require verification; this record is not an ethical conclusion.';
  const turns=item.snapshot.session.messages.map(m=>`## ${m.role==='user'?(zh?'用户陈述':'User statement'):'Inquire'}\n\n${m.content}`).join('\n\n');
- return `# Inquire — ${heading}\n\n${item.name}\n\n${note}\n\n${turns}\n\n## ${zh?'模型来源':'Model provenance'}\n\n${JSON.stringify(item.snapshot.session.records,null,2)}`;
+ return `# Inquire — ${heading}\n\n${item.name}\n\n${note}\n\n${turns}\n\n${analysisMarkdown(item.snapshot,zh)}\n\n## ${zh?'模型来源':'Model provenance'}\n\n${JSON.stringify(item.snapshot.session.records,null,2)}`;
 }

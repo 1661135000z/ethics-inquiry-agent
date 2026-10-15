@@ -5,3 +5,5 @@ import './style.css';
 import './experience.css';
 import './polish.css';
 createRoot(document.getElementById('root')!).render(<React.StrictMode><App/></React.StrictMode>);
+
+import './analysis.css';
