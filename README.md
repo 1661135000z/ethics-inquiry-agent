@@ -17,7 +17,8 @@ The mirror runs the same interface and relays API requests to the same backend. 
 - Pending-message feedback, real execution stages, back-to-latest navigation and collapsible initial context.
 - An in-page human-review dossier, print/PDF layout and the existing downloadable HTML packet after two accepted turns.
 - Explicitly saved, read-only local history with naming, deletion/undo and Markdown export. Records stay in that browser and origin; credentials and unsent drafts are excluded.
-- Configured versus verified model status, separate turn/request counts and bilingual guide, privacy and about panels.
+- Configured versus verified model status, separate turn/request counts and a bilingual guide that opens naturally after the first model connection. The existing help panel remains available at any time.
+- A read-only, genuine recorded inquiry with original English messages and model provenance; viewing never calls a model or replaces the live inquiry.
 - Refresh recovery, keyboard/touch support and reduced-motion support. Expired server sessions retain a read-only browser copy when available.
 
 The assistant is an inquiry aid, not an auditor or a source of verified facts. It does not train a model, browse standards, make audit opinions or show hidden model reasoning. Execution events stream over SSE; model text is displayed **after complete JSON validation**, rather than raw token streaming.
@@ -67,7 +68,7 @@ docs/               Current usage, architecture, deployment and verification
 legacy/             Archived Streamlit release and historical design notes
 ```
 
-See [editing the product](docs/editing.md) for exactly which files control the page and agent behavior. The former Streamlit app is self-contained in [`legacy/streamlit/`](legacy/streamlit/README.md); it is not the default entrypoint. No teaching materials, identities or filled credentials belong in this repository.
+See [editing the product](docs/editing.md) for exactly which files control the page and agent behavior. The former Streamlit app is self-contained in [`legacy/streamlit/`](legacy/streamlit/README.md); it is not the default entrypoint. No teaching materials, visitor identities or filled credentials belong in this repository.
 
 ## Check and deploy
 
@@ -83,3 +84,7 @@ The ZIP at `dist/inquire-react-source.zip` includes the built UI and native Pyth
 ## Licenses and attribution
 
 Third-party notices are in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Local Noto Sans SC subsets retain the SIL Open Font License. GSAP follows its own Standard License. No Base44 template source or assets were copied.
+
+## Author and origins
+
+Created by **张浩然** · [1661135000z@gmail.com](mailto:1661135000z@gmail.com). This project originated as an **ACC305** course design on audit ethics and human–AI collaboration. Project descriptions and updates follow the author's published version; third-party components retain their respective licences.

@@ -19,7 +19,7 @@ export function SituationStudio({cases,zh,selected,preview,locked,onSelect,onCus
  return <div className="studio-grid">
   <div className="entry-bezel" data-enter><div className="entry-core">
    <div className="entry-intro"><div className="entry-caption"><span className="status-dot"/>{t('由你提供情境','The context is yours')}</div>
-    <h3>{t('写下你正在思考的事。','What is on your mind?')}</h3>
+    <h3 data-scene-title>{current?(zh?current.zh:current.en).replace(/^(Example · |Fictional · |示例 · |新编虚构 · )/,''):t('你的探究情境','Your inquiry')}</h3>
     <p>{t('一个决定，一些线索，或还说不清的疑虑。','A decision, a few clues, or an unresolved concern.')}</p>
     <svg viewBox="0 0 420 110" fill="none" className="entry-contours" aria-hidden="true"><path d="M-30 140C90 140 70 18 230 18s140 120 240 120M-30 155C100 155 80 37 230 37s140 120 240 120M-30 170C110 170 90 56 230 56s140 120 240 120"/></svg>
    </div>

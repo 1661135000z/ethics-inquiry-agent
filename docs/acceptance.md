@@ -57,3 +57,13 @@ The EdgeOne console shows the same commit Running and the account plan Free. The
 ## Interactive clue radar — 2026-10-15
 
 The decorative ellipse is replaced by five axes derived from accepted statement counts. The common count scale is labelled and expands in multiples of three; zero remains zero. This is neither a risk score nor a completeness measure. Category and axis hover/focus are linked, and activation opens the corresponding clue section without a model request. Count changes animate locally and respect reduced-motion preferences. Two geometry/count regression tests bring the frontend suite to 38 tests. Local fictional browser checks cover count updates and axis-to-notebook navigation; no live model call is required for this change.
+
+## Guided experience and author credit — 2026-10-15
+
+- 44 frontend tests, 30 Python API tests and TypeScript checking passed. No provider, billing, session-limit or core objectivity logic changed.
+- The existing Inside Inquire sheet introduces the guide once after the first eligible successful model transition. Editing, settings, accepted conversations and prior viewing suppress automatic opening. Explicit guide completion focuses the composer; ordinary dismissal restores its invoking control.
+- A fresh-context review identified focus stealing during settings edits and unconditional mobile keyboard activation. Both were repaired; the eligibility regression was checked failing before the fix and passing afterwards.
+- Local browser checks use an explicitly marked simulated provider, with real request/validation/commit flow. They verify two accepted turns, bounded composer height, contextual question reference, home/resume preserving drafts and counts, no repeated guide, source-to-radar linkage and printable S01/S02 source references. These are not new live-provider acceptance claims.
+- The read-only example reproduces the original two-turn export from 12 October 2026, with fictional input, original English wording and actual model provenance. It is clearly historical, costs no model request and leaves the current inquiry untouched.
+- About and the footer include the owner's authorised name. About includes the authorised contact email, ACC305 course-design origin and third-party licence acknowledgement. This does not authorise publishing visitor identities or original teaching files.
+- Desktop 1366px and mobile 390px layouts were checked, including the Chinese light-mode About sheet, with no horizontal page overflow. The separately delivered English Word guide retains its original five pages and adds a sixth page; all six rendered pages were visually checked.

@@ -66,3 +66,13 @@ Choose a record to read its conversation, clues and review preview. Rename it, e
 These saved archives survive tab closure until you delete them or clear site storage. They are not synchronised: the primary and mirror domains have separate local archives. Avoid confidential data, including on shared devices. Browser storage restrictions may prevent saving; the active inquiry still works. Download an export before clearing site data.
 
 Use **Help** for the short guide, privacy details and product scope. Theme and language changes do not translate user quotations or discard the live conversation.
+
+## The first-run guide and recorded example
+
+After the first successful model transition, the existing **Inside Inquire** panel opens with a short guide. It opens after the situation page settles and can be dismissed with its close button, Escape or **Explore my situation**. Only that explicit action focuses the input; ordinary dismissal restores the invoking control. Viewing is remembered per browser and domain when storage is available. It does not interrupt an existing dialogue or active editing. Use the help icon beside the language switch to reopen it.
+
+**Real example** contains an actual two-turn test from 12 October 2026 with a fictional situation. The original English user inputs, model questions and OpenRouter provenance are preserved, including in the Chinese interface. It is a historical record, not a simulated live response. Reading it makes no model requests, does not spend the backup allowance and does not replace your current conversation.
+
+The composer grows with your input within a bounded height. Expand its follow-up reference to see the question you are answering. An explicit **Retry this input** resends a failed draft only when the current connection and sending permission allow it; this uses an API attempt. There are no automatic retries. Newly recorded clues briefly highlight the relevant radar axis; source navigation highlights its category. Printed review previews include statement IDs, source turns and space for human-review notes.
+
+The **About Inquire** tab contains the author's contact details and project origins.

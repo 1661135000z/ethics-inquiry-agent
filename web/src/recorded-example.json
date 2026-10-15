@@ -1,0 +1,64 @@
+{
+  "recorded": "2026-10-12",
+  "original_language": "English",
+  "messages": [
+    {
+      "role": "user",
+      "content": "Fictional scenario: I am an audit senior. An AI dashboard rates year-end journals low risk, but a batch of manual entries is absent. I do not know whether another system tested them. My manager wants testing closed today."
+    },
+    {
+      "role": "assistant",
+      "content": "What steps can you take to verify whether the missing manual entries have been examined by any other system or control before agreeing to close testing?"
+    },
+    {
+      "role": "user",
+      "content": "I can request the complete journal population and screening logs from the data team. They need until tomorrow. My manager says the dashboard is enough, and my performance review rewards finishing on schedule."
+    },
+    {
+      "role": "assistant",
+      "content": "How would proceeding with testing closure based solely on the AI dashboard affect your ability to exercise professional skepticism if the missing manual entries contain material misstatements?"
+    }
+  ],
+  "records": [
+    {
+      "turn": 1,
+      "time": "2026-10-12T05:34:38.228479+00:00",
+      "provider": "openrouter",
+      "model": "nvidia/nemotron-3-super-120b-a12b:free",
+      "tokens": 1214,
+      "focus": "pressure",
+      "fallback_from": null
+    },
+    {
+      "turn": 2,
+      "time": "2026-10-12T05:39:17.709038+00:00",
+      "provider": "openrouter",
+      "model": "nvidia/nemotron-3-super-120b-a12b:free",
+      "tokens": 783,
+      "focus": "pressure",
+      "fallback_from": null
+    }
+  ],
+  "observations": [
+    {
+      "area": "role",
+      "quote": "I am an audit senior."
+    },
+    {
+      "area": "pressure",
+      "quote": "My manager wants testing closed today."
+    },
+    {
+      "area": "pressure",
+      "quote": "My manager says the dashboard is enough, and my performance review rewards finishing on schedule."
+    },
+    {
+      "area": "evidence",
+      "quote": "An AI dashboard rates year-end journals low risk, but a batch of manual entries is absent."
+    },
+    {
+      "area": "evidence",
+      "quote": "I do not know whether another system tested them."
+    }
+  ]
+}
