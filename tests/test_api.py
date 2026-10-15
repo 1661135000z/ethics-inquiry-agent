@@ -40,7 +40,7 @@ class APITests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(len(self.transport.calls), 1)
 
     async def test_invalid_model_output_keeps_session(self):
-        self.transport.raw = '{"question":"You should sign this audit.","focus":"review"}'
+        self.transport.raw = '{}'
         with self.assertRaises(APIError): await self.events(self.body)
         state = await self.service.restore(self.token)
         self.assertEqual(state['version'], 0)
@@ -124,7 +124,7 @@ class SemanticFlowTests(unittest.IsolatedAsyncioTestCase):
     async def test_analysis_failure_preserves_accepted_facts_and_brief(self):
         await self.events(self.body)
         before=await self.service.restore(self.token)
-        self.transport.raw=json.dumps({'question':'Who could review the records?','response':'You should sign this audit. Who could review the records?','focus':'review','analysis':{'updates':[]}})
+        self.transport.raw='{}'
         with self.assertRaises(APIError):
             await self.events({**self.body,'version':1,'request_id':'semantic-fail-2','text':'I do not know whether anyone reviewed the records.'})
         after=await self.service.restore(self.token)

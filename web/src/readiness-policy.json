@@ -1,0 +1,19 @@
+{
+  "weights": {
+    "role": 2,
+    "interests": 1,
+    "pressure": 1,
+    "evidence": 3,
+    "review": 3
+  },
+  "breadth_weight": 2,
+  "conflict_weight": 20,
+  "stance_weight": 10,
+  "stakeholder_weight": 10,
+  "consequence_weight": 10,
+  "action_weight": 10,
+  "unknown_penalty": 7,
+  "max_penalty": 21,
+  "threshold": 60,
+  "ceiling": 95
+}

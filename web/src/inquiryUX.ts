@@ -11,13 +11,13 @@ const prompts:Record<string,Record<string,[string,string,string,string]>>={
 export function gapSuggestions(snapshot:Snapshot,zh:boolean){
  if(!snapshot.session.analysis||snapshot.session.analysis.origin==='pending')return [];
  return Object.entries(dimensionDefinitions).flatMap(([area,d],order)=>{
-  const v=dimensionView(snapshot,area);if(!v.missing.length)return [];
+  const v=dimensionView(snapshot,area),available=v.missing.filter(f=>!v.declined.includes(f));if(!available.length)return [];
   // An explicit uncertainty deserves a checking path before unrelated missing details.
-  const facet=v.missing.find(f=>v.uncertain.some(u=>u.facet===f))||v.missing[0];
+  const facet=available.find(f=>v.uncertain.some(u=>u.facet===f)&&!v.engagements.some(e=>e.facet===f&&e.state==='unknown'))||available.find(f=>v.unexplored.includes(f))||available[0];
   const uncertain=v.uncertain.some(f=>f.facet===facet),p=prompts[area][facet];
   return [{area,facet,label:zh?d.zh:d.en,question:uncertain?(zh?'可以通过哪些资料或人员核实这部分不确定的信息？':'Which available records or people could help check this uncertainty?'):p[zh?1:0],starter:uncertain?(zh?'关于这部分不确定的信息，我可以尝试核实的途径是……':'A way I could try to check this uncertainty is…'):p[zh?3:2],uncertain,source:v.uncertain.filter(f=>f.facet===facet).at(-1)||v.facts.at(-1),
    hint:uncertain?(zh?'这部分尚不能确认；可以补充核实途径，也可以说明暂时无法核实。':'This is uncertain. Describe a checking route, or say that none is currently known.'):(zh?'只填写你知道的；不知道、暂不适用也可以说明。':'Share only what you know; unknown or not applicable is a useful answer.'),
-   coverage:v.coverage,remaining:v.missing.length,priority:area===snapshot.session.focus?0:uncertain?1:2,order}];
+   coverage:v.information,remaining:available.length,priority:area===snapshot.session.focus?0:uncertain?1:2,order}];
  }).sort((a,b)=>a.priority-b.priority||a.coverage-b.coverage||a.order-b.order);
 }
 export function turnChanges(snapshot:Snapshot,turn:number){

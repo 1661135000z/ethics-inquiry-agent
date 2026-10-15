@@ -23,7 +23,7 @@ The mirror runs the same interface and relays API requests to the same backend. 
 - A read-only genuine recorded inquiry with original English messages, labelled Chinese translations and model provenance; viewing never calls a model or replaces the live inquiry.
 - Refresh recovery, keyboard/touch support and reduced-motion support. Expired server sessions retain a read-only browser copy when available.
 
-The assistant is an inquiry aid, not an auditor or a source of verified facts. It does not train a model, browse standards, make audit opinions or show hidden model reasoning. Execution events stream over SSE; model text is displayed **after complete JSON validation**, rather than raw token streaming.
+The assistant is an inquiry aid, not an auditor or a source of verified facts. It does not train a model, browse standards, make audit opinions or show hidden model reasoning. Execution events stream over SSE; model text is displayed **after usable-reply and source validation**, rather than raw token streaming.
 
 ## Run locally
 
@@ -55,7 +55,7 @@ Put developer credentials in `.env` locally or **Cloudflare Workers Secrets** on
 
 A visitor's personal key overrides the developer key for that request and is not persisted. Changing provider does not silently send content to a second service.
 
-Gemini/GLM inquiries allow up to **12 accepted turns**. DeepSeek mode allows up to **10 accepted turns total in the current inquiry**, including earlier turns. DeepSeek also has a **10-request session allowance** and a **60-request shared daily allowance**; failed calls and regeneration consume request attempts. Starting a new inquiry resets its conversation counter, preserves the 24-attempt lineage counter, returns DeepSeek users to GLM, and requires a fresh GLM failure to offer the backup again. Shared limits remain **40 attempts/hour and 150/day**. These request caps are not a monetary spending guarantee. See [limits and troubleshooting](docs/user-guide.md).
+Gemini/GLM inquiries allow up to **20 accepted turns**. DeepSeek mode allows up to **10 accepted turns total in the current inquiry**, including earlier turns. DeepSeek also has a **10-request session allowance** and a **60-request shared daily allowance**; failed calls and regeneration consume request attempts. Starting a new inquiry resets its conversation counter, preserves the 48-attempt lineage counter, returns DeepSeek users to GLM, and requires a fresh GLM failure to offer the backup again. Shared limits remain **40 attempts/hour and 150/day**. These request caps are not a monetary spending guarantee. See [limits and troubleshooting](docs/user-guide.md).
 
 ## Source layout
 
@@ -90,3 +90,5 @@ Third-party notices are in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Loc
 ## Author and origins
 
 Created by **张浩然** · [1661135000z@gmail.com](mailto:1661135000z@gmail.com). This project originated as an **ACC305** course design on audit ethics and human–AI collaboration. Project descriptions and updates follow the author's published version; third-party components retain their respective licences.
+
+The five areas distinguish exploration coverage from information sufficiency. An independent, source-grounded Advice Readiness meter supports conditional guidance without requiring every area to be complete. Gemini/GLM allow 20 accepted turns; DeepSeek remains a manually enabled ten-turn paid backup. See [user guide](docs/user-guide.md) and [architecture](docs/architecture.md) for separate attempt/provider limits.

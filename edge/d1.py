@@ -37,7 +37,7 @@ class D1Store:
             row=plain(await self.stmt("SELECT json_extract(payload,'$.backup_until') AS allowed FROM sessions WHERE token=? AND expires>?",token,now).first())
             if not row or not row['allowed'] or row['allowed']<=now:raise APIError('backup_gate','请先在GLM失败后选择备用模型。',403)
         results=plain(await self.db.batch([
-            self.stmt("INSERT OR IGNORE INTO requests(token,request_id,fingerprint,created) SELECT ?,?,?,? WHERE EXISTS(SELECT 1 FROM sessions WHERE token=? AND expires>? AND busy_until<? AND json_extract(payload,'$.version')=? AND json_extract(payload,'$.attempts')<24 AND (?=0 OR json_extract(payload,'$.backup_until')>?)) AND (SELECT count(*) FROM requests WHERE created>?)<40 AND (SELECT count(*) FROM requests WHERE created>?)<150 AND (?=0 OR ((SELECT count(*) FROM requests WHERE token=? AND fingerprint LIKE 'paid:%')<10 AND (SELECT count(*) FROM requests WHERE fingerprint LIKE 'paid:%' AND created>?)<60))",token,rid,fingerprint,now,token,now,now,version,int(paid),now,now-3600,now-86400,int(paid),token,now-86400),
+            self.stmt("INSERT OR IGNORE INTO requests(token,request_id,fingerprint,created) SELECT ?,?,?,? WHERE EXISTS(SELECT 1 FROM sessions WHERE token=? AND expires>? AND busy_until<? AND json_extract(payload,'$.version')=? AND json_extract(payload,'$.attempts')<48 AND (?=0 OR json_extract(payload,'$.backup_until')>?)) AND (SELECT count(*) FROM requests WHERE created>?)<40 AND (SELECT count(*) FROM requests WHERE created>?)<150 AND (?=0 OR ((SELECT count(*) FROM requests WHERE token=? AND fingerprint LIKE 'paid:%')<10 AND (SELECT count(*) FROM requests WHERE fingerprint LIKE 'paid:%' AND created>?)<60))",token,rid,fingerprint,now,token,now,now,version,int(paid),now,now-3600,now-86400,int(paid),token,now-86400),
             self.stmt("UPDATE sessions SET busy=?,busy_until=?,payload=json_set(payload,'$.attempts',json_extract(payload,'$.attempts')+1) WHERE token=? AND busy_until<? AND json_extract(payload,'$.version')=? AND EXISTS(SELECT 1 FROM requests WHERE token=? AND request_id=? AND created=? AND result IS NULL)",rid,now+90,token,now,version,token,rid,now)
         ]))
         results=[plain(r) for r in results]
@@ -45,6 +45,9 @@ class D1Store:
             if paid:
                 counts=plain(await self.stmt("SELECT (SELECT count(*) FROM requests WHERE token=? AND fingerprint LIKE 'paid:%') AS session_paid,(SELECT count(*) FROM requests WHERE fingerprint LIKE 'paid:%' AND created>?) AS day_paid",token,now-86400).first())
                 if counts['session_paid']>=10 or counts['day_paid']>=60:raise APIError('backup_limit','备用模型请求额度已达到限制，请返回GLM或稍后再试。',429)
+            quota=plain(await self.stmt("SELECT (SELECT count(*) FROM requests WHERE created>?) AS hourly,(SELECT count(*) FROM requests WHERE created>?) AS daily",now-3600,now-86400).first())
+            if quota['hourly']>=40 or quota['daily']>=150:
+                raise APIError('deployment_quota','演示服务已达到共享请求额度，请稍后再试。已有对话和草稿仍保留。',429)
             raise APIError('conflict_or_limit','会话正在更新、已过期或达到请求限制。请恢复后继续。',409)
         return None
     async def finish(self,token,rid,snapshot=None):

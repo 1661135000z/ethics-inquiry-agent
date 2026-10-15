@@ -7,7 +7,7 @@ it('links exact quotations only to user turns and preserves missing sources',()=
 });
 it('counts only accepted turns and treats backup cap as total inquiry turns',()=>{
  const s=initialState().snapshot;s.session.messages=[{role:'user',content:'a'},{role:'assistant',content:'b'}];
- expect(stats(s,'deepseek').remaining).toBe(9);expect(stats(s,'zhipu').remaining).toBe(11);
+ expect(stats(s,'deepseek').remaining).toBe(9);expect(stats(s,'zhipu').remaining).toBe(19);
 });
 it('stages never invent completed checks before server progress',()=>{
  expect(stageState('request','input')).toBe('complete');expect(stageState('request','commit')).toBe('waiting');expect(stageState('error','commit')).toBe('waiting');

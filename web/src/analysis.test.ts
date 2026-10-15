@@ -59,7 +59,7 @@ it('latest uncertainty blocks old reported facet coverage until a later supporte
  const c=cases.find(c=>c.id==='relationships')!,s=scenarioSnapshot(c,c.text_en,false);
  const f=s.session.analysis!.facts.find(f=>f.area==='interests')!;
  s.session.analysis!.facts.push({...f,id:'Fnew-unknown',turn:2,kind:'uncertain',quote:'I cannot confirm that relationship.'});
- expect(dimensionView(s,'interests').coverage).toBe(0);
+ expect(dimensionView(s,'interests').information).toBe(0);
  s.session.analysis!.facts.push({...f,id:'Fnew-known',turn:3,quote:'The classmate relationship has been confirmed.'});
  expect(dimensionView(s,'interests').coverage).toBe(1);
 });

@@ -27,7 +27,7 @@ Changing the Python example list changes `/api/config`; the browser uses the ser
 
 ### Five-dimensional behaviour
 
-- Change the area definitions, facet boundaries, source validation or advice gate in `inquiry/analysis.py`; change conversational style and structured output in `inquiry/core.py`.
+- Change the area definitions, facet boundaries, source validation or advice gate in `inquiry/analysis.py`; edit dual indicators/readiness in `inquiry/progress.py` and `web/src/progress.ts`; run `scripts/sync_analysis_assets.py` after policy changes. Change conversational style and structured output in `inquiry/core.py`.
 - Run `python scripts/sync_analysis_assets.py` after changing preset evidence or definitions, then test and rebuild. Do not edit generated `web/src/cases.json` or `dimensions.json` independently.
 - `web/src/analysis.ts` handles source-checked browser restoration and preset previews; `ExperiencePanels.tsx` displays gaps, coverage and the decision brief. `analysis.css` adds only these information layouts.
 - Historical messages stay verbatim. `recorded-example.json` stores labelled Chinese translations separately from original English; do not rewrite the original test transcript as a new live response.

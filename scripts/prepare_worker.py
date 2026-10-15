@@ -8,7 +8,7 @@ project.mkdir(exist_ok=True)
 target=project/'src'
 target.mkdir(exist_ok=True)
 for package,names in {'edge':['__init__.py','worker.py','service.py','policy.py','transport.py','store.py','d1.py'],
-                      'inquiry':['__init__.py','core.py','analysis.py','examples.py','review_packet.py']}.items():
+                      'inquiry':['__init__.py','core.py','analysis.py','progress.py','replies.py','context.py','examples.py','review_packet.py']}.items():
     (target/package).mkdir(exist_ok=True)
     for name in names: shutil.copy2(root/package/name,target/package/name)
 shutil.copy2(root/'pyproject.toml',project/'pyproject.toml')

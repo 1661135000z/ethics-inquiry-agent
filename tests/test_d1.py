@@ -47,7 +47,7 @@ class D1Tests(unittest.IsolatedAsyncioTestCase):
         result=[e async for e in self.service.inquire(self.token,{**self.body,'request_id':'d1-request-0002'})]
         self.assertEqual(result[-1]['data']['attempts'],2)
     async def test_new_session_keeps_attempt_budget(self):
-        t,s=await self.service.create(attempts=24)
+        t,s=await self.service.create(attempts=48)
         with self.assertRaises(APIError):[e async for e in self.service.inquire(t,self.body)]
         self.assertEqual(len(self.transport.calls),0)
     async def test_stale_response_cannot_overwrite_newer_lease(self):
@@ -64,4 +64,10 @@ class D1Tests(unittest.IsolatedAsyncioTestCase):
             await self.store.finish(self.token,'request-margin',snapshot)
             self.assertEqual((await self.store.get(self.token))['version'],1)
 
-if __name__=='__main__':unittest.main()
+    async def test_twenty_accepted_turns_persist_under_production_sql(self):
+        s=await self.service.restore(self.token)
+        for i in range(20):
+            s=([e async for e in self.service.inquire(self.token,{**self.body,'version':s['version'],'request_id':f'd1-twenty-{i:03}'})])[-1]['data']
+        self.assertEqual(len(s['session']['messages']),40)
+        self.assertEqual(len(s['session']['records']),20)
+        self.assertEqual(s['attempts'],20)

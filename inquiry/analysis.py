@@ -34,7 +34,7 @@ DEFINITIONS = {
 }
 
 def empty_analysis():
- return {'schema':1,'facts':[],'dimensions':{},'ready':False,'brief':None,'language':'English','origin':'semantic'}
+ return {'schema':1,'facts':[],'dimensions':{},'ready':False,'engagements':[],'context':{'signals':{},'critical_unknowns':[]},'brief':None,'language':'English','origin':'semantic'}
 
 def fact_id(area,facet,quote,turn):
  return 'F'+hashlib.sha256((area+'|'+facet+'|'+normalise(quote)+'|'+str(turn)).encode()).hexdigest()[:12]
@@ -43,19 +43,14 @@ def normalise(text):
  return re.sub(r'\W+','',text.casefold())
 
 def dimension_states(analysis):
- states={}
- for area,d in DEFINITIONS.items():
-  facts=[f for f in analysis.get('facts',[]) if f['area']==area and f.get('status')=='active']
-  covered={facet for facet in d['facets'] if max((f['turn'] for f in facts if f['facet']==facet and f['kind']=='reported'),default=0)>max((f['turn'] for f in facts if f['facet']==facet and f['kind']=='uncertain'),default=0)}
-  missing=[f for f in d['facets'] if f not in covered]
-  states[area]={'coverage':len(covered),'status':'substantial' if len(covered)==3 else 'partial' if facts else 'unexplored',
-                'known':[f['id'] for f in facts if f['kind']=='reported'],
-                'uncertain':[f['id'] for f in facts if f['kind']=='uncertain'],'missing':missing}
- return states
+ from inquiry.progress import dimension_states as dual_states
+ return dual_states(analysis)
 
 def finish(analysis):
+ from inquiry.progress import advice_readiness
  analysis['dimensions']=dimension_states(analysis)
- analysis['ready']=all(d['status']=='substantial' for d in analysis['dimensions'].values())
+ analysis['ready']=all(d['information']==3 for d in analysis['dimensions'].values())
+ analysis['readiness']=advice_readiness(analysis,analysis['dimensions'])
  return analysis
 
 def apply_updates(previous,updates,user_texts):
@@ -66,7 +61,7 @@ def apply_updates(previous,updates,user_texts):
   area,facet,quote,turn,kind=(u.get(k) for k in ('area','facet','quote','turn','kind'))
   if not isinstance(area,str) or area not in DEFINITIONS or not isinstance(facet,str) or facet not in DEFINITIONS[area]['facets'] or not isinstance(kind,str) or kind not in {'reported','uncertain'}:continue
   if type(turn) is not int or not 1<=turn<=len(user_texts):continue
-  if not isinstance(quote,str) or not 4<=len(quote)<=600 or quote not in user_texts[turn-1]:continue
+  if not isinstance(quote,str) or not 1<=len(quote)<=600 or quote not in user_texts[turn-1]:continue
   # Preserve explicit unknowns even if the model assigns the wrong epistemic kind.
   if re.search(r"(?:I |we )?(?:do not|don't|cannot|can't) (?:know|confirm)|not sure|不知道|不清楚|不能确认|无法确认|尚不确定",quote,re.I):kind='uncertain'
   # Only a current-message correction can displace the same area's earlier claim.
@@ -135,10 +130,10 @@ def seed_case(case,language):
  return a
 
 def wants_advice(text):
- return bool(re.search(r'建议|怎么办|怎么做|该如何|你会怎么|选哪个|recommend|advice|suggest|what should|what would you|which option|what can i do',text,re.I))
+ return bool(re.search(r'建议|怎么办|怎么做|该如何|你会怎么|选哪个|recommend|advice|guidance|suggest|what should|what would you|which option|what can i do',text,re.I))
 
 def validate_brief(value,analysis,user_texts,language):
- if not isinstance(value,dict) or not (analysis['ready'] or (user_texts and wants_advice(user_texts[-1]))):return None
+ if not isinstance(value,dict) or not (analysis.get('readiness',{}).get('eligible') or analysis['ready'] or (user_texts and wants_advice(user_texts[-1]))):return None
  active=[f for f in analysis['facts'] if f['status']=='active']
  basis=value.get('basis_quotes',[])
  if not isinstance(basis,list):return None
@@ -148,7 +143,7 @@ def validate_brief(value,analysis,user_texts,language):
  fields=('conflict','stakeholders','recommendation')
  if not all(txt(value.get(k),500) for k in fields):return None
  options=value.get('options',[]);unknowns=value.get('uncertainties',[])
- if not isinstance(options,list) or not 2<=len(options)<=3 or not all(isinstance(o,dict) and txt(o.get('action'),220) and txt(o.get('tradeoff'),300) for o in options):return None
+ if not isinstance(options,list) or not 1<=len(options)<=3 or not all(isinstance(o,dict) and txt(o.get('action'),220) and txt(o.get('tradeoff'),300) for o in options):return None
  if not isinstance(unknowns,list) or not 1<=len(unknowns)<=4 or not all(txt(u,250) for u in unknowns):return None
  return {**{k:value[k] for k in fields},'options':[{'action':o['action'],'tradeoff':o['tradeoff']} for o in options],
          'uncertainties':unknowns,'basis':ids,'language':language,'stale':False,'as_of_turn':len(user_texts)}
@@ -156,14 +151,15 @@ def validate_brief(value,analysis,user_texts,language):
 def analysis_markdown(analysis,language='English'):
  zh=language=='中文';a=finish(deepcopy(analysis or empty_analysis()))
  lines=['# 五维信息与初步建议' if zh else '# Five-dimensional context and preliminary guidance',
-        '信息覆盖不是事实核实或风险评分，仍需人工判断。' if zh else 'Context coverage is not verification and not a risk score. Human judgment remains necessary.']
+        '探索覆盖度记录讨论范围，信息充分度记录有据内容；两者均非核实或伦理评分。' if zh else 'Exploration measures discussion; information measures supported context. Neither is verification or a moral score; this is not a risk score. Human judgment remains necessary.']
  for area,d in DEFINITIONS.items():
-  state=a['dimensions'][area];lines.append('\n## '+d['zh' if zh else 'en']+f" ({state['coverage']}/3)")
+  state=a['dimensions'][area];lines.append('\n## '+d['zh' if zh else 'en']+f" — Exploration {round(state['coverage']/3*100)}%; Information {state['information']}/3")
   for f in a['facts']:
    if f['area']==area and f['status']=='active':
     lines.append(f"[{f['id']}] "+('初始情境' if zh and f['turn']==1 else '第'+str(f['turn'])+'轮' if zh else 'Initial situation' if f['turn']==1 else 'Turn '+str(f['turn']))+' · '+('不确定' if zh and f['kind']=='uncertain' else f['kind'])+'\n> '+f['quote'].replace('\n','\n> '))
   missing=[d['facets'][f][int(zh)] for f in state['missing']]
   if missing:lines.append(('仍值得探索：' if zh else 'Still worth exploring: ')+'; '.join(missing))
+ lines.append(('建议准备度：' if zh else 'Advice readiness: ')+str(a['readiness']['score'])+'% · '+a['readiness']['stage'])
  b=a.get('brief')
  if b:
   lines.append('\n## '+('有条件的初步建议' if zh else 'Conditional preliminary guidance'))

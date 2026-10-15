@@ -41,7 +41,7 @@ export function publicSnapshot(s:State){
 export function restoreState(raw:string|null):State{
  const fallback=initialState();
  try{
-  if(!raw||raw.length>200000)return fallback;
+  if(!raw||raw.length>500000)return fallback;
   const v=JSON.parse(raw); if(!v||!['welcome','cases','chat'].includes(v.screen)||!Array.isArray(v.snapshot?.session?.messages))return fallback;
   const text=(x:unknown,max=24000)=>typeof x==='string'&&x.length<=max;
   const n=(x:unknown)=>typeof x==='number'&&Number.isSafeInteger(x)&&x>=0;
@@ -51,9 +51,9 @@ export function restoreState(raw:string|null):State{
     !['chat','notes','review'].includes(v.view)||!['中文','English'].includes(v.language)||!['dark','light'].includes(v.theme))return fallback;
   const s=v.snapshot,session=s.session;
   if(!n(s.version)||!n(s.attempts)||!text(s.initial_text)||!text(s.case_id,120)||!text(session.focus,40)||
-    session.messages.length>30||!session.messages.every((m:Message)=>m&&['user','assistant'].includes(m.role)&&text(m.content))||
+    session.messages.length>40||!session.messages.every((m:Message)=>m&&['user','assistant'].includes(m.role)&&text(m.content))||
     !Array.isArray(session.observations)||session.observations.length>30||!session.observations.every((o:{area:string;quote:string})=>o&&text(o.area,80)&&text(o.quote))||
-    !Array.isArray(session.records)||session.records.length>15||!session.records.every((r:Snapshot['session']['records'][number])=>r&&n(r.turn)&&text(r.provider,40)&&text(r.model,120)&&text(r.focus,40)&&text(r.time,80)))return fallback;
+    !Array.isArray(session.records)||session.records.length>20||!session.records.every((r:Snapshot['session']['records'][number])=>r&&n(r.turn)&&text(r.provider,40)&&text(r.model,120)&&text(r.focus,40)&&text(r.time,80)))return fallback;
   if(v.archived!==undefined&&typeof v.archived!=='boolean')return fallback;
   v.snapshot={version:s.version,attempts:s.attempts,initial_text:s.initial_text,case_id:s.case_id,session:{
    ...(cleanAnalysis(session.analysis,session.messages)?{analysis:cleanAnalysis(session.analysis,session.messages)}:{}),

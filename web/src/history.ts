@@ -10,7 +10,7 @@ export function createArchive(state:State,name:string,id:string,savedAt:number):
  return {id,name:name.trim().slice(0,80)||'Inquire',savedAt,provider:clean.provider,model:clean.model,language:clean.language,snapshot:clean.snapshot};
 }
 export function readHistory(raw:string|null):Archive[]{
- if(!raw||raw.length>2000000)return [];
+ if(!raw||raw.length>6000000)return [];
  try{const value=JSON.parse(raw);if(!Array.isArray(value))return [];const result:Archive[]=[];
  for(const item of value.slice(0,20)){try{
   if(!item||typeof item.name!=='string'||typeof item.id!=='string'||typeof item.savedAt!=='number')continue;

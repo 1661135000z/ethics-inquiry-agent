@@ -18,15 +18,16 @@ export function GapGuide({snapshot,zh,locked,draft,onDraft,onArea}:{snapshot:Sna
  </section>;
 }
 export function TurnUpdate({snapshot,turn,zh,onLocate}:{snapshot:Snapshot;turn:number;zh:boolean;onLocate:(turn:number,area?:string)=>void}){
- const change=turnChanges(snapshot,turn),t=(a:string,b:string)=>zh?a:b;
+ const engagements=(snapshot.session.analysis?.engagements||[]).filter(e=>e.turn===turn);const change=turnChanges(snapshot,turn),t=(a:string,b:string)=>zh?a:b;
  if(!snapshot.session.analysis)return null;
  const labels=(ids:string[])=>[...new Set(ids)].map(id=>dimensionDefinitions[id as keyof typeof dimensionDefinitions]?.[zh?'zh':'en']).filter(Boolean).join(zh?'、':', ');
  return <details className={`turn-update ${change.corrected.length?'has-correction':''}`} open={change.corrected.length>0}>
-  <summary><Icon name={change.corrected.length?'refresh':'note'} size={13}/><span>{change.corrected.length?t('本轮修正了先前信息','Earlier information revised'):change.added.length?t(`本轮补充：${labels(change.added.map(f=>f.area))}`,`Context added: ${labels(change.added.map(f=>f.area))}`):t('本轮未记录新的维度信息','No new dimensional context recorded this turn')}</span><Icon name="plus" size={12}/></summary>
+  <summary><Icon name={change.corrected.length?'refresh':'note'} size={13}/><span>{change.corrected.length?t('本轮修正了先前信息','Earlier information revised'):change.added.length?t(`本轮补充：${labels(change.added.map(f=>f.area))}`,`Context added: ${labels(change.added.map(f=>f.area))}`):engagements.length?t(`本轮探索：${labels(engagements.map(e=>e.area))}`,`Explored: ${labels(engagements.map(e=>e.area))}`):t('本轮未记录新的维度信息','No new dimensional context recorded this turn')}</span><Icon name="plus" size={12}/></summary>
   <p>{t('以下来自已接受记录；是用户陈述，不是独立核实的事实。','From accepted records: reported statements, not independently verified facts.')}</p>
   {change.corrected.map(c=><div className="correction-pair" key={c.after.id}><span>{t('先前陈述','Earlier statement')}</span>{c.before.map(f=><blockquote key={f.id}>{f.quote}<button className="text-button" onClick={()=>onLocate(f.turn,f.area)}>{t(`第${f.turn}轮`,`Turn ${f.turn}`)}<Icon name="arrow" size={12}/></button></blockquote>)}<span>{t('本轮修正为','Revised this turn')}</span><blockquote>{c.after.quote}</blockquote></div>)}
   {change.added.length>0&&<ul>{change.added.map(f=><li key={f.id}><span>{labels([f.area])}{f.kind==='uncertain'?t(' · 尚不确定',' · uncertain'):''}{f.status==='superseded'?t(' · 后续已修正',' · revised later'):''}</span><q>{f.quote}</q></li>)}</ul>}
-  {!change.added.length&&!change.corrected.length&&<p>{t('重复、模糊或暂时无法分类的回答不会被强行算作进展；仍可以继续讨论。','Repeated, ambiguous or unclassified answers are not forced into progress. The inquiry can still continue.')}</p>}
+  {engagements.map(e=><blockquote key={e.id}>{e.quote}<small>{e.state==='unknown'?t('已探索 · 仍不确定','Explored · still uncertain'):e.state==='declined'?t('已探索 · 暂不继续追问','Explored · not pursued further'):t('已记录讨论或立场','Discussion or position recorded')}</small></blockquote>)}
+  {!engagements.length&&!change.added.length&&!change.corrected.length&&<p>{t('重复、模糊或暂时无法分类的回答不会被强行算作进展；仍可以继续讨论。','Repeated, ambiguous or unclassified answers are not forced into progress. The inquiry can still continue.')}</p>}
  </details>;
 }
 export function BriefRevision({brief,previous,zh}:{brief:DecisionBrief;previous?:DecisionBrief|null;zh:boolean}){

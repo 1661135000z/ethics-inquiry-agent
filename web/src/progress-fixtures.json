@@ -1,0 +1,742 @@
+[
+  {
+    "schema": 1,
+    "facts": [],
+    "dimensions": {
+      "role": {
+        "coverage": 0,
+        "information": 0,
+        "status": "unexplored",
+        "explored": [],
+        "unexplored": [
+          "position",
+          "decision",
+          "responsibility"
+        ],
+        "supported": [],
+        "known": [],
+        "uncertain": [],
+        "missing": [
+          "position",
+          "decision",
+          "responsibility"
+        ],
+        "declined": []
+      },
+      "interests": {
+        "coverage": 0,
+        "information": 0,
+        "status": "unexplored",
+        "explored": [],
+        "unexplored": [
+          "relationship",
+          "stake",
+          "influence"
+        ],
+        "supported": [],
+        "known": [],
+        "uncertain": [],
+        "missing": [
+          "relationship",
+          "stake",
+          "influence"
+        ],
+        "declined": []
+      },
+      "pressure": {
+        "coverage": 0,
+        "information": 0,
+        "status": "unexplored",
+        "explored": [],
+        "unexplored": [
+          "request",
+          "incentive",
+          "response"
+        ],
+        "supported": [],
+        "known": [],
+        "uncertain": [],
+        "missing": [
+          "request",
+          "incentive",
+          "response"
+        ],
+        "declined": []
+      },
+      "evidence": {
+        "coverage": 0,
+        "information": 0,
+        "status": "unexplored",
+        "explored": [],
+        "unexplored": [
+          "basis",
+          "uncertainty",
+          "alternatives"
+        ],
+        "supported": [],
+        "known": [],
+        "uncertain": [],
+        "missing": [
+          "basis",
+          "uncertainty",
+          "alternatives"
+        ],
+        "declined": []
+      },
+      "review": {
+        "coverage": 0,
+        "information": 0,
+        "status": "unexplored",
+        "explored": [],
+        "unexplored": [
+          "reviewer",
+          "route",
+          "safeguard"
+        ],
+        "supported": [],
+        "known": [],
+        "uncertain": [],
+        "missing": [
+          "reviewer",
+          "route",
+          "safeguard"
+        ],
+        "declined": []
+      }
+    },
+    "ready": false,
+    "engagements": [],
+    "context": {
+      "signals": {},
+      "critical_unknowns": []
+    },
+    "brief": null,
+    "language": "English",
+    "origin": "semantic",
+    "readiness": {
+      "score": 0,
+      "eligible": false,
+      "stage": "exploring",
+      "criteria": {
+        "conflict": false,
+        "stance": false,
+        "stakeholders": false,
+        "consequences": false,
+        "action_basis": false
+      },
+      "critical_unknowns": [],
+      "unknown_count": 0,
+      "information_points": 0,
+      "exploration_points": 0,
+      "penalty": 0
+    }
+  },
+  {
+    "schema": 1,
+    "facts": [
+      {
+        "id": "Fdd82a2885912",
+        "area": "interests",
+        "facet": "relationship",
+        "quote": "The CFO is my classmate.",
+        "turn": 1,
+        "source": "initial",
+        "kind": "reported",
+        "status": "active",
+        "basis": "Source statement.",
+        "replaces": []
+      },
+      {
+        "id": "Ff0100f6011b3",
+        "area": "role",
+        "facet": "decision",
+        "quote": "I must decide whether to report a discrepancy.",
+        "turn": 1,
+        "source": "initial",
+        "kind": "reported",
+        "status": "active",
+        "basis": "Source statement.",
+        "replaces": []
+      },
+      {
+        "id": "F18feb2809c37",
+        "area": "role",
+        "facet": "responsibility",
+        "quote": "Investors may lose money.",
+        "turn": 1,
+        "source": "initial",
+        "kind": "reported",
+        "status": "active",
+        "basis": "Source statement.",
+        "replaces": []
+      },
+      {
+        "id": "F2187164c12bb",
+        "area": "evidence",
+        "facet": "basis",
+        "quote": "I can check the ledger.",
+        "turn": 1,
+        "source": "initial",
+        "kind": "reported",
+        "status": "active",
+        "basis": "Source statement.",
+        "replaces": []
+      }
+    ],
+    "dimensions": {
+      "role": {
+        "coverage": 2,
+        "information": 2,
+        "status": "partial",
+        "explored": [
+          "decision",
+          "responsibility"
+        ],
+        "unexplored": [
+          "position"
+        ],
+        "supported": [
+          "decision",
+          "responsibility"
+        ],
+        "known": [
+          "Ff0100f6011b3",
+          "F18feb2809c37"
+        ],
+        "uncertain": [],
+        "missing": [
+          "position"
+        ],
+        "declined": []
+      },
+      "interests": {
+        "coverage": 1,
+        "information": 1,
+        "status": "partial",
+        "explored": [
+          "relationship"
+        ],
+        "unexplored": [
+          "stake",
+          "influence"
+        ],
+        "supported": [
+          "relationship"
+        ],
+        "known": [
+          "Fdd82a2885912"
+        ],
+        "uncertain": [],
+        "missing": [
+          "stake",
+          "influence"
+        ],
+        "declined": []
+      },
+      "pressure": {
+        "coverage": 0,
+        "information": 0,
+        "status": "unexplored",
+        "explored": [],
+        "unexplored": [
+          "request",
+          "incentive",
+          "response"
+        ],
+        "supported": [],
+        "known": [],
+        "uncertain": [],
+        "missing": [
+          "request",
+          "incentive",
+          "response"
+        ],
+        "declined": []
+      },
+      "evidence": {
+        "coverage": 1,
+        "information": 1,
+        "status": "partial",
+        "explored": [
+          "basis"
+        ],
+        "unexplored": [
+          "uncertainty",
+          "alternatives"
+        ],
+        "supported": [
+          "basis"
+        ],
+        "known": [
+          "F2187164c12bb"
+        ],
+        "uncertain": [],
+        "missing": [
+          "uncertainty",
+          "alternatives"
+        ],
+        "declined": []
+      },
+      "review": {
+        "coverage": 0,
+        "information": 0,
+        "status": "unexplored",
+        "explored": [],
+        "unexplored": [
+          "reviewer",
+          "route",
+          "safeguard"
+        ],
+        "supported": [],
+        "known": [],
+        "uncertain": [],
+        "missing": [
+          "reviewer",
+          "route",
+          "safeguard"
+        ],
+        "declined": []
+      }
+    },
+    "ready": false,
+    "engagements": [],
+    "context": {
+      "signals": {},
+      "critical_unknowns": []
+    },
+    "brief": null,
+    "language": "English",
+    "origin": "semantic",
+    "readiness": {
+      "score": 44,
+      "eligible": false,
+      "stage": "exploring",
+      "criteria": {
+        "conflict": false,
+        "stance": false,
+        "stakeholders": true,
+        "consequences": true,
+        "action_basis": true
+      },
+      "critical_unknowns": [],
+      "unknown_count": 0,
+      "information_points": 8,
+      "exploration_points": 6,
+      "penalty": 0
+    }
+  },
+  {
+    "schema": 1,
+    "facts": [
+      {
+        "id": "Fdd82a2885912",
+        "area": "interests",
+        "facet": "relationship",
+        "quote": "The CFO is my classmate.",
+        "turn": 1,
+        "source": "initial",
+        "kind": "reported",
+        "status": "active",
+        "basis": "Source statement.",
+        "replaces": []
+      },
+      {
+        "id": "Ff0100f6011b3",
+        "area": "role",
+        "facet": "decision",
+        "quote": "I must decide whether to report a discrepancy.",
+        "turn": 1,
+        "source": "initial",
+        "kind": "reported",
+        "status": "active",
+        "basis": "Source statement.",
+        "replaces": []
+      },
+      {
+        "id": "F18feb2809c37",
+        "area": "role",
+        "facet": "responsibility",
+        "quote": "Investors may lose money.",
+        "turn": 1,
+        "source": "initial",
+        "kind": "reported",
+        "status": "active",
+        "basis": "Source statement.",
+        "replaces": []
+      },
+      {
+        "id": "F2187164c12bb",
+        "area": "evidence",
+        "facet": "basis",
+        "quote": "I can check the ledger.",
+        "turn": 1,
+        "source": "initial",
+        "kind": "reported",
+        "status": "active",
+        "basis": "Source statement.",
+        "replaces": []
+      }
+    ],
+    "dimensions": {
+      "role": {
+        "coverage": 2,
+        "information": 2,
+        "status": "partial",
+        "explored": [
+          "decision",
+          "responsibility"
+        ],
+        "unexplored": [
+          "position"
+        ],
+        "supported": [
+          "decision",
+          "responsibility"
+        ],
+        "known": [
+          "Ff0100f6011b3",
+          "F18feb2809c37"
+        ],
+        "uncertain": [],
+        "missing": [
+          "position"
+        ],
+        "declined": []
+      },
+      "interests": {
+        "coverage": 1,
+        "information": 1,
+        "status": "partial",
+        "explored": [
+          "relationship"
+        ],
+        "unexplored": [
+          "stake",
+          "influence"
+        ],
+        "supported": [
+          "relationship"
+        ],
+        "known": [
+          "Fdd82a2885912"
+        ],
+        "uncertain": [],
+        "missing": [
+          "stake",
+          "influence"
+        ],
+        "declined": []
+      },
+      "pressure": {
+        "coverage": 0,
+        "information": 0,
+        "status": "unexplored",
+        "explored": [],
+        "unexplored": [
+          "request",
+          "incentive",
+          "response"
+        ],
+        "supported": [],
+        "known": [],
+        "uncertain": [],
+        "missing": [
+          "request",
+          "incentive",
+          "response"
+        ],
+        "declined": []
+      },
+      "evidence": {
+        "coverage": 1,
+        "information": 0,
+        "status": "partial",
+        "explored": [
+          "basis"
+        ],
+        "unexplored": [
+          "uncertainty",
+          "alternatives"
+        ],
+        "supported": [],
+        "known": [
+          "F2187164c12bb"
+        ],
+        "uncertain": [],
+        "missing": [
+          "basis",
+          "uncertainty",
+          "alternatives"
+        ],
+        "declined": []
+      },
+      "review": {
+        "coverage": 0,
+        "information": 0,
+        "status": "unexplored",
+        "explored": [],
+        "unexplored": [
+          "reviewer",
+          "route",
+          "safeguard"
+        ],
+        "supported": [],
+        "known": [],
+        "uncertain": [],
+        "missing": [
+          "reviewer",
+          "route",
+          "safeguard"
+        ],
+        "declined": []
+      }
+    },
+    "ready": false,
+    "engagements": [
+      {
+        "id": "E8d9166948dc9",
+        "area": "evidence",
+        "facet": "basis",
+        "quote": "I do not know",
+        "turn": 2,
+        "state": "unknown"
+      }
+    ],
+    "context": {
+      "signals": {},
+      "critical_unknowns": []
+    },
+    "brief": null,
+    "language": "English",
+    "origin": "semantic",
+    "readiness": {
+      "score": 24,
+      "eligible": false,
+      "stage": "exploring",
+      "criteria": {
+        "conflict": false,
+        "stance": false,
+        "stakeholders": true,
+        "consequences": true,
+        "action_basis": false
+      },
+      "critical_unknowns": [],
+      "unknown_count": 1,
+      "information_points": 5,
+      "exploration_points": 6,
+      "penalty": 7
+    }
+  },
+  {
+    "schema": 1,
+    "facts": [
+      {
+        "id": "Fdd82a2885912",
+        "area": "interests",
+        "facet": "relationship",
+        "quote": "The CFO is my classmate.",
+        "turn": 1,
+        "source": "initial",
+        "kind": "reported",
+        "status": "active",
+        "basis": "Source statement.",
+        "replaces": []
+      },
+      {
+        "id": "Ff0100f6011b3",
+        "area": "role",
+        "facet": "decision",
+        "quote": "I must decide whether to report a discrepancy.",
+        "turn": 1,
+        "source": "initial",
+        "kind": "reported",
+        "status": "active",
+        "basis": "Source statement.",
+        "replaces": []
+      },
+      {
+        "id": "F18feb2809c37",
+        "area": "role",
+        "facet": "responsibility",
+        "quote": "Investors may lose money.",
+        "turn": 1,
+        "source": "initial",
+        "kind": "reported",
+        "status": "active",
+        "basis": "Source statement.",
+        "replaces": []
+      },
+      {
+        "id": "F2187164c12bb",
+        "area": "evidence",
+        "facet": "basis",
+        "quote": "I can check the ledger.",
+        "turn": 1,
+        "source": "initial",
+        "kind": "reported",
+        "status": "active",
+        "basis": "Source statement.",
+        "replaces": []
+      }
+    ],
+    "dimensions": {
+      "role": {
+        "coverage": 2,
+        "information": 2,
+        "status": "partial",
+        "explored": [
+          "decision",
+          "responsibility"
+        ],
+        "unexplored": [
+          "position"
+        ],
+        "supported": [
+          "decision",
+          "responsibility"
+        ],
+        "known": [
+          "Ff0100f6011b3",
+          "F18feb2809c37"
+        ],
+        "uncertain": [],
+        "missing": [
+          "position"
+        ],
+        "declined": []
+      },
+      "interests": {
+        "coverage": 2,
+        "information": 1,
+        "status": "partial",
+        "explored": [
+          "relationship",
+          "influence"
+        ],
+        "unexplored": [
+          "stake"
+        ],
+        "supported": [
+          "relationship"
+        ],
+        "known": [
+          "Fdd82a2885912"
+        ],
+        "uncertain": [],
+        "missing": [
+          "stake",
+          "influence"
+        ],
+        "declined": [
+          "influence"
+        ]
+      },
+      "pressure": {
+        "coverage": 0,
+        "information": 0,
+        "status": "unexplored",
+        "explored": [],
+        "unexplored": [
+          "request",
+          "incentive",
+          "response"
+        ],
+        "supported": [],
+        "known": [],
+        "uncertain": [],
+        "missing": [
+          "request",
+          "incentive",
+          "response"
+        ],
+        "declined": []
+      },
+      "evidence": {
+        "coverage": 1,
+        "information": 0,
+        "status": "partial",
+        "explored": [
+          "basis"
+        ],
+        "unexplored": [
+          "uncertainty",
+          "alternatives"
+        ],
+        "supported": [],
+        "known": [
+          "F2187164c12bb"
+        ],
+        "uncertain": [],
+        "missing": [
+          "basis",
+          "uncertainty",
+          "alternatives"
+        ],
+        "declined": []
+      },
+      "review": {
+        "coverage": 0,
+        "information": 0,
+        "status": "unexplored",
+        "explored": [],
+        "unexplored": [
+          "reviewer",
+          "route",
+          "safeguard"
+        ],
+        "supported": [],
+        "known": [],
+        "uncertain": [],
+        "missing": [
+          "reviewer",
+          "route",
+          "safeguard"
+        ],
+        "declined": []
+      }
+    },
+    "ready": false,
+    "engagements": [
+      {
+        "id": "E8d9166948dc9",
+        "area": "evidence",
+        "facet": "basis",
+        "quote": "I do not know",
+        "turn": 2,
+        "state": "unknown"
+      },
+      {
+        "id": "Ec744b7fe15d2",
+        "area": "interests",
+        "facet": "influence",
+        "quote": "I prefer to pass",
+        "turn": 3,
+        "state": "declined"
+      }
+    ],
+    "context": {
+      "signals": {},
+      "critical_unknowns": []
+    },
+    "brief": null,
+    "language": "English",
+    "origin": "semantic",
+    "readiness": {
+      "score": 24,
+      "eligible": false,
+      "stage": "exploring",
+      "criteria": {
+        "conflict": false,
+        "stance": false,
+        "stakeholders": true,
+        "consequences": true,
+        "action_basis": false
+      },
+      "critical_unknowns": [],
+      "unknown_count": 1,
+      "information_points": 5,
+      "exploration_points": 6,
+      "penalty": 7
+    }
+  }
+]

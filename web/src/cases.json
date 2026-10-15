@@ -12,64 +12,131 @@
       "dimensions": {
         "role": {
           "coverage": 0,
+          "information": 0,
           "status": "unexplored",
+          "explored": [],
+          "unexplored": [
+            "position",
+            "decision",
+            "responsibility"
+          ],
+          "supported": [],
           "known": [],
           "uncertain": [],
           "missing": [
             "position",
             "decision",
             "responsibility"
-          ]
+          ],
+          "declined": []
         },
         "interests": {
           "coverage": 0,
+          "information": 0,
           "status": "unexplored",
+          "explored": [],
+          "unexplored": [
+            "relationship",
+            "stake",
+            "influence"
+          ],
+          "supported": [],
           "known": [],
           "uncertain": [],
           "missing": [
             "relationship",
             "stake",
             "influence"
-          ]
+          ],
+          "declined": []
         },
         "pressure": {
           "coverage": 0,
+          "information": 0,
           "status": "unexplored",
+          "explored": [],
+          "unexplored": [
+            "request",
+            "incentive",
+            "response"
+          ],
+          "supported": [],
           "known": [],
           "uncertain": [],
           "missing": [
             "request",
             "incentive",
             "response"
-          ]
+          ],
+          "declined": []
         },
         "evidence": {
           "coverage": 0,
+          "information": 0,
           "status": "unexplored",
+          "explored": [],
+          "unexplored": [
+            "basis",
+            "uncertainty",
+            "alternatives"
+          ],
+          "supported": [],
           "known": [],
           "uncertain": [],
           "missing": [
             "basis",
             "uncertainty",
             "alternatives"
-          ]
+          ],
+          "declined": []
         },
         "review": {
           "coverage": 0,
+          "information": 0,
           "status": "unexplored",
+          "explored": [],
+          "unexplored": [
+            "reviewer",
+            "route",
+            "safeguard"
+          ],
+          "supported": [],
           "known": [],
           "uncertain": [],
           "missing": [
             "reviewer",
             "route",
             "safeguard"
-          ]
+          ],
+          "declined": []
         }
       },
       "ready": false,
+      "engagements": [],
+      "context": {
+        "signals": {},
+        "critical_unknowns": []
+      },
       "brief": null,
       "language": "English",
-      "origin": "curated"
+      "origin": "curated",
+      "readiness": {
+        "score": 0,
+        "eligible": false,
+        "stage": "exploring",
+        "criteria": {
+          "conflict": false,
+          "stance": false,
+          "stakeholders": false,
+          "consequences": false,
+          "action_basis": false
+        },
+        "critical_unknowns": [],
+        "unknown_count": 0,
+        "information_points": 0,
+        "exploration_points": 0,
+        "penalty": 0
+      }
     },
     "analysis_zh": {
       "schema": 1,
@@ -77,64 +144,131 @@
       "dimensions": {
         "role": {
           "coverage": 0,
+          "information": 0,
           "status": "unexplored",
+          "explored": [],
+          "unexplored": [
+            "position",
+            "decision",
+            "responsibility"
+          ],
+          "supported": [],
           "known": [],
           "uncertain": [],
           "missing": [
             "position",
             "decision",
             "responsibility"
-          ]
+          ],
+          "declined": []
         },
         "interests": {
           "coverage": 0,
+          "information": 0,
           "status": "unexplored",
+          "explored": [],
+          "unexplored": [
+            "relationship",
+            "stake",
+            "influence"
+          ],
+          "supported": [],
           "known": [],
           "uncertain": [],
           "missing": [
             "relationship",
             "stake",
             "influence"
-          ]
+          ],
+          "declined": []
         },
         "pressure": {
           "coverage": 0,
+          "information": 0,
           "status": "unexplored",
+          "explored": [],
+          "unexplored": [
+            "request",
+            "incentive",
+            "response"
+          ],
+          "supported": [],
           "known": [],
           "uncertain": [],
           "missing": [
             "request",
             "incentive",
             "response"
-          ]
+          ],
+          "declined": []
         },
         "evidence": {
           "coverage": 0,
+          "information": 0,
           "status": "unexplored",
+          "explored": [],
+          "unexplored": [
+            "basis",
+            "uncertainty",
+            "alternatives"
+          ],
+          "supported": [],
           "known": [],
           "uncertain": [],
           "missing": [
             "basis",
             "uncertainty",
             "alternatives"
-          ]
+          ],
+          "declined": []
         },
         "review": {
           "coverage": 0,
+          "information": 0,
           "status": "unexplored",
+          "explored": [],
+          "unexplored": [
+            "reviewer",
+            "route",
+            "safeguard"
+          ],
+          "supported": [],
           "known": [],
           "uncertain": [],
           "missing": [
             "reviewer",
             "route",
             "safeguard"
-          ]
+          ],
+          "declined": []
         }
       },
       "ready": false,
+      "engagements": [],
+      "context": {
+        "signals": {},
+        "critical_unknowns": []
+      },
       "brief": null,
       "language": "中文",
-      "origin": "curated"
+      "origin": "curated",
+      "readiness": {
+        "score": 0,
+        "eligible": false,
+        "stage": "exploring",
+        "criteria": {
+          "conflict": false,
+          "stance": false,
+          "stakeholders": false,
+          "consequences": false,
+          "action_basis": false
+        },
+        "critical_unknowns": [],
+        "unknown_count": 0,
+        "information_points": 0,
+        "exploration_points": 0,
+        "penalty": 0
+      }
     }
   },
   {
@@ -199,7 +333,18 @@
       "dimensions": {
         "role": {
           "coverage": 1,
+          "information": 1,
           "status": "partial",
+          "explored": [
+            "position"
+          ],
+          "unexplored": [
+            "decision",
+            "responsibility"
+          ],
+          "supported": [
+            "position"
+          ],
           "known": [
             "Facaa9af56872"
           ],
@@ -207,11 +352,23 @@
           "missing": [
             "decision",
             "responsibility"
-          ]
+          ],
+          "declined": []
         },
         "interests": {
           "coverage": 1,
+          "information": 1,
           "status": "partial",
+          "explored": [
+            "relationship"
+          ],
+          "unexplored": [
+            "stake",
+            "influence"
+          ],
+          "supported": [
+            "relationship"
+          ],
           "known": [
             "F57477bcfada9"
           ],
@@ -219,11 +376,23 @@
           "missing": [
             "stake",
             "influence"
-          ]
+          ],
+          "declined": []
         },
         "pressure": {
           "coverage": 1,
+          "information": 1,
           "status": "partial",
+          "explored": [
+            "incentive"
+          ],
+          "unexplored": [
+            "request",
+            "response"
+          ],
+          "supported": [
+            "incentive"
+          ],
           "known": [
             "Fd79cf56e4539"
           ],
@@ -231,11 +400,21 @@
           "missing": [
             "request",
             "response"
-          ]
+          ],
+          "declined": []
         },
         "evidence": {
-          "coverage": 0,
+          "coverage": 1,
+          "information": 0,
           "status": "partial",
+          "explored": [
+            "uncertainty"
+          ],
+          "unexplored": [
+            "basis",
+            "alternatives"
+          ],
+          "supported": [],
           "known": [],
           "uncertain": [
             "Ff4c5182459ef"
@@ -244,24 +423,56 @@
             "basis",
             "uncertainty",
             "alternatives"
-          ]
+          ],
+          "declined": []
         },
         "review": {
           "coverage": 0,
+          "information": 0,
           "status": "unexplored",
+          "explored": [],
+          "unexplored": [
+            "reviewer",
+            "route",
+            "safeguard"
+          ],
+          "supported": [],
           "known": [],
           "uncertain": [],
           "missing": [
             "reviewer",
             "route",
             "safeguard"
-          ]
+          ],
+          "declined": []
         }
       },
       "ready": false,
+      "engagements": [],
+      "context": {
+        "signals": {},
+        "critical_unknowns": []
+      },
       "brief": null,
       "language": "English",
-      "origin": "curated"
+      "origin": "curated",
+      "readiness": {
+        "score": 5,
+        "eligible": false,
+        "stage": "exploring",
+        "criteria": {
+          "conflict": false,
+          "stance": false,
+          "stakeholders": false,
+          "consequences": false,
+          "action_basis": false
+        },
+        "critical_unknowns": [],
+        "unknown_count": 1,
+        "information_points": 4,
+        "exploration_points": 8,
+        "penalty": 7
+      }
     },
     "analysis_zh": {
       "schema": 1,
@@ -318,7 +529,18 @@
       "dimensions": {
         "role": {
           "coverage": 1,
+          "information": 1,
           "status": "partial",
+          "explored": [
+            "position"
+          ],
+          "unexplored": [
+            "decision",
+            "responsibility"
+          ],
+          "supported": [
+            "position"
+          ],
           "known": [
             "Ff63a2d90ac31"
           ],
@@ -326,11 +548,23 @@
           "missing": [
             "decision",
             "responsibility"
-          ]
+          ],
+          "declined": []
         },
         "interests": {
           "coverage": 1,
+          "information": 1,
           "status": "partial",
+          "explored": [
+            "relationship"
+          ],
+          "unexplored": [
+            "stake",
+            "influence"
+          ],
+          "supported": [
+            "relationship"
+          ],
           "known": [
             "Fbf0ce36eb951"
           ],
@@ -338,11 +572,23 @@
           "missing": [
             "stake",
             "influence"
-          ]
+          ],
+          "declined": []
         },
         "pressure": {
           "coverage": 1,
+          "information": 1,
           "status": "partial",
+          "explored": [
+            "incentive"
+          ],
+          "unexplored": [
+            "request",
+            "response"
+          ],
+          "supported": [
+            "incentive"
+          ],
           "known": [
             "Fe7677b26f322"
           ],
@@ -350,11 +596,21 @@
           "missing": [
             "request",
             "response"
-          ]
+          ],
+          "declined": []
         },
         "evidence": {
-          "coverage": 0,
+          "coverage": 1,
+          "information": 0,
           "status": "partial",
+          "explored": [
+            "uncertainty"
+          ],
+          "unexplored": [
+            "basis",
+            "alternatives"
+          ],
+          "supported": [],
           "known": [],
           "uncertain": [
             "Fe8bfa88486a7"
@@ -363,24 +619,56 @@
             "basis",
             "uncertainty",
             "alternatives"
-          ]
+          ],
+          "declined": []
         },
         "review": {
           "coverage": 0,
+          "information": 0,
           "status": "unexplored",
+          "explored": [],
+          "unexplored": [
+            "reviewer",
+            "route",
+            "safeguard"
+          ],
+          "supported": [],
           "known": [],
           "uncertain": [],
           "missing": [
             "reviewer",
             "route",
             "safeguard"
-          ]
+          ],
+          "declined": []
         }
       },
       "ready": false,
+      "engagements": [],
+      "context": {
+        "signals": {},
+        "critical_unknowns": []
+      },
       "brief": null,
       "language": "中文",
-      "origin": "curated"
+      "origin": "curated",
+      "readiness": {
+        "score": 5,
+        "eligible": false,
+        "stage": "exploring",
+        "criteria": {
+          "conflict": false,
+          "stance": false,
+          "stakeholders": false,
+          "consequences": false,
+          "action_basis": false
+        },
+        "critical_unknowns": [],
+        "unknown_count": 1,
+        "information_points": 4,
+        "exploration_points": 8,
+        "penalty": 7
+      }
     }
   },
   {
@@ -433,7 +721,18 @@
       "dimensions": {
         "role": {
           "coverage": 1,
+          "information": 1,
           "status": "partial",
+          "explored": [
+            "decision"
+          ],
+          "unexplored": [
+            "position",
+            "responsibility"
+          ],
+          "supported": [
+            "decision"
+          ],
           "known": [
             "F29fd2dc35bcd"
           ],
@@ -441,11 +740,23 @@
           "missing": [
             "position",
             "responsibility"
-          ]
+          ],
+          "declined": []
         },
         "interests": {
           "coverage": 1,
+          "information": 1,
           "status": "partial",
+          "explored": [
+            "relationship"
+          ],
+          "unexplored": [
+            "stake",
+            "influence"
+          ],
+          "supported": [
+            "relationship"
+          ],
           "known": [
             "F15ac95268216"
           ],
@@ -453,11 +764,23 @@
           "missing": [
             "stake",
             "influence"
-          ]
+          ],
+          "declined": []
         },
         "pressure": {
           "coverage": 1,
+          "information": 1,
           "status": "partial",
+          "explored": [
+            "request"
+          ],
+          "unexplored": [
+            "incentive",
+            "response"
+          ],
+          "supported": [
+            "request"
+          ],
           "known": [
             "Fdfe7dba3b7a4"
           ],
@@ -465,35 +788,76 @@
           "missing": [
             "incentive",
             "response"
-          ]
+          ],
+          "declined": []
         },
         "evidence": {
           "coverage": 0,
+          "information": 0,
           "status": "unexplored",
+          "explored": [],
+          "unexplored": [
+            "basis",
+            "uncertainty",
+            "alternatives"
+          ],
+          "supported": [],
           "known": [],
           "uncertain": [],
           "missing": [
             "basis",
             "uncertainty",
             "alternatives"
-          ]
+          ],
+          "declined": []
         },
         "review": {
           "coverage": 0,
+          "information": 0,
           "status": "unexplored",
+          "explored": [],
+          "unexplored": [
+            "reviewer",
+            "route",
+            "safeguard"
+          ],
+          "supported": [],
           "known": [],
           "uncertain": [],
           "missing": [
             "reviewer",
             "route",
             "safeguard"
-          ]
+          ],
+          "declined": []
         }
       },
       "ready": false,
+      "engagements": [],
+      "context": {
+        "signals": {},
+        "critical_unknowns": []
+      },
       "brief": null,
       "language": "English",
-      "origin": "curated"
+      "origin": "curated",
+      "readiness": {
+        "score": 20,
+        "eligible": false,
+        "stage": "exploring",
+        "criteria": {
+          "conflict": false,
+          "stance": false,
+          "stakeholders": true,
+          "consequences": false,
+          "action_basis": false
+        },
+        "critical_unknowns": [],
+        "unknown_count": 0,
+        "information_points": 4,
+        "exploration_points": 6,
+        "penalty": 0
+      }
     },
     "analysis_zh": {
       "schema": 1,
@@ -538,7 +902,18 @@
       "dimensions": {
         "role": {
           "coverage": 1,
+          "information": 1,
           "status": "partial",
+          "explored": [
+            "decision"
+          ],
+          "unexplored": [
+            "position",
+            "responsibility"
+          ],
+          "supported": [
+            "decision"
+          ],
           "known": [
             "Fadaf36fb5536"
           ],
@@ -546,11 +921,23 @@
           "missing": [
             "position",
             "responsibility"
-          ]
+          ],
+          "declined": []
         },
         "interests": {
           "coverage": 1,
+          "information": 1,
           "status": "partial",
+          "explored": [
+            "relationship"
+          ],
+          "unexplored": [
+            "stake",
+            "influence"
+          ],
+          "supported": [
+            "relationship"
+          ],
           "known": [
             "F9fb3b288c2d7"
           ],
@@ -558,11 +945,23 @@
           "missing": [
             "stake",
             "influence"
-          ]
+          ],
+          "declined": []
         },
         "pressure": {
           "coverage": 1,
+          "information": 1,
           "status": "partial",
+          "explored": [
+            "request"
+          ],
+          "unexplored": [
+            "incentive",
+            "response"
+          ],
+          "supported": [
+            "request"
+          ],
           "known": [
             "Ff58f972f03f9"
           ],
@@ -570,35 +969,76 @@
           "missing": [
             "incentive",
             "response"
-          ]
+          ],
+          "declined": []
         },
         "evidence": {
           "coverage": 0,
+          "information": 0,
           "status": "unexplored",
+          "explored": [],
+          "unexplored": [
+            "basis",
+            "uncertainty",
+            "alternatives"
+          ],
+          "supported": [],
           "known": [],
           "uncertain": [],
           "missing": [
             "basis",
             "uncertainty",
             "alternatives"
-          ]
+          ],
+          "declined": []
         },
         "review": {
           "coverage": 0,
+          "information": 0,
           "status": "unexplored",
+          "explored": [],
+          "unexplored": [
+            "reviewer",
+            "route",
+            "safeguard"
+          ],
+          "supported": [],
           "known": [],
           "uncertain": [],
           "missing": [
             "reviewer",
             "route",
             "safeguard"
-          ]
+          ],
+          "declined": []
         }
       },
       "ready": false,
+      "engagements": [],
+      "context": {
+        "signals": {},
+        "critical_unknowns": []
+      },
       "brief": null,
       "language": "中文",
-      "origin": "curated"
+      "origin": "curated",
+      "readiness": {
+        "score": 20,
+        "eligible": false,
+        "stage": "exploring",
+        "criteria": {
+          "conflict": false,
+          "stance": false,
+          "stakeholders": true,
+          "consequences": false,
+          "action_basis": false
+        },
+        "critical_unknowns": [],
+        "unknown_count": 0,
+        "information_points": 4,
+        "exploration_points": 6,
+        "penalty": 0
+      }
     }
   },
   {
@@ -663,7 +1103,18 @@
       "dimensions": {
         "role": {
           "coverage": 1,
+          "information": 1,
           "status": "partial",
+          "explored": [
+            "position"
+          ],
+          "unexplored": [
+            "decision",
+            "responsibility"
+          ],
+          "supported": [
+            "position"
+          ],
           "known": [
             "F76504f91d44a"
           ],
@@ -671,22 +1122,43 @@
           "missing": [
             "decision",
             "responsibility"
-          ]
+          ],
+          "declined": []
         },
         "interests": {
           "coverage": 0,
+          "information": 0,
           "status": "unexplored",
+          "explored": [],
+          "unexplored": [
+            "relationship",
+            "stake",
+            "influence"
+          ],
+          "supported": [],
           "known": [],
           "uncertain": [],
           "missing": [
             "relationship",
             "stake",
             "influence"
-          ]
+          ],
+          "declined": []
         },
         "pressure": {
           "coverage": 1,
+          "information": 1,
           "status": "partial",
+          "explored": [
+            "request"
+          ],
+          "unexplored": [
+            "incentive",
+            "response"
+          ],
+          "supported": [
+            "request"
+          ],
           "known": [
             "F41f9da9b2721"
           ],
@@ -694,11 +1166,23 @@
           "missing": [
             "incentive",
             "response"
-          ]
+          ],
+          "declined": []
         },
         "evidence": {
-          "coverage": 1,
+          "coverage": 2,
+          "information": 1,
           "status": "partial",
+          "explored": [
+            "basis",
+            "uncertainty"
+          ],
+          "unexplored": [
+            "alternatives"
+          ],
+          "supported": [
+            "basis"
+          ],
           "known": [
             "F1e628d048ef1"
           ],
@@ -708,24 +1192,56 @@
           "missing": [
             "uncertainty",
             "alternatives"
-          ]
+          ],
+          "declined": []
         },
         "review": {
           "coverage": 0,
+          "information": 0,
           "status": "unexplored",
+          "explored": [],
+          "unexplored": [
+            "reviewer",
+            "route",
+            "safeguard"
+          ],
+          "supported": [],
           "known": [],
           "uncertain": [],
           "missing": [
             "reviewer",
             "route",
             "safeguard"
-          ]
+          ],
+          "declined": []
         }
       },
       "ready": false,
+      "engagements": [],
+      "context": {
+        "signals": {},
+        "critical_unknowns": []
+      },
       "brief": null,
       "language": "English",
-      "origin": "curated"
+      "origin": "curated",
+      "readiness": {
+        "score": 15,
+        "eligible": false,
+        "stage": "exploring",
+        "criteria": {
+          "conflict": false,
+          "stance": false,
+          "stakeholders": false,
+          "consequences": false,
+          "action_basis": true
+        },
+        "critical_unknowns": [],
+        "unknown_count": 1,
+        "information_points": 6,
+        "exploration_points": 6,
+        "penalty": 7
+      }
     },
     "analysis_zh": {
       "schema": 1,
@@ -782,7 +1298,18 @@
       "dimensions": {
         "role": {
           "coverage": 1,
+          "information": 1,
           "status": "partial",
+          "explored": [
+            "position"
+          ],
+          "unexplored": [
+            "decision",
+            "responsibility"
+          ],
+          "supported": [
+            "position"
+          ],
           "known": [
             "Fcc197c798c7b"
           ],
@@ -790,22 +1317,43 @@
           "missing": [
             "decision",
             "responsibility"
-          ]
+          ],
+          "declined": []
         },
         "interests": {
           "coverage": 0,
+          "information": 0,
           "status": "unexplored",
+          "explored": [],
+          "unexplored": [
+            "relationship",
+            "stake",
+            "influence"
+          ],
+          "supported": [],
           "known": [],
           "uncertain": [],
           "missing": [
             "relationship",
             "stake",
             "influence"
-          ]
+          ],
+          "declined": []
         },
         "pressure": {
           "coverage": 1,
+          "information": 1,
           "status": "partial",
+          "explored": [
+            "request"
+          ],
+          "unexplored": [
+            "incentive",
+            "response"
+          ],
+          "supported": [
+            "request"
+          ],
           "known": [
             "Fdad1cf206651"
           ],
@@ -813,11 +1361,23 @@
           "missing": [
             "incentive",
             "response"
-          ]
+          ],
+          "declined": []
         },
         "evidence": {
-          "coverage": 1,
+          "coverage": 2,
+          "information": 1,
           "status": "partial",
+          "explored": [
+            "basis",
+            "uncertainty"
+          ],
+          "unexplored": [
+            "alternatives"
+          ],
+          "supported": [
+            "basis"
+          ],
           "known": [
             "Fbed75299b541"
           ],
@@ -827,24 +1387,56 @@
           "missing": [
             "uncertainty",
             "alternatives"
-          ]
+          ],
+          "declined": []
         },
         "review": {
           "coverage": 0,
+          "information": 0,
           "status": "unexplored",
+          "explored": [],
+          "unexplored": [
+            "reviewer",
+            "route",
+            "safeguard"
+          ],
+          "supported": [],
           "known": [],
           "uncertain": [],
           "missing": [
             "reviewer",
             "route",
             "safeguard"
-          ]
+          ],
+          "declined": []
         }
       },
       "ready": false,
+      "engagements": [],
+      "context": {
+        "signals": {},
+        "critical_unknowns": []
+      },
       "brief": null,
       "language": "中文",
-      "origin": "curated"
+      "origin": "curated",
+      "readiness": {
+        "score": 15,
+        "eligible": false,
+        "stage": "exploring",
+        "criteria": {
+          "conflict": false,
+          "stance": false,
+          "stakeholders": false,
+          "consequences": false,
+          "action_basis": true
+        },
+        "critical_unknowns": [],
+        "unknown_count": 1,
+        "information_points": 6,
+        "exploration_points": 6,
+        "penalty": 7
+      }
     }
   },
   {
@@ -897,7 +1489,18 @@
       "dimensions": {
         "role": {
           "coverage": 1,
+          "information": 1,
           "status": "partial",
+          "explored": [
+            "decision"
+          ],
+          "unexplored": [
+            "position",
+            "responsibility"
+          ],
+          "supported": [
+            "decision"
+          ],
           "known": [
             "F3ac39733ec82"
           ],
@@ -905,11 +1508,23 @@
           "missing": [
             "position",
             "responsibility"
-          ]
+          ],
+          "declined": []
         },
         "interests": {
           "coverage": 1,
+          "information": 1,
           "status": "partial",
+          "explored": [
+            "stake"
+          ],
+          "unexplored": [
+            "relationship",
+            "influence"
+          ],
+          "supported": [
+            "stake"
+          ],
           "known": [
             "Fe551dde439cc"
           ],
@@ -917,22 +1532,43 @@
           "missing": [
             "relationship",
             "influence"
-          ]
+          ],
+          "declined": []
         },
         "pressure": {
           "coverage": 0,
+          "information": 0,
           "status": "unexplored",
+          "explored": [],
+          "unexplored": [
+            "request",
+            "incentive",
+            "response"
+          ],
+          "supported": [],
           "known": [],
           "uncertain": [],
           "missing": [
             "request",
             "incentive",
             "response"
-          ]
+          ],
+          "declined": []
         },
         "evidence": {
           "coverage": 1,
+          "information": 1,
           "status": "partial",
+          "explored": [
+            "basis"
+          ],
+          "unexplored": [
+            "uncertainty",
+            "alternatives"
+          ],
+          "supported": [
+            "basis"
+          ],
           "known": [
             "F7714c449b9db"
           ],
@@ -940,24 +1576,56 @@
           "missing": [
             "uncertainty",
             "alternatives"
-          ]
+          ],
+          "declined": []
         },
         "review": {
           "coverage": 0,
+          "information": 0,
           "status": "unexplored",
+          "explored": [],
+          "unexplored": [
+            "reviewer",
+            "route",
+            "safeguard"
+          ],
+          "supported": [],
           "known": [],
           "uncertain": [],
           "missing": [
             "reviewer",
             "route",
             "safeguard"
-          ]
+          ],
+          "declined": []
         }
       },
       "ready": false,
+      "engagements": [],
+      "context": {
+        "signals": {},
+        "critical_unknowns": []
+      },
       "brief": null,
       "language": "English",
-      "origin": "curated"
+      "origin": "curated",
+      "readiness": {
+        "score": 32,
+        "eligible": false,
+        "stage": "exploring",
+        "criteria": {
+          "conflict": false,
+          "stance": false,
+          "stakeholders": true,
+          "consequences": false,
+          "action_basis": true
+        },
+        "critical_unknowns": [],
+        "unknown_count": 0,
+        "information_points": 6,
+        "exploration_points": 6,
+        "penalty": 0
+      }
     },
     "analysis_zh": {
       "schema": 1,
@@ -1002,7 +1670,18 @@
       "dimensions": {
         "role": {
           "coverage": 1,
+          "information": 1,
           "status": "partial",
+          "explored": [
+            "decision"
+          ],
+          "unexplored": [
+            "position",
+            "responsibility"
+          ],
+          "supported": [
+            "decision"
+          ],
           "known": [
             "Fa9c00e4b2b9b"
           ],
@@ -1010,11 +1689,23 @@
           "missing": [
             "position",
             "responsibility"
-          ]
+          ],
+          "declined": []
         },
         "interests": {
           "coverage": 1,
+          "information": 1,
           "status": "partial",
+          "explored": [
+            "stake"
+          ],
+          "unexplored": [
+            "relationship",
+            "influence"
+          ],
+          "supported": [
+            "stake"
+          ],
           "known": [
             "Fbbdd2072c72f"
           ],
@@ -1022,22 +1713,43 @@
           "missing": [
             "relationship",
             "influence"
-          ]
+          ],
+          "declined": []
         },
         "pressure": {
           "coverage": 0,
+          "information": 0,
           "status": "unexplored",
+          "explored": [],
+          "unexplored": [
+            "request",
+            "incentive",
+            "response"
+          ],
+          "supported": [],
           "known": [],
           "uncertain": [],
           "missing": [
             "request",
             "incentive",
             "response"
-          ]
+          ],
+          "declined": []
         },
         "evidence": {
           "coverage": 1,
+          "information": 1,
           "status": "partial",
+          "explored": [
+            "basis"
+          ],
+          "unexplored": [
+            "uncertainty",
+            "alternatives"
+          ],
+          "supported": [
+            "basis"
+          ],
           "known": [
             "F3217220ed915"
           ],
@@ -1045,24 +1757,56 @@
           "missing": [
             "uncertainty",
             "alternatives"
-          ]
+          ],
+          "declined": []
         },
         "review": {
           "coverage": 0,
+          "information": 0,
           "status": "unexplored",
+          "explored": [],
+          "unexplored": [
+            "reviewer",
+            "route",
+            "safeguard"
+          ],
+          "supported": [],
           "known": [],
           "uncertain": [],
           "missing": [
             "reviewer",
             "route",
             "safeguard"
-          ]
+          ],
+          "declined": []
         }
       },
       "ready": false,
+      "engagements": [],
+      "context": {
+        "signals": {},
+        "critical_unknowns": []
+      },
       "brief": null,
       "language": "中文",
-      "origin": "curated"
+      "origin": "curated",
+      "readiness": {
+        "score": 32,
+        "eligible": false,
+        "stage": "exploring",
+        "criteria": {
+          "conflict": false,
+          "stance": false,
+          "stakeholders": true,
+          "consequences": false,
+          "action_basis": true
+        },
+        "critical_unknowns": [],
+        "unknown_count": 0,
+        "information_points": 6,
+        "exploration_points": 6,
+        "penalty": 0
+      }
     }
   }
 ]

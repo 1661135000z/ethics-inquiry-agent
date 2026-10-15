@@ -28,7 +28,7 @@ Click the top-left Inquire logo to return home. Your conversation, unsent draft,
 
 **Choose another situation** opens selection without deleting the accepted conversation. Submit the replacement to commit it only after a valid first reply; cancel restores the old draft. **New inquiry** clears the transcript, observations and execution records, retains the original situation and model preference, and clears sending consent. When using DeepSeek, it returns to GLM.
 
-The conversation turn counter resets for a new inquiry. The inherited **24 request-attempt limit does not reset**, and global hourly/daily limits remain. A new server session has a fresh ten-attempt DeepSeek allowance only if a new real GLM failure enables it; this is not unlimited free access. Normal Gemini/GLM inquiries allow twelve accepted turns. Connection tests also consume the shared deployment allowance.
+The conversation turn counter resets for a new inquiry. The inherited **48 request-attempt limit does not reset**, and global hourly/daily limits remain. A new server session has a fresh ten-attempt DeepSeek allowance only if a new real GLM failure enables it; this is not unlimited free access. Normal Gemini/GLM inquiries allow twenty accepted turns. Connection tests also consume the shared deployment allowance.
 
 **Regenerate** replaces only the latest agent question and preserves the unsent answer; it does not add a user turn but consumes an API attempt. Changing models retains the conversation and requires renewed sending consent.
 
@@ -38,7 +38,7 @@ Reported statements are exact quotations from the user, not independently verifi
 
 The browser retains non-secret drafts and accepted records in tab sessionStorage. Personal keys and sending consent clear on refresh. Server sessions expire after two hours; availability may end earlier if the native server restarts. An available cached transcript is then read-only and can be exported. Closing the tab can discard its local cache. Do not enter client-identifiable, confidential or sensitive information.
 
-Execution details show actual input checks, provider requests, output validation and commit status. They do not display hidden chain-of-thought or invented tool calls. A validation failure leaves the previous accepted conversation intact; rephrase or switch provider rather than accepting an invalid answer.
+Execution details show actual input checks, provider requests, output validation and commit status. They do not display hidden chain-of-thought or invented tool calls. A validation failure leaves the previous accepted conversation intact; retry or switch provider if no usable content was returned; ordinary uncertainty and imperfect formatting do not invalidate a turn.
 
 ## A demonstration you can reproduce
 
@@ -96,3 +96,11 @@ Under an accepted reply, expand **Context added** to inspect exact quotations. A
 When the model supplies a valid decision brief, compare its proposed actions and stated trade-offs. **Examine this option** appends a discussion question to your draft. The brief marks unreassessed context and labels updated advice. The most recent previous suggestion is retained in the workspace across views, home navigation and refresh, with source-checked restoration. A new inquiry clears it. This is a single prior version, not a full advice-version archive. The accepted fact-correction record remains source-linked after refresh.
 
 On phones, the conversation uses normal page scrolling. **Back to latest** returns to the latest accepted reply without forcing you away from earlier messages. When the browser reports a reduced visual viewport while the input is focused, supplementary guidance hides temporarily so text and sending controls remain accessible. It returns when the viewport or focus changes. Device keyboard behaviour can vary.
+
+## Exploration and preliminary advice
+
+The five bars show **Exploration Coverage**: which distinct topics have been discussed, not whether you supplied a correct answer. “I do not know”, refusal and controversial positions are valid contributions. Repeating a statement cannot keep increasing the same measure. Open an area to distinguish this from **Information Sufficiency**, which describes supported information and remaining unknowns. You can skip a question; the agent should move to another useful angle.
+
+The independent **Advice Readiness** meter combines relevant information, core conflict, position, stakeholders, possible consequences and important unknowns. It is neither a risk score nor a guarantee. It may decrease when new facts challenge earlier understanding. The agent can offer conditional guidance before all five areas are explored; use **Ask for preliminary guidance** at any stage to insert an editable request into your draft. It makes no hidden API call. When a source-backed brief exists, **View preliminary guidance** opens it. Continue discussing, comparing options and correcting information afterwards.
+
+Free-provider inquiries support twenty accepted turns. Attempts, shared quotas and provider limits are separate; a busy provider may need time to recover. Existing records remain available at a limit. Paid DeepSeek remains a manual, developer-funded ten-turn backup.

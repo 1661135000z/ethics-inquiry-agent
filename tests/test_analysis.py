@@ -23,7 +23,7 @@ class AnalysisTests(unittest.TestCase):
         a=apply_updates(empty_analysis(),[update('interests','relationship','The CFO is my old classmate.'),update('pressure','incentive','My boss tied promotion to silence.'),update('review','reviewer','I do not know who reviewed the file.',kind='uncertain'),update('role','responsibility','Nobody reviewed anything.')],texts)
         self.assertEqual({f['area'] for f in a['facts']},{'interests','pressure','review'})
         self.assertIn('reviewer',dimension_states(a)['review']['missing'])
-        self.assertEqual(dimension_states(a)['review']['coverage'],0)
+        self.assertEqual(dimension_states(a)['review']['information'],0)
         self.assertEqual(dimension_states(a)['pressure']['coverage'],1)
 
     def test_repeat_and_nested_quote_do_not_accumulate_coverage(self):
@@ -39,7 +39,7 @@ class AnalysisTests(unittest.TestCase):
         texts=['An independent partner reviewed the file.','Correction: I cannot confirm any review occurred.']
         a=apply_updates(empty_analysis(),[update('review','reviewer',texts[0])],texts[:1])
         b=apply_updates(a,[update('review','reviewer',texts[1],2,'uncertain',[a['facts'][0]['id']])],texts)
-        self.assertEqual(dimension_states(b)['review']['coverage'],0)
+        self.assertEqual(dimension_states(b)['review']['information'],0)
         self.assertEqual(b['facts'][0]['status'],'superseded')
         self.assertEqual(b['facts'][1]['kind'],'uncertain')
         bad=apply_updates(a,[update('pressure','request',texts[1],2,'uncertain',[a['facts'][0]['id']])],texts)
@@ -70,7 +70,7 @@ class AnalysisTests(unittest.TestCase):
 
     def test_invalid_response_is_atomic(self):
         class Client:
-            def complete(self,messages): return json.dumps({'question':'Who could review this?','focus':'review','response':'You should sign the audit. Who could review this?','analysis':{'updates':[]}}),{}
+            def complete(self,messages): return '{}',{}
         s=Session()
         with self.assertRaises(ModelOutputError):s.submit('The CFO is my university classmate.',Client())
         self.assertEqual(s.messages,[])
@@ -109,7 +109,7 @@ class AdviceStateTests(unittest.TestCase):
         old=next(f for f in a['facts'] if f['area']=='role' and f['facet']=='responsibility')
         b=apply_updates(a,[update('role','responsibility',new,len(texts)+1,'uncertain',[old['id']])],texts+[new])
         self.assertFalse(b['ready']);self.assertTrue(b['brief']['stale'])
-        self.assertIsNone(validate_brief(brief,b,texts+[new],'English'))
+        self.assertIsNotNone(validate_brief(brief,b,texts+[new],'English'))  # Conditional advice may proceed with explicit unknowns.
         early=apply_updates(empty_analysis(),[update('role','position',texts[0])],texts[:1])
         self.assertIsNone(validate_brief(brief,early,texts[:1],'English'))
         self.assertIsNotNone(validate_brief(brief,early,texts[:1]+['What would you recommend?'],'English'))
@@ -118,7 +118,7 @@ class AdviceStateTests(unittest.TestCase):
     def test_wrong_epistemic_kind_cannot_make_unknowns_complete(self):
         a=apply_updates(empty_analysis(),[update('review','reviewer','I do not know who reviewed the file.')],['I do not know who reviewed the file.'])
         self.assertEqual(a['facts'][0]['kind'],'uncertain')
-        self.assertEqual(dimension_states(a)['review']['coverage'],0)
+        self.assertEqual(dimension_states(a)['review']['information'],0)
 
 class AnalysisExportTests(unittest.TestCase):
     def test_export_contains_coverage_sources_and_no_invented_facts(self):
@@ -188,8 +188,8 @@ class CurrentUncertaintyTests(unittest.TestCase):
         texts=['An independent partner reviewed the file.','I cannot confirm who reviewed the file.','The quality partner confirmed reviewing it.']
         a=apply_updates(empty_analysis(),[update('review','reviewer',texts[0])],texts[:1])
         b=apply_updates(a,[update('review','reviewer',texts[1],2,'uncertain')],texts[:2])
-        self.assertEqual(dimension_states(b)['review']['coverage'],0)
+        self.assertEqual(dimension_states(b)['review']['information'],0)
         c=apply_updates(b,[update('review','reviewer',texts[2],3)],texts)
         self.assertEqual(dimension_states(c)['review']['coverage'],1)
         d=apply_updates(c,[update('review','reviewer',texts[1],4,'uncertain')],texts+[texts[1]])
-        self.assertEqual(dimension_states(d)['review']['coverage'],0)
+        self.assertEqual(dimension_states(d)['review']['information'],0)

@@ -8,7 +8,7 @@ export function clueGroups(snapshot:Snapshot){return areas.map(area=>{
  snapshot.session.observations.filter(o=>o.area===area.id).map(o=>({...o,sourceId:`S${String(snapshot.session.observations.indexOf(o)+1).padStart(2,'0')}`,turn:quoteSource(snapshot,o.quote),kind:'reported',basis:'',facet:'',source:'answer'}))};
 });}
 
-export function stats(snapshot:Snapshot,provider:string){const accepted=snapshot.session.messages.filter(m=>m.role==='user').length,cap=provider==='deepseek'?10:12;return {accepted,cap,remaining:Math.max(0,cap-accepted),attempts:snapshot.attempts,statements:snapshot.session.observations.length};}
+export function stats(snapshot:Snapshot,provider:string){const accepted=snapshot.session.messages.filter(m=>m.role==='user').length,cap=provider==='deepseek'?10:20;return {accepted,cap,remaining:Math.max(0,cap-accepted),attempts:snapshot.attempts,statements:snapshot.session.observations.length};}
 export function stageState(current:string,stage:string):'active'|'complete'|'waiting'{const stages=['input','request','validate','commit'];if(current==='done')return 'complete';if(current===stage)return 'active';return stages.indexOf(current)>stages.indexOf(stage)?'complete':'waiting';}
 
 export function radarData(snapshot:Snapshot){

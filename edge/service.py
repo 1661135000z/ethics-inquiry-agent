@@ -6,6 +6,7 @@ import hashlib
 import json
 import secrets
 import re
+from inquiry.context import FREE_TURN_LIMIT,TRANSCRIPT_LIMIT,model_history
 from inquiry.core import Session, system_prompt, parse_turn, ModelOutputError
 from inquiry.examples import EXAMPLES
 from inquiry.analysis import seed_case, DEFINITIONS
@@ -64,8 +65,8 @@ class Service:
                 if not session.messages or session.messages[-1]['role']!='assistant': raise APIError('input','暂无可重新生成的追问。')
                 candidate=session.messages[:-1]
             else:
-                if session.turns>=(10 if provider=='deepseek' else 12): raise APIError('limit','已达到10轮，请导出并开始新对话。' if provider=='deepseek' else '已达到12轮，请导出并开始新对话。')
-                if sum(len(m['content']) for m in session.messages)+len(text.strip())>24000: raise APIError('limit','已达到上下文长度限制。')
+                if session.turns>=(10 if provider=='deepseek' else FREE_TURN_LIMIT): raise APIError('limit','已达到10轮，请导出并开始新对话。' if provider=='deepseek' else '已达到20轮，请导出并开始新对话。')
+                if sum(len(m['content']) for m in session.messages)+len(text.strip())>TRANSCRIPT_LIMIT: raise APIError('limit','已达到上下文长度限制。')
                 candidate=session.messages+[{'role':'user','content':text.strip()}]
             if not session.messages and operation!='regenerate':
                 selected=next((c for c in EXAMPLES if c['id']==body.get('case_id')),None)
@@ -73,11 +74,11 @@ class Service:
                     session.analysis=seed_case({**selected, 'text_zh':text.strip(), 'text_en':text.strip()},language)
             yield {'event':'stage','data':{'stage':'input'}}
             yield {'event':'stage','data':{'stage':'request'}}
-            prompt=system_prompt(language,session.observations,session.analysis)
+            prompt=system_prompt(language,session.observations,session.analysis,len([m for m in candidate if m['role']=='user']))
             if provider=='deepseek':prompt+='\nCompact output budget: 1600 tokens. Use short source-complete quotes and classification explanations; only new/corrected updates. Keep any requested brief very concise, and finish valid JSON.'
-            raw,meta=await self.transport.complete(provider,model,key,[{'role':'system','content':prompt},*candidate])
+            raw,meta=await self.transport.complete(provider,model,key,[{'role':'system','content':prompt},*model_history(candidate)])
             yield {'event':'stage','data':{'stage':'validate'}}
-            question,focus,quotes,analysis=parse_turn(raw,[m['content'] for m in candidate if m['role']=='user'],session.analysis,language,session.observations)
+            question,focus,quotes,analysis=parse_turn(raw,[m['content'] for m in candidate if m['role']=='user'],session.analysis,language,session.observations,session.focus,regenerating=operation=='regenerate')
             session.messages=candidate+[{'role':'assistant','content':question}]
             session.observations=quotes[-30:]; session.focus=focus; session.analysis=analysis
             record={'turn':session.turns,'time':datetime.now(timezone.utc).isoformat(),
@@ -98,7 +99,7 @@ class Service:
             yield {'event':'complete','data':state}
         except ModelOutputError:
             await self.store.finish(token,rid)
-            raise APIError('validation','回复未通过伦理追问检查，原对话和输入已保留。请重试或切换模型。',422) from None
+            raise APIError('validation','模型未返回可用内容，原对话和输入已保留。请稍后重试或切换模型。',422) from None
         except APIError as error:
             await self.store.finish(token,rid)
             if provider=='zhipu' and error.code in {'glm_capacity','glm_rate_limit','glm_busy','network','unavailable','quota'}:

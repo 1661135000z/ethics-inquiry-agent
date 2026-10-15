@@ -17,7 +17,7 @@ export async function inquiry(body:unknown,signal:AbortSignal,event:(stage:strin
   while((end=buffer.indexOf('\n\n'))>=0){const frame=buffer.slice(0,end);buffer=buffer.slice(end+2);const type=frame.match(/^event: (.*)$/m)?.[1];const raw=frame.match(/^data: (.*)$/m)?.[1];if(!raw)continue;const data=JSON.parse(raw);
    if(type==='stage')event(data.stage);if(type==='complete')result=data;if(type==='error')throw new APIError(data.code,data.message,400,data.backup_available===true);
   }
-  if(buffer.length>250000)throw new APIError('format','响应超过长度限制。');if(done)break;
+  if(buffer.length>500000)throw new APIError('format','响应超过长度限制。');if(done)break;
  }
  if(!result)throw new APIError('interrupted','连接中断，输入已保留。请先恢复会话，避免重复发送。');return result;
 }
