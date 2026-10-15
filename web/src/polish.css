@@ -34,3 +34,10 @@
 .sheet-onboarding .sheet-head{padding:18px 28px}.sheet-onboarding .sheet-head h2{font-size:22px;margin:5px 0}.sheet-onboarding .help-panel>.work-tabs{margin-bottom:19px;top:109px}.sheet-onboarding .guide-intro h3{font-size:25px;line-height:1.25;margin:11px 0}.sheet-onboarding .guide-intro p{font-size:11px;line-height:1.8}.sheet-onboarding .guide-path{margin-top:19px}.sheet-onboarding .guide-path li{padding-bottom:16px}.sheet-onboarding .guide-path li:last-child{padding-bottom:0}.sheet-onboarding .guide-path h4{font-size:12px;margin-bottom:5px}.sheet-onboarding .guide-path p{font-size:11px;line-height:1.8}.sheet-onboarding .guide-actions{margin-top:21px}.sheet-onboarding .guide-start>.help-note{font-size:9px;margin-top:16px;padding-top:12px}
 /* Keep the author's mark as a small signature within the reading flow. */
 .sheet-help .help-prose,.sheet-onboarding .help-prose{padding:12px 0}.about-optic{width:64px;margin:0 0 18px}
+
+/* Help actions use a single, unframed directional cue. */
+.guide-actions>.primary{display:inline-flex;align-items:center;justify-content:center;gap:12px;padding:12px 18px;line-height:1.5;white-space:normal;text-align:center}
+.guide-actions>.primary>svg{flex-shrink:0;transition:transform 220ms cubic-bezier(.2,.8,.2,1)}
+.guide-actions>.primary:hover:not(:disabled)>svg{transform:translateX(3px)}
+.guide-actions>.primary:active:not(:disabled)>svg{transform:translateX(4px)}
+@media(prefers-reduced-motion:reduce){.guide-actions>.primary>svg{transition:none}.guide-actions>.primary:hover:not(:disabled)>svg,.guide-actions>.primary:active:not(:disabled)>svg{transform:none}}

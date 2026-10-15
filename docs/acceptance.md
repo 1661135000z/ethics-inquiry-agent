@@ -86,3 +86,7 @@ This release changes the inquiry state and response contract, while keeping the 
 
 - Mobile navigation now stretches to the workspace width rather than shrinking with translated text. At 390px, Chinese previously measured 269px; both languages now measure 350px. At 320px both measure 280px, without horizontal page overflow.
 - The panel is hidden during mobile situation selection and visible after the first accepted reply. Desktop selection at 1366px retains the panel. Browser checks used the labelled local simulated-provider flow, without live model requests. All 54 frontend and 51 Python tests and TypeScript checking passed.
+
+## Help action refinement — 2026-10-15
+
+The guide and recorded-example actions use unframed SVG arrows instead of dark circular inserts. Browser checks covered Chinese dark desktop and light mobile at 390px, including advancing the recorded example. Buttons retain their existing actions; reduced-motion preferences disable arrow movement. TypeScript, production build and all 54 frontend tests passed.
