@@ -81,3 +81,8 @@ This release changes the inquiry state and response contract, while keeping the 
 - Live acceptance attempted one normal Gemini request, which returned the provider's unsupported-source-region HTTP 400 classification, and one normal GLM request, which returned recognised capacity HTTP 429. Both were stopped without repeated requests or region bypass. **No accepted live semantic transcript or classification-accuracy result is claimed for this release.** The previous live acceptances above remain historical, not evidence for the new prompt.
 - `tests/semantic_cases.json` contains varied English/Chinese, indirect, ambiguous and multi-area expressions. The opt-in `scripts/evaluate_semantics.py` can run at most six normal free-provider cases, stops on a provider error and never enables DeepSeek. Run it after service availability recovers; inspect replies as well as labels. It is a smoke sample, not an accuracy benchmark.
 - The separate Word user guide was updated to seven pages and rendered for page-by-page inspection. Public source contains no real client documents, visitor histories or credentials.
+
+## Mobile radar layout repair — 2026-10-15
+
+- Mobile navigation now stretches to the workspace width rather than shrinking with translated text. At 390px, Chinese previously measured 269px; both languages now measure 350px. At 320px both measure 280px, without horizontal page overflow.
+- The panel is hidden during mobile situation selection and visible after the first accepted reply. Desktop selection at 1366px retains the panel. Browser checks used the labelled local simulated-provider flow, without live model requests. All 54 frontend and 51 Python tests and TypeScript checking passed.

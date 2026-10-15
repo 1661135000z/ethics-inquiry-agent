@@ -5,3 +5,10 @@
 @media print{.decision-brief{break-inside:auto;background:white;color:black}.decision-brief p,.decision-brief h4{color:black}.decision-brief>details{display:block}.brief-options{grid-template-columns:1fr 1fr}}
 
 .help-panel>.work-tabs{overflow-x:auto;scrollbar-width:none}.help-panel>.work-tabs .guide-language{margin-left:auto;color:var(--accent);flex-shrink:0}.help-panel>.work-tabs button{flex-shrink:0}
+/* Mobile navigation must stretch independently of translated text lengths. */
+@media(max-width:760px){
+ .workspace>.journey{align-self:stretch;inline-size:100%;min-inline-size:0;max-inline-size:100%}
+ .is-studio .journey .clue-compass{display:none}
+ .is-chat .journey .clue-compass{display:block;width:100%;min-width:0}
+ .clue-radar svg{max-width:100%;margin-inline:auto}
+}

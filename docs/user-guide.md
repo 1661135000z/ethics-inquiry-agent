@@ -12,6 +12,8 @@ The interface opens in English for first-time visitors. Use **中文** to switch
 
 A turn is one accepted user message plus the agent's validated question. Questions explore objectivity through your role, relationships, incentives, competing explanations, evidence and independent review. They do not certify ethical compliance.
 
+On phones, the five-dimensional panel appears after the first valid reply and stays hidden during situation selection. Desktop keeps it available during selection too. Language switching preserves its alignment and inquiry state.
+
 ## If GLM is busy
 
 A recognised capacity error means the provider is crowded; retrying later may work. Other rate-limit, quota, authentication and network errors have different causes. The app offers a visible DeepSeek backup after an eligible GLM failure. Expand it and choose **Switch to DeepSeek** to continue without discarding the accepted conversation or unsent input. The developer funds this service; you do not pay or provide a key.
