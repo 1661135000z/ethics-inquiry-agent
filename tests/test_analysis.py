@@ -182,3 +182,14 @@ class ReviewRegressionTests(unittest.TestCase):
         self.assertFalse(same['brief']['stale'])
         _,_,_,new=parse_turn(raw,['Original situation.','The reviewer may also be involved in the problem.'],a,'English')
         self.assertTrue(new['brief']['stale'])
+
+class CurrentUncertaintyTests(unittest.TestCase):
+    def test_latest_unknown_reopens_a_previously_reported_facet_without_invented_retraction(self):
+        texts=['An independent partner reviewed the file.','I cannot confirm who reviewed the file.','The quality partner confirmed reviewing it.']
+        a=apply_updates(empty_analysis(),[update('review','reviewer',texts[0])],texts[:1])
+        b=apply_updates(a,[update('review','reviewer',texts[1],2,'uncertain')],texts[:2])
+        self.assertEqual(dimension_states(b)['review']['coverage'],0)
+        c=apply_updates(b,[update('review','reviewer',texts[2],3)],texts)
+        self.assertEqual(dimension_states(c)['review']['coverage'],1)
+        d=apply_updates(c,[update('review','reviewer',texts[1],4,'uncertain')],texts+[texts[1]])
+        self.assertEqual(dimension_states(d)['review']['coverage'],0)

@@ -8,7 +8,7 @@ export type Analysis={schema:1;facts:Fact[];ready:boolean;brief:DecisionBrief|nu
 export const blankAnalysis=():Analysis=>({schema:1,facts:[],ready:false,brief:null,language:'English',origin:'semantic'});
 export function dimensionView(snapshot:Snapshot,area:string){
  const def=definitions[area as keyof typeof definitions],facts=(snapshot.session.analysis?.facts||[]).filter(f=>f.area===area&&f.status==='active');
- const covered=new Set(facts.filter(f=>f.kind==='reported').map(f=>f.facet));
+ const covered=new Set(Object.keys(def.facets).filter(facet=>Math.max(0,...facts.filter(f=>f.facet===facet&&f.kind==='reported').map(f=>f.turn))>Math.max(0,...facts.filter(f=>f.facet===facet&&f.kind==='uncertain').map(f=>f.turn))));
  const missing=Object.keys(def.facets).filter(k=>!covered.has(k));
  return {facts,known:facts.filter(f=>f.kind==='reported'),uncertain:facts.filter(f=>f.kind==='uncertain'),missing,coverage:covered.size,status:covered.size===3?'substantial':facts.length?'partial':'unexplored'};
 }

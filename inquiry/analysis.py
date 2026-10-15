@@ -46,7 +46,7 @@ def dimension_states(analysis):
  states={}
  for area,d in DEFINITIONS.items():
   facts=[f for f in analysis.get('facts',[]) if f['area']==area and f.get('status')=='active']
-  covered={f['facet'] for f in facts if f['kind']=='reported'}
+  covered={facet for facet in d['facets'] if max((f['turn'] for f in facts if f['facet']==facet and f['kind']=='reported'),default=0)>max((f['turn'] for f in facts if f['facet']==facet and f['kind']=='uncertain'),default=0)}
   missing=[f for f in d['facets'] if f not in covered]
   states[area]={'coverage':len(covered),'status':'substantial' if len(covered)==3 else 'partial' if facts else 'unexplored',
                 'known':[f['id'] for f in facts if f['kind']=='reported'],
@@ -77,7 +77,8 @@ def apply_updates(previous,updates,user_texts):
     replaced.append(old)
   canonical=normalise(quote)
   existing=next((f for f in facts if f['area']==area and f['facet']==facet and f['kind']==kind and f['status']=='active' and (canonical in normalise(f['quote']) or normalise(f['quote']) in canonical)),None)
-  if existing and not replaced:continue
+  intervening=existing and any(f['area']==area and f['facet']==facet and f['kind']!=kind and f['status']=='active' and f['turn']>existing['turn'] for f in facts)
+  if existing and not replaced and not intervening:continue
   fid=fact_id(area,facet,quote,turn)
   if any(f['id']==fid for f in facts):continue
   for old in replaced:old['status']='superseded';old['replaced_by']=fid
