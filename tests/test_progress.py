@@ -128,3 +128,10 @@ class ReviewRegressionTests(unittest.TestCase):
   b=parse_turn(raw,['Initial situation','I do not want to answer'],a,'English')[3]
   self.assertEqual(b['dimensions']['pressure']['information'],0)
   self.assertEqual(b['dimensions']['review']['coverage'],1)
+ def test_chinese_export_preserves_unknown_source_and_localised_measures(self):
+  from inquiry.progress import record_engagements
+  from inquiry.analysis import analysis_markdown
+  a=finish(record_engagements(empty_analysis(),[],['Situation','不知道'],{'area':'review','facet':'reviewer'}))
+  text=analysis_markdown(a,'中文')
+  for value in ['探索覆盖度','信息充分度','建议准备度','已探索 · 仍未知','不知道']:self.assertIn(value,text)
+  self.assertNotIn('exploring',text)

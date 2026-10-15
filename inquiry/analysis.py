@@ -153,13 +153,16 @@ def analysis_markdown(analysis,language='English'):
  lines=['# 五维信息与初步建议' if zh else '# Five-dimensional context and preliminary guidance',
         '探索覆盖度记录讨论范围，信息充分度记录有据内容；两者均非核实或伦理评分。' if zh else 'Exploration measures discussion; information measures supported context. Neither is verification or a moral score; this is not a risk score. Human judgment remains necessary.']
  for area,d in DEFINITIONS.items():
-  state=a['dimensions'][area];lines.append('\n## '+d['zh' if zh else 'en']+f" — Exploration {round(state['coverage']/3*100)}%; Information {state['information']}/3")
+  state=a['dimensions'][area];lines.append('\n## '+d['zh' if zh else 'en']+f" — {'探索覆盖度' if zh else 'Exploration'} {round(state['coverage']/3*100)}%; {'信息充分度' if zh else 'Information'} {state['information']}/3")
   for f in a['facts']:
    if f['area']==area and f['status']=='active':
     lines.append(f"[{f['id']}] "+('初始情境' if zh and f['turn']==1 else '第'+str(f['turn'])+'轮' if zh else 'Initial situation' if f['turn']==1 else 'Turn '+str(f['turn']))+' · '+('不确定' if zh and f['kind']=='uncertain' else f['kind'])+'\n> '+f['quote'].replace('\n','\n> '))
+  for e in [v for v in a.get('engagements',[]) if v['area']==area][-2:]:
+   status=({'unknown':'已探索 · 仍未知','declined':'已探索 · 暂不继续追问','position':'已表达立场','discussed':'已讨论'}[e['state']] if zh else e['state'])
+   lines.append(f"[{e['id']}] "+('第'+str(e['turn'])+'轮' if zh else 'Turn '+str(e['turn']))+' · '+status+'\n> '+e['quote'].replace('\n','\n> '))
   missing=[d['facets'][f][int(zh)] for f in state['missing']]
   if missing:lines.append(('仍值得探索：' if zh else 'Still worth exploring: ')+'; '.join(missing))
- lines.append(('建议准备度：' if zh else 'Advice readiness: ')+str(a['readiness']['score'])+'% · '+a['readiness']['stage'])
+ lines.append(('建议准备度：' if zh else 'Advice readiness: ')+str(a['readiness']['score'])+'% · '+({'exploring':'探索中','initial':'可提供初步建议','refining':'持续完善建议'}[a['readiness']['stage']] if zh else a['readiness']['stage']))
  b=a.get('brief')
  if b:
   lines.append('\n## '+('有条件的初步建议' if zh else 'Conditional preliminary guidance'))

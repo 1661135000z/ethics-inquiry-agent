@@ -20,3 +20,7 @@ import type {Analysis} from './analysis';
 it('matches the Python source-of-truth for exploration, sufficiency and readiness',()=>{
  for(const fixture of fixtures){const a=fixture as unknown as Analysis;for(const [area,expected] of Object.entries(fixture.dimensions)){const d=dimensionState(a,area);expect(d.coverage).toBe(expected.coverage);expect(d.information).toBe(expected.information);expect(d.declined).toEqual(expected.declined)}expect(readinessForAnalysis(a)).toEqual(fixture.readiness)}
 });
+import {analysisMarkdown} from './analysis';
+it('exports coverage, information, readiness and unresolved discussion in the selected language',()=>{
+ const s=emptySnapshot();s.session.analysis=blankAnalysis();s.session.analysis.engagements=[{id:'e1',area:'review',facet:'reviewer',quote:'不知道',turn:2,state:'unknown'}];const text=analysisMarkdown(s,true);expect(text).toContain('建议准备度');expect(text).toContain('已探索 · 仍未知');expect(text).not.toContain('exploring');
+});

@@ -60,8 +60,10 @@ export function analysisMarkdown(snapshot:Snapshot,zh:boolean):string{
  for(const [area,d] of Object.entries(definitions)){
   const state=dimensionView(snapshot,area);lines.push(`### ${zh?d.zh:d.en} — ${zh?'探索':'Exploration'} ${Math.round(state.coverage/3*100)}%; ${zh?'信息':'Information'} ${state.information}/3`);
   for(const f of a.facts.filter(f=>f.area===area))lines.push(`[${f.id}] ${f.source==='initial'?(zh?'初始情境':'Initial situation'):(zh?'轮次 ':'Turn ')+f.turn} · ${f.kind==='uncertain'?(zh?'不确定':'Uncertain'):(zh?'用户陈述':'Reported')} ${f.status==='superseded'?(zh?'· 已被更正':'· Superseded'):''}\n> ${f.quote.replace(/\n/g,'\n> ')}`);
+  for(const e of (a.engagements||[]).filter(e=>e.area===area).slice(-2))lines.push(`[${e.id}] ${zh?'第':'Turn '}${e.turn}${zh?'轮':''} · ${zh?({unknown:'已探索 · 仍未知',declined:'已探索 · 暂不继续追问',position:'已表达立场',discussed:'已讨论'}[e.state]):e.state}\n> ${e.quote.replace(/\n/g,'\n> ')}`);
   if(state.missing.length)lines.push((zh?'仍值得探索：':'Still worth exploring: ')+state.missing.map(f=>facetLabel(area,f,zh)).join('; '));
  }
+ const readiness=readinessForAnalysis(a);lines.push(`${zh?'建议准备度':'Advice readiness'}: ${readiness.score}% · ${zh?({exploring:'探索中',initial:'可提供初步建议',refining:'持续完善建议'}[readiness.stage]):readiness.stage}`);
  const b=a.brief;if(b){lines.push(zh?'### 有条件的初步建议':'### Conditional preliminary guidance');if(b.stale)lines.push(zh?'本轮尚待重新评估。':'Awaiting reassessment.');lines.push(b.conflict,b.stakeholders,...b.options.map(o=>o.action+' — '+o.tradeoff),b.recommendation,(zh?'尚未解决：':'Unresolved: ')+b.uncertainties.join('; '),(zh?'依据：':'Sources: ')+b.basis.join(', '));}
  return lines.join('\n\n');
 }
